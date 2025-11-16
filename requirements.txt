@@ -1,0 +1,84 @@
+# ====================================
+# FARMTRACK - PROJECT DEPENDENCIES
+# ====================================
+
+# ====================================
+# SYSTEM REQUIREMENTS
+# ====================================
+# Node.js: v16 or higher
+# npm: v8 or higher
+# MySQL: v8.0 or higher
+# Git: Latest version
+
+# ====================================
+# BACKEND DEPENDENCIES (Node.js/Express)
+# ====================================
+# Install with: npm install (in backend folder)
+
+express@^4.18.2              # Web framework
+mysql2@^3.6.5                # MySQL database driver
+dotenv@^16.3.1               # Environment variable management
+cors@^2.8.5                  # Cross-Origin Resource Sharing
+body-parser@^1.20.2          # HTTP request body parser
+qrcode@^1.5.3                # QR code generation
+bcrypt@^5.1.1                # Password hashing
+jsonwebtoken@^9.0.2          # JWT authentication
+express-session@^1.17.3      # Session management
+passport@^0.7.0              # Authentication middleware
+passport-google-oauth20@^2.0.0  # Google OAuth strategy
+passport-local@^1.0.0        # Local authentication strategy
+
+# Development Dependencies (Backend)
+nodemon@^3.0.2               # Auto-restart server on changes
+
+# Network & Tunneling (Optional)
+ngrok                        # Secure tunnels to localhost for mobile testing
+
+# ====================================
+# FRONTEND DEPENDENCIES (React)
+# ====================================
+# Install with: npm install (in frontend folder)
+
+react@^18.2.0                # React library
+react-dom@^18.2.0            # React DOM rendering
+react-router-dom@^6.20.0     # Routing for React
+axios@^1.6.2                 # HTTP client
+recharts@^2.10.3             # Chart library for React
+react-scripts@5.0.1          # Create React App scripts
+
+# ====================================
+# EXTERNAL APIs & SERVICES
+# ====================================
+# Google Maps JavaScript API
+# Google OAuth 2.0
+# (API keys configured in .env file)
+
+# ====================================
+# DATABASE
+# ====================================
+# MySQL 8.0+
+# Database schema files:
+# - database_update.sql
+# - treatment_schema_update.sql
+# - UPDATE_DATABASE.sql
+
+# ====================================
+# INSTALLATION INSTRUCTIONS
+# ====================================
+# 1. Install Node.js (v16+) from https://nodejs.org/
+# 2. Install MySQL (v8.0+) from https://dev.mysql.com/downloads/
+# 3. Clone the repository
+# 4. Copy .env file and configure all values
+# 5. Run: cd backend && npm install
+# 6. Run: cd frontend && npm install
+# 7. Import database schema using MySQL Workbench or command line
+# 8. Start backend: npm start (in backend folder)
+# 9. Start frontend: npm start (in frontend folder)
+
+# ====================================
+# QUICK START
+# ====================================
+# For detailed setup instructions, see:
+# - QUICKSTART.md
+# - README.md
+# - SCHEMA_UPDATE_QUICKSTART.md

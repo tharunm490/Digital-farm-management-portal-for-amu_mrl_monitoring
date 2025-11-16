@@ -1,0 +1,280 @@
+.batch-management-container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 30px;
+}
+
+.batch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.batch-header h2 {
+  color: #333;
+  font-size: 28px;
+  margin: 0;
+  flex: 1;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #fcc;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 18px;
+}
+
+/* Form Styles */
+.batch-form-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.batch-form-card h3 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group select:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Buttons */
+.btn-primary {
+  padding: 12px 30px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+  background: #138496;
+}
+
+.btn-danger {
+  padding: 10px 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+/* Entity List */
+.batch-list {
+  margin-top: 30px;
+}
+
+.batch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.batch-card {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.batch-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.batch-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.batch-card-header h3 {
+  color: #333;
+  font-size: 20px;
+  margin: 0;
+  flex: 1;
+  word-break: break-word;
+}
+
+.entity-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.entity-badge.animal {
+  background: #e8f5e9;
+  color: #28a745;
+}
+
+.entity-badge.batch {
+  background: #fff3e0;
+  color: #ff9800;
+}
+
+.batch-card-body {
+  margin-bottom: 20px;
+}
+
+.batch-card-body p {
+  margin: 10px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+  color: #555;
+}
+
+.batch-card-body p:last-child {
+  border-bottom: none;
+}
+
+.batch-card-body strong {
+  color: #333;
+  margin-right: 10px;
+}
+
+.batch-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.batch-card-actions button {
+  flex: 1;
+  min-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .batch-management-container {
+    padding: 20px 15px;
+  }
+  
+  .batch-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .batch-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .batch-card-actions {
+    flex-direction: column;
+  }
+  
+  .batch-card-actions button {
+    width: 100%;
+  }
+}
+
