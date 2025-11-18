@@ -99,35 +99,42 @@ router.get('/:entity_id', async (req, res) => {
     const accept = req.headers.accept || '';
     if (accept.includes('text/html')) {
       const e = response.entity_details;
-      const treatmentsHtml = response.treatment_records.map(t => `
-        <tr>
-          <td>${t.treatment_id}</td>
-          <td>${t.active_ingredient || '-'}</td>
-          <td>${t.dose_mg_per_kg || '-'}</td>
-          <td>${t.route || '-'}</td>
-          <td>${t.frequency_per_day || '-'}</td>
-          <td>${t.duration_days || '-'}</td>
-          <td>${t.start_date || '-'}</td>
-          <td>${t.end_date || '-'}</td>
-          <td>${t.withdrawal_period_days || '-'}</td>
-          <td>${t.withdrawal_end_date || '-'}</td>
-        </tr>
-      `).join('');
-
-      const amuHtml = (response.amu_records || []).map(a => `
-        <li>${a.medicine || a.active_ingredient} - ${a.dose || ''} (${a.date || ''})</li>
-      `).join('');
-
-      const mrlHtml = response.mrl_limits ? `
-        <p><strong>MRL Limits:</strong> ${JSON.stringify(response.mrl_limits)}</p>
-      ` : '';
-
       const withdrawal = response.withdrawal_info;
-      const safety = withdrawal.mrl_pass ? '<span style="color:green">SAFE (PASS)</span>' : '<span style="color:red">NOT SAFE (FAIL)</span>';
-
       const statusBanner = withdrawal.mrl_pass
         ? { text: 'PASS', color1: '#dafbe6', color2: '#ffe066', icon: 'fa-solid fa-circle-check', gradient: 'linear-gradient(90deg,#dafbe6,#ffe066)' }
         : { text: 'FAIL', color1: '#ffdede', color2: '#ffe066', icon: 'fa-solid fa-circle-xmark', gradient: 'linear-gradient(90deg,#ffdede,#ffe066)' };
+
+      // Treatment Records as grid cards
+      const treatmentsGridHtml = response.treatment_records.length > 0 ? `
+        <div class="details-grid">
+          ${response.treatment_records.map(t => `
+            <div class="detail-box">
+              <div class="detail-label">Active Ingredient</div>${t.active_ingredient || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Dose (mg/kg)</div>${t.dose_mg_per_kg || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Route</div>${t.route || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Frequency/Day</div>${t.frequency_per_day || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Duration (days)</div>${t.duration_days || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Start Date</div>${t.start_date || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">End Date</div>${t.end_date || '-'}
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Withdrawal End</div>${t.withdrawal_end_date || '-'}
+            </div>
+          `).join('')}
+        </div>
+      ` : `<div style="color:#888;font-size:1.05rem;padding:18px;text-align:center;">No treatment records found.</div>`;
 
       const html = `
         <!doctype html>
@@ -154,6 +161,8 @@ router.get('/:entity_id', async (req, res) => {
             .details-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
             .detail-box{background:#f6fbf7;border-radius:8px;padding:14px;text-align:center;font-size:1.05rem;color:#222;box-shadow:0 1px 4px #0001}
             .detail-label{font-size:0.97rem;color:#6b7280;margin-bottom:4px}
+            @media (max-width:720px){.details-grid{grid-template-columns:1fr}}
+            @media (max-width:480px){.card{padding:12px;margin:12px;}.details-grid{gap:8px;}.detail-box{padding:10px;font-size:0.97rem;}}
             table{width:100%;border-collapse:collapse;background:#f6fbf7;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px #0001}
             th,td{padding:12px;text-align:left;font-size:1rem;border-bottom:1px solid #e6eef0}
             th{background:#f3f3f3;color:#2e5c1a;font-weight:600}
@@ -169,7 +178,6 @@ router.get('/:entity_id', async (req, res) => {
             .verification-text{font-size:1.07rem;color:#222}
             .print-btn{position:fixed;bottom:24px;right:24px;background:#2e5c1a;color:#fff;border:none;border-radius:50px;padding:12px 24px;font-size:1.1rem;box-shadow:0 2px 8px #0002;cursor:pointer;z-index:99;transition:background 0.2s}
             .print-btn:hover{background:#388e3c}
-            @media (max-width:720px){.details-grid{grid-template-columns:1fr}}
           </style>
         </head>
         <body>
@@ -196,25 +204,7 @@ router.get('/:entity_id', async (req, res) => {
 
           <div class="card">
             <div class="card-title"><span class="icon"><i class="fa-solid fa-notes-medical"></i></span> Treatment Records</div>
-            <table>
-              <thead>
-                <tr><th>Active Ingredient</th><th>Dose</th><th>Route</th><th>Freq/day</th><th>Duration</th><th>Start</th><th>End</th><th>Withdrawal end</th></tr>
-              </thead>
-              <tbody>
-                ${response.treatment_records.map(t => `
-                  <tr>
-                    <td>${t.active_ingredient || '-'}</td>
-                    <td>${t.dose_mg_per_kg || '-'}</td>
-                    <td>${t.route || '-'}</td>
-                    <td>${t.frequency_per_day || '-'}</td>
-                    <td>${t.duration_days || '-'}</td>
-                    <td>${t.start_date || '-'}</td>
-                    <td>${t.end_date || '-'}</td>
-                    <td>${t.withdrawal_end_date || '-'}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
+            ${treatmentsGridHtml}
           </div>
 
           <div class="card">
