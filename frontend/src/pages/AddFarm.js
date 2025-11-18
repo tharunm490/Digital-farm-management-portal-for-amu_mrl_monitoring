@@ -98,7 +98,7 @@ const AddFarm = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${process.env.REACT_APP_API_URL}/farms`, {
+      await axios.post(`${process.env.REACT_APP_API_URL || '/api'}/farms`, {
         farm_name: formData.farm_name,
         latitude: parseFloat(formData.latitude),
         longitude: parseFloat(formData.longitude)

@@ -23,7 +23,9 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
+    // Redirect to backend Google auth endpoint
+    const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    window.location.href = `${backendUrl}/auth/google`;
   };
 
   return (

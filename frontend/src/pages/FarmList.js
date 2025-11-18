@@ -19,8 +19,8 @@ const FarmList = () => {
     try {
       const token = localStorage.getItem('token');
       const endpoint = user?.role === 'farmer' 
-        ? `${process.env.REACT_APP_API_URL}/farms/my-farms`
-        : `${process.env.REACT_APP_API_URL}/farms`;
+        ? `${process.env.REACT_APP_API_URL || '/api'}/farms/my-farms`
+        : `${process.env.REACT_APP_API_URL || '/api'}/farms`;
       
       const response = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` }

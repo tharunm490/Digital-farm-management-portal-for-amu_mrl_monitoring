@@ -23,7 +23,7 @@ const RoleSelection = () => {
     try {
       // Update profile with role
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/auth/profile`,
+        `${process.env.REACT_APP_API_URL || '/api'}/auth/profile`,
         {
           ...formData,
           role

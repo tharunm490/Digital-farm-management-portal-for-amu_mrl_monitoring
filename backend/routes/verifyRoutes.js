@@ -1,4 +1,5 @@
 const express = require('express');
+const db = require('../config/database');
 const router = express.Router();
 const Entity = require('../models/Entity');
 const Treatment = require('../models/Treatment');
@@ -94,6 +95,152 @@ router.get('/:entity_id', async (req, res) => {
       }
     };
     
+    // If browser requests HTML, render a human-friendly verification page
+    const accept = req.headers.accept || '';
+    if (accept.includes('text/html')) {
+      const e = response.entity_details;
+      const treatmentsHtml = response.treatment_records.map(t => `
+        <tr>
+          <td>${t.treatment_id}</td>
+          <td>${t.active_ingredient || '-'}</td>
+          <td>${t.dose_mg_per_kg || '-'}</td>
+          <td>${t.route || '-'}</td>
+          <td>${t.frequency_per_day || '-'}</td>
+          <td>${t.duration_days || '-'}</td>
+          <td>${t.start_date || '-'}</td>
+          <td>${t.end_date || '-'}</td>
+          <td>${t.withdrawal_period_days || '-'}</td>
+          <td>${t.withdrawal_end_date || '-'}</td>
+        </tr>
+      `).join('');
+
+      const amuHtml = (response.amu_records || []).map(a => `
+        <li>${a.medicine || a.active_ingredient} - ${a.dose || ''} (${a.date || ''})</li>
+      `).join('');
+
+      const mrlHtml = response.mrl_limits ? `
+        <p><strong>MRL Limits:</strong> ${JSON.stringify(response.mrl_limits)}</p>
+      ` : '';
+
+      const withdrawal = response.withdrawal_info;
+      const safety = withdrawal.mrl_pass ? '<span style="color:green">SAFE (PASS)</span>' : '<span style="color:red">NOT SAFE (FAIL)</span>';
+
+      const statusBanner = withdrawal.mrl_pass
+        ? { text: 'PASS', color1: '#dafbe6', color2: '#ffe066', icon: 'fa-solid fa-circle-check', gradient: 'linear-gradient(90deg,#dafbe6,#ffe066)' }
+        : { text: 'FAIL', color1: '#ffdede', color2: '#ffe066', icon: 'fa-solid fa-circle-xmark', gradient: 'linear-gradient(90deg,#ffdede,#ffe066)' };
+
+      const html = `
+        <!doctype html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Batch Verification</title>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"/>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+          <style>
+            body{background:#f4f7fa;font-family:'Inter',Roboto,Arial,sans-serif;margin:0}
+            .header{position:sticky;top:0;background:#fff;box-shadow:0 2px 8px #0001;padding:18px 0 10px 0;z-index:10}
+            .header-title{font-size:2rem;font-weight:700;color:#2e5c1a;text-align:center;letter-spacing:0.5px}
+            .banner{margin:24px auto 0 auto;max-width:420px;padding:18px 0;border-radius:14px;background:${statusBanner.gradient};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px #0002}
+            .banner-icon{font-size:2.8rem;margin-right:18px;color:#d32f2f}
+            .banner-content{display:flex;flex-direction:column}
+            .banner-title{font-size:1.25rem;font-weight:700;color:#d32f2f;letter-spacing:0.5px}
+            .banner-sub{font-size:1rem;color:#444}
+            .card{background:#fff;border-radius:14px;box-shadow:0 1px 8px #0001;padding:22px;margin:28px auto;max-width:650px;transition:box-shadow 0.2s}
+            .card:hover{box-shadow:0 4px 16px #0002}
+            .card-title{font-size:1.13rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;color:#2e5c1a;letter-spacing:0.2px}
+            .card-title .icon{font-size:1.3rem}
+            .details-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+            .detail-box{background:#f6fbf7;border-radius:8px;padding:14px;text-align:center;font-size:1.05rem;color:#222;box-shadow:0 1px 4px #0001}
+            .detail-label{font-size:0.97rem;color:#6b7280;margin-bottom:4px}
+            table{width:100%;border-collapse:collapse;background:#f6fbf7;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px #0001}
+            th,td{padding:12px;text-align:left;font-size:1rem;border-bottom:1px solid #e6eef0}
+            th{background:#f3f3f3;color:#2e5c1a;font-weight:600}
+            tr:hover{background:#eaf6ff}
+            .treatment-label{font-weight:600;color:#2e5c1a}
+            .withdrawal-status{background:#f6fbf7;border-radius:10px;padding:16px;margin-top:10px;box-shadow:0 1px 4px #0001}
+            .withdrawal-label{font-size:1.05rem;color:#6b7280}
+            .withdrawal-value{font-size:1.05rem;color:#222}
+            .withdrawal-fail{color:#d32f2f;font-weight:700}
+            .withdrawal-pass{color:#388e3c;font-weight:700}
+            .verification-status{background:#e8fbef;border-radius:10px;padding:18px;margin-top:24px;max-width:650px;margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px #0001}
+            .verification-icon{font-size:1.7rem;color:#388e3c}
+            .verification-text{font-size:1.07rem;color:#222}
+            .print-btn{position:fixed;bottom:24px;right:24px;background:#2e5c1a;color:#fff;border:none;border-radius:50px;padding:12px 24px;font-size:1.1rem;box-shadow:0 2px 8px #0002;cursor:pointer;z-index:99;transition:background 0.2s}
+            .print-btn:hover{background:#388e3c}
+            @media (max-width:720px){.details-grid{grid-template-columns:1fr}}
+          </style>
+        </head>
+        <body>
+          <div class="header"><div class="header-title">Batch Verification</div></div>
+          <div class="banner">
+            <span class="banner-icon"><i class="${statusBanner.icon}"></i></span>
+            <div class="banner-content">
+              <span class="banner-title">${statusBanner.text}</span>
+              <span class="banner-sub">${statusBanner.text === 'PASS' ? 'The process has completed withdrawal period.' : 'The process has not completed withdrawal period.'}</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="icon"><i class="fa-solid fa-clipboard-list"></i></span> Animal Details</div>
+            <div class="details-grid">
+              <div class="detail-box"><div class="detail-label">Entity ID</div>${e.entity_id}</div>
+              <div class="detail-box"><div class="detail-label">Type</div>${e.entity_type}</div>
+              <div class="detail-box"><div class="detail-label">Tag</div>${e.tag_id}</div>
+              <div class="detail-box"><div class="detail-label">Species</div>${e.species}</div>
+              <div class="detail-box"><div class="detail-label">Breed</div>${e.breed}</div>
+              <div class="detail-box"><div class="detail-label">Farm</div>${e.farm_name}</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="icon"><i class="fa-solid fa-notes-medical"></i></span> Treatment Records</div>
+            <table>
+              <thead>
+                <tr><th>Active Ingredient</th><th>Dose</th><th>Route</th><th>Freq/day</th><th>Duration</th><th>Start</th><th>End</th><th>Withdrawal end</th></tr>
+              </thead>
+              <tbody>
+                ${response.treatment_records.map(t => `
+                  <tr>
+                    <td>${t.active_ingredient || '-'}</td>
+                    <td>${t.dose_mg_per_kg || '-'}</td>
+                    <td>${t.route || '-'}</td>
+                    <td>${t.frequency_per_day || '-'}</td>
+                    <td>${t.duration_days || '-'}</td>
+                    <td>${t.start_date || '-'}</td>
+                    <td>${t.end_date || '-'}</td>
+                    <td>${t.withdrawal_end_date || '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="icon"><i class="fa-solid fa-clock"></i></span> Withdrawal Period Status</div>
+            <div class="withdrawal-status">
+              <div><span class="withdrawal-label">Withdrawal Period:</span> <span class="withdrawal-value">${withdrawal.withdrawal_period_days || '-'}</span></div>
+              <div><span class="withdrawal-label">Withdrawal Finish Date:</span> <span class="withdrawal-value">${withdrawal.withdrawal_finish_date || '-'}</span></div>
+              <div><span class="withdrawal-label">Days from Withdrawal:</span> <span class="withdrawal-value">${withdrawal.days_from_withdrawal == null ? '-' : withdrawal.days_from_withdrawal}</span></div>
+              <div><span class="withdrawal-label">MRL Status:</span> <span class="${withdrawal.mrl_pass ? 'withdrawal-pass' : 'withdrawal-fail'}">${withdrawal.mrl_pass ? '✔ SAFE' : '✗ NOT SAFE'}</span></div>
+            </div>
+          </div>
+
+          <div class="verification-status">
+            <span class="verification-icon"><i class="fa-solid fa-lock"></i></span>
+            <span class="verification-text">Record verified successfully<br><span style="font-size:0.95rem;color:#6b7280">All measurements and withdrawal periods checked for batch or animal.</span></span>
+          </div>
+
+          <button class="print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+        </body>
+        </html>
+      `;
+
+      res.set('Content-Type', 'text/html');
+      return res.send(html);
+    }
+
     res.json(response);
     
   } catch (error) {
@@ -103,3 +250,62 @@ router.get('/:entity_id', async (req, res) => {
 });
 
 module.exports = router;
+// Flexible QR verification route for /verify and /verify/ with query param
+// PUBLIC QR VERIFICATION ROUTE — NO LOGIN REQUIRED
+router.get(['/', ''], async (req, res) => {
+  try {
+    const entityId = req.query.entity_id;
+    if (!entityId) {
+      return res.status(400).json({ error: 'Entity ID missing' });
+    }
+    // Fetch entity details
+    const [entity] = await db.query(
+      'SELECT * FROM animals_or_batches WHERE entity_id = ?',
+      [entityId]
+    );
+    if (entity.length === 0) {
+      return res.status(404).json({ error: 'Entity not found' });
+    }
+    // Fetch treatment history
+    const [treatments] = await db.query(
+      'SELECT * FROM treatment_records WHERE entity_id = ?',
+      [entityId]
+    );
+    return res.json({
+      status: 'success',
+      entity: entity[0],
+      treatments
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Path-based QR verification route: /verify/:entityId
+router.get('/:entityId', async (req, res) => {
+  try {
+    const entityId = req.params.entityId;
+    // Fetch entity details
+    const [entity] = await db.query(
+      'SELECT * FROM animals_or_batches WHERE entity_id = ?',
+      [entityId]
+    );
+    if (entity.length === 0) {
+      return res.status(404).json({ error: 'Entity not found' });
+    }
+    // Fetch treatment history
+    const [treatments] = await db.query(
+      'SELECT * FROM treatment_records WHERE entity_id = ?',
+      [entityId]
+    );
+    return res.json({
+      status: 'success',
+      entity: entity[0],
+      treatments
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});

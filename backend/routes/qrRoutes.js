@@ -29,9 +29,20 @@ router.post('/generate/:entity_id', authMiddleware, farmerOnly, async (req, res)
     // Check if QR already exists
     let qrRecord = await QR.getByEntityId(entity_id);
     
-    // Generate QR URL (use IP for mobile scanning, localhost for web)
-    const frontendUrl = process.env.QR_FRONTEND_URL || 'http://192.168.64.1:3000';
-    const qrUrl = `${frontendUrl}/verify?entity_id=${entity_id}`;
+    // Generate QR URL (use hotspot IP for mobile scanning if available)
+    const { getHotspotIp } = require('../utils/network');
+    const hotspotIp = getHotspotIp();
+    let qrUrl;
+    if (hotspotIp) {
+      qrUrl = `http://${hotspotIp}:5000/api/verify/${entity_id}`;
+    } else if (process.env.QR_FRONTEND_URL) {
+      // If hotspot not found, fall back to QR_FRONTEND_URL host (if configured)
+      const host = process.env.QR_FRONTEND_URL.replace(/https?:\/\//, '').replace(/:\d+$/, '');
+      qrUrl = `http://${host}:5000/api/verify/${entity_id}`;
+    } else {
+      // Final fallback to localhost (useful for dev on same device)
+      qrUrl = `http://localhost:5000/api/verify/${entity_id}`;
+    }
     
     // Generate QR code as Base64 image
     const qrImage = await QRCode.toDataURL(qrUrl, {

@@ -21,7 +21,7 @@ const AuthCallback = () => {
         localStorage.setItem('token', token);
 
         // Get user details
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL || '/api'}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
