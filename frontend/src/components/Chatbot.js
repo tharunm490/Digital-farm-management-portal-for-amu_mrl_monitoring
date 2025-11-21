@@ -6,7 +6,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hello! I'm KrushiAI, your farm management assistant. How can I help you today?",
+      text: "Namaste! I'm KrushiAI, your farming companion. I can help you with livestock management, treatment tracking, vaccination schedules, and farm compliance. What would you like to know about your farm today?",
       sender: 'bot',
       timestamp: new Date()
     }
@@ -36,7 +36,11 @@ const Chatbot = () => {
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = language === 'english' ? 'en-US' : 
-                                   language === 'hindi' ? 'hi-IN' : 'en-US';
+                                   language === 'hindi' ? 'hi-IN' :
+                                   language === 'kannada' ? 'kn-IN' :
+                                   language === 'telugu' ? 'te-IN' :
+                                   language === 'tamil' ? 'ta-IN' :
+                                   language === 'malayalam' ? 'ml-IN' : 'en-US';
 
       recognitionRef.current.onstart = () => {
         setIsListening(true);
@@ -109,6 +113,13 @@ const Chatbot = () => {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 

@@ -6,6 +6,17 @@ const Entity = require('../models/Entity');
 const MRL = require('../models/MRL');
 const { authMiddleware, farmerOnly } = require('../middleware/auth');
 
+// Helper function to convert integer date (YYYYMMDD) to string date (YYYY-MM-DD)
+function intToDate(intDate) {
+  if (!intDate) return null;
+  const dateStr = intDate.toString();
+  if (dateStr.length !== 8) return null;
+  const year = dateStr.slice(0, 4);
+  const month = dateStr.slice(4, 6);
+  const day = dateStr.slice(6, 8);
+  return `${year}-${month}-${day}`;
+}
+
 // All routes require authentication and farmer role
 router.use(authMiddleware, farmerOnly);
 
@@ -111,7 +122,9 @@ router.post('/', async (req, res) => {
       cause,
       vaccination_date,
       vaccine_interval_days,
-      vaccine_total_months
+      vaccine_total_months,
+      next_due_date,
+      vaccine_end_date
     } = req.body;
 
     // Validate required fields
@@ -149,15 +162,17 @@ router.post('/', async (req, res) => {
       route,
       frequency_per_day,
       duration_days,
-      start_date,
-      end_date,
+      start_date: intToDate(start_date),
+      end_date: intToDate(end_date),
       vet_id,
       vet_name,
       reason,
       cause,
-      vaccination_date,
+      vaccination_date: intToDate(vaccination_date),
       vaccine_interval_days,
-      vaccine_total_months
+      vaccine_total_months,
+      next_due_date: intToDate(next_due_date),
+      vaccine_end_date: intToDate(vaccine_end_date)
     });
 
     const treatment = await Treatment.getById(treatmentId);
@@ -366,8 +381,7 @@ router.post('/:treatmentId/vaccination-history', async (req, res) => {
 
     // Calculate next due date
     const givenDate = new Date(today);
-    const nextDueDate = new Date(givenDate);
-    nextDueDate.setDate(nextDueDate.getDate() + latestEntry.interval_days);
+    const nextDueDate = new Date(givenDate.getTime() + (latestEntry.interval_days * 24 * 60 * 60 * 1000));
 
     // Create new vaccination history entry
     const vaccId = await VaccinationHistory.create({

@@ -61,6 +61,23 @@ const TreatmentManagement = () => {
   const navigate = useNavigate();
   const { entity_id } = useParams();
 
+  // Format date as DD/MM/YYYY
+  const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
+  // Convert date to integer format YYYYMMDD
+  const dateToInt = (dateStr) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return parseInt(`${year}${month}${day}`);
+  };
+
   useEffect(() => {
     fetchEntities();
     if (entity_id) {
@@ -190,16 +207,16 @@ const TreatmentManagement = () => {
         route: formData.route,
         reason: formData.reason,
         cause: formData.cause,
-        start_date: formData.start_date,
-        end_date: formData.end_date,
+        start_date: dateToInt(formData.start_date),
+        end_date: dateToInt(formData.end_date),
         vet_id: formData.vet_id || null,
         vet_name: formData.vet_name || null,
         is_vaccine: formData.is_vaccine,
-        vaccination_date: formData.is_vaccine ? formData.start_date : null,
+        vaccination_date: formData.is_vaccine ? dateToInt(formData.start_date) : null,
         vaccine_interval_days: formData.vaccine_interval_days || null,
         vaccine_total_months: formData.vaccine_total_months || null,
-        next_due_date: formData.next_due_date || null,
-        vaccine_end_date: formData.vaccine_end_date || null
+        next_due_date: dateToInt(formData.next_due_date) || null,
+        vaccine_end_date: dateToInt(formData.vaccine_end_date) || null
       };
 
       await api.post('/treatments', submitData);
@@ -709,6 +726,22 @@ const TreatmentManagement = () => {
       setVaccinationHistory(response.data);
     } catch (err) {
       console.error('Failed to fetch vaccination history:', err);
+    }
+  };
+
+  const markVaccinationGiven = async (treatmentId) => {
+    try {
+      await api.post(`/treatments/${treatmentId}/vaccination-history`);
+      // Refresh the vaccination history after marking as given
+      fetchVaccinationHistory(treatmentId);
+      // Also refresh the treatments list to update the treatment status
+      if (entity_id) {
+        fetchTreatmentsByEntity(entity_id);
+      }
+      alert('Vaccination marked as given successfully!');
+    } catch (err) {
+      console.error('Failed to mark vaccination as given:', err);
+      setError(err.response?.data?.error || 'Failed to mark vaccination as given');
     }
   };
 
@@ -1572,7 +1605,7 @@ const TreatmentManagement = () => {
                       </div>
                       <div className="treatment-meta">
                         <span className="treatment-date">
-                          {new Date(treatment.start_date).toLocaleDateString()}
+                          {formatDate(treatment.start_date)}
                         </span>
                       </div>
                     </div>
@@ -1602,7 +1635,7 @@ const TreatmentManagement = () => {
                         <div className="detail-row">
                           <span className="label">End Date:</span>
                           <span className="value">
-                            {new Date(treatment.end_date).toLocaleDateString()}
+                            {formatDate(treatment.end_date)}
                           </span>
                         </div>
                         {treatment.vet_name && (
@@ -1634,7 +1667,7 @@ const TreatmentManagement = () => {
                               </div>
                               <div className="detail-item">
                                 <span className="label">End Date:</span>
-                                <span className="value">{treatment.vaccine_end_date ? new Date(treatment.vaccine_end_date).toLocaleDateString() : 'N/A'}</span>
+                                <span className="value">{treatment.vaccine_end_date ? formatDate(treatment.vaccine_end_date) : 'N/A'}</span>
                               </div>
                             </div>
                           </div>
@@ -1643,9 +1676,11 @@ const TreatmentManagement = () => {
                             <button
                               onClick={() => markVaccinationGiven(treatment.treatment_id)}
                               className="btn-vaccine"
-                              disabled={new Date() >= new Date(treatment.vaccine_end_date)}
+                              disabled={vaccinationHistory.length > 0 && new Date() < new Date(vaccinationHistory[0].next_due_date) || new Date() >= new Date(treatment.vaccine_end_date)}
                             >
-                              {new Date() >= new Date(treatment.vaccine_end_date) ? 'Cycle Completed' : 'Mark Vaccination Given'}
+                              {new Date() >= new Date(treatment.vaccine_end_date) ? 'Cycle Completed' : 
+                               vaccinationHistory.length > 0 && new Date() < new Date(vaccinationHistory[0].next_due_date) ? 'Not Due Yet' :
+                               'Mark Vaccination Given'}
                             </button>
                             <button
                               onClick={() => {
@@ -1658,55 +1693,61 @@ const TreatmentManagement = () => {
                             </button>
                           </div>
 
-                          {showVaccinationSection && vaccinationHistory.length > 0 && (
+                          {showVaccinationSection && (
                             <div className="vaccination-history">
                               <h5>Vaccination History</h5>
-                              <div className="history-list">
-                                {vaccinationHistory.map((vacc, index) => {
-                                  const today = new Date();
-                                  const nextDue = new Date(vacc.next_due_date);
-                                  const isOverdue = nextDue < today && new Date(vacc.vaccine_end_date) > today;
-                                  const isDueToday = nextDue.toDateString() === today.toDateString();
-                                  const isCompleted = new Date(vacc.vaccine_end_date) <= today;
-                                  
-                                  let status = 'active';
-                                  if (isCompleted) status = 'completed';
-                                  else if (isOverdue) status = 'overdue';
-                                  else if (isDueToday) status = 'due-today';
-                                  
-                                  return (
-                                    <div key={vacc.vacc_id} className={`history-item ${status}`}>
-                                      <div className="history-header">
-                                        <span className="dose-number">Dose {index + 1}</span>
-                                        <span className={`status-indicator ${status}`}>
-                                          {status === 'completed' && '✅ Completed'}
-                                          {status === 'overdue' && '❌ Overdue'}
-                                          {status === 'due-today' && '⚠️ Due Today'}
-                                          {status === 'active' && '⏳ Active'}
-                                        </span>
-                                      </div>
-                                      <div className="history-details">
-                                        <div className="detail-row">
-                                          <span className="label">Given Date:</span>
-                                          <span className="value">{new Date(vacc.given_date).toLocaleDateString()}</span>
+                              {vaccinationHistory.length > 0 ? (
+                                <div className="history-list">
+                                  {vaccinationHistory.map((vacc, index) => {
+                                    const today = new Date();
+                                    const nextDue = new Date(vacc.next_due_date);
+                                    const isOverdue = nextDue < today && new Date(vacc.vaccine_end_date) > today;
+                                    const isDueToday = nextDue.toDateString() === today.toDateString();
+                                    const isCompleted = new Date(vacc.vaccine_end_date) <= today;
+                                    
+                                    let status = 'active';
+                                    if (isCompleted) status = 'completed';
+                                    else if (isOverdue) status = 'overdue';
+                                    else if (isDueToday) status = 'due-today';
+                                    
+                                    return (
+                                      <div key={vacc.vacc_id} className={`history-item ${status}`}>
+                                        <div className="history-header">
+                                          <span className="dose-number">Dose {index + 1}</span>
+                                          <span className={`status-indicator ${status}`}>
+                                            {status === 'completed' && '✅ Completed'}
+                                            {status === 'overdue' && '❌ Overdue'}
+                                            {status === 'due-today' && '⚠️ Due Today'}
+                                            {status === 'active' && '⏳ Active'}
+                                          </span>
                                         </div>
-                                        <div className="detail-row">
-                                          <span className="label">Next Due:</span>
-                                          <span className="value">{new Date(vacc.next_due_date).toLocaleDateString()}</span>
-                                        </div>
-                                        {!isCompleted && (
+                                        <div className="history-details">
                                           <div className="detail-row">
-                                            <span className="label">Days Remaining:</span>
-                                            <span className="value">
-                                              {Math.max(0, Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24)))} days
-                                            </span>
+                                            <span className="label">Given Date:</span>
+                                            <span className="value">{formatDate(vacc.given_date)}</span>
                                           </div>
-                                        )}
+                                          <div className="detail-row">
+                                            <span className="label">Next Due:</span>
+                                            <span className="value">{formatDate(vacc.next_due_date)}</span>
+                                          </div>
+                                          {!isCompleted && (
+                                            <div className="detail-row">
+                                              <span className="label">Days Remaining:</span>
+                                              <span className="value">
+                                                {Math.max(0, Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24)))} days
+                                              </span>
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                <div className="no-history">
+                                  <p>No vaccination history available. The initial vaccination may still be in progress.</p>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

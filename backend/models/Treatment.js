@@ -75,14 +75,12 @@ class Treatment {
       const vaccDate = new Date(vaccination_date);
 
       if (!final_next_due_date) {
-        final_next_due_date = new Date(vaccDate);
-        final_next_due_date.setDate(final_next_due_date.getDate() + (vaccine_interval_days || 30));
+        final_next_due_date = new Date(vaccDate.getTime() + ((vaccine_interval_days || 30) * 24 * 60 * 60 * 1000));
         final_next_due_date = final_next_due_date.toISOString().split('T')[0];
       }
 
       if (!final_vaccine_end_date) {
-        final_vaccine_end_date = new Date(vaccDate);
-        final_vaccine_end_date.setMonth(final_vaccine_end_date.getMonth() + (vaccine_total_months || 12));
+        final_vaccine_end_date = new Date(vaccDate.getTime() + (vaccine_total_months * 30.44 * 24 * 60 * 60 * 1000));
         final_vaccine_end_date = final_vaccine_end_date.toISOString().split('T')[0];
       }
     }

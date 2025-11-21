@@ -81,6 +81,30 @@ router.post('/chat', async (req, res) => {
       });
     }
 
+    // If no API key, provide basic responses
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn('GEMINI_API_KEY not found, using basic responses');
+      
+      let response = '';
+      if (lowerMessage.includes('treatment') || lowerMessage.includes('medicine')) {
+        response = 'For treatment recording, use the Treatment Management section. Select an animal, choose medication category, and follow the guided form. The system provides FSSAI-compliant recommendations.';
+      } else if (lowerMessage.includes('vaccination') || lowerMessage.includes('vaccine')) {
+        response = 'Vaccination schedules can be managed in the Treatment section. Choose "vaccine" as the medication type and set up recurring schedules with automatic reminders.';
+      } else if (lowerMessage.includes('amu') || lowerMessage.includes('antimicrobial')) {
+        response = 'AMU monitoring tracks antimicrobial usage across your farm. View reports in the dashboard to ensure responsible antibiotic use and compliance.';
+      } else if (lowerMessage.includes('mrl') || lowerMessage.includes('residue')) {
+        response = 'MRL compliance ensures meat products meet safety standards. The system calculates withdrawal periods automatically based on treatments entered.';
+      } else {
+        response = 'I can help you with farm management topics like treatments, vaccinations, AMU monitoring, and MRL compliance. What would you like to know?';
+      }
+
+      return res.json({
+        response: response,
+        language: language,
+        timestamp: new Date().toISOString()
+      });
+    }
+
     // Get Gemini model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 

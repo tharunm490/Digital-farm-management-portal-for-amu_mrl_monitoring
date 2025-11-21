@@ -23,6 +23,13 @@ const Profile = () => {
   const states = getAllStates();
   const districts = formData.state ? getDistrictsByState(formData.state) : [];
 
+  // Format date as DD/MM/YYYY
+  const formatDate = (date) => {
+    if (!date) return 'N/A';
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -236,7 +243,7 @@ const Profile = () => {
                 <div className="detail-item">
                   <span className="detail-label">Member Since:</span>
                   <span className="detail-value">
-                    {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                    {user?.created_at ? formatDate(user.created_at) : 'N/A'}
                   </span>
                 </div>
               </div>

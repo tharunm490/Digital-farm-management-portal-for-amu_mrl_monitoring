@@ -28,6 +28,23 @@ const VaccinationManagement = () => {
   const navigate = useNavigate();
   const { entity_id } = useParams();
 
+  // Format date as DD/MM/YYYY
+  const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
+  // Convert date to integer format YYYYMMDD
+  const dateToInt = (dateStr) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return parseInt(`${year}${month}${day}`);
+  };
+
   useEffect(() => {
     fetchEntities();
     if (entity_id) {
@@ -73,7 +90,21 @@ const VaccinationManagement = () => {
     setError(null);
 
     try {
-      await api.post('/vaccinations', formData);
+      const submitData = {
+        entity_id: formData.entity_id,
+        vaccine_name: formData.vaccine_name,
+        vaccination_date: dateToInt(formData.vaccination_date),
+        next_due_date: dateToInt(formData.next_due_date),
+        batch_number: formData.batch_number,
+        manufacturer: formData.manufacturer,
+        vet_id: formData.vet_id,
+        vet_name: formData.vet_name,
+        dosage: formData.dosage,
+        route: formData.route,
+        notes: formData.notes
+      };
+
+      await api.post('/vaccinations', submitData);
       alert('Vaccination record added successfully!');
       setShowAddForm(false);
       resetForm();
@@ -383,7 +414,7 @@ const VaccinationManagement = () => {
                     <div className="vaccination-header">
                       <h3>{vaccination.vaccine_name}</h3>
                       <span className="vaccination-date">
-                        {new Date(vaccination.vaccination_date).toLocaleDateString()}
+                        {formatDate(vaccination.vaccination_date)}
                       </span>
                     </div>
 
@@ -418,7 +449,7 @@ const VaccinationManagement = () => {
                         <div className="detail-row">
                           <span className="label">Next Due:</span>
                           <span className="value">
-                            {new Date(vaccination.next_due_date).toLocaleDateString()}
+                            {formatDate(vaccination.next_due_date)}
                           </span>
                         </div>
                       )}

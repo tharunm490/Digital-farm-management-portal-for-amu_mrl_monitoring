@@ -4,6 +4,17 @@ const Vaccination = require('../models/Vaccination');
 const Entity = require('../models/Entity');
 const { authMiddleware, farmerOnly } = require('../middleware/auth');
 
+// Helper function to convert integer date (YYYYMMDD) to string date (YYYY-MM-DD)
+function intToDate(intDate) {
+  if (!intDate) return null;
+  const dateStr = intDate.toString();
+  if (dateStr.length !== 8) return null;
+  const year = dateStr.slice(0, 4);
+  const month = dateStr.slice(4, 6);
+  const day = dateStr.slice(6, 8);
+  return `${year}-${month}-${day}`;
+}
+
 // All routes require authentication and farmer role
 router.use(authMiddleware, farmerOnly);
 
@@ -111,8 +122,8 @@ router.post('/', async (req, res) => {
     const vaccinationId = await Vaccination.create({
       entity_id,
       vaccine_name,
-      vaccination_date,
-      next_due_date,
+      vaccination_date: intToDate(vaccination_date),
+      next_due_date: intToDate(next_due_date),
       batch_number,
       manufacturer,
       vet_id,
