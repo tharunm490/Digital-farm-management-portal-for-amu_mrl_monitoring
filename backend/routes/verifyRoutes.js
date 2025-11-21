@@ -11,48 +11,48 @@ const { TamperProof } = require('../models/QR');
 router.get('/:entity_id', async (req, res) => {
   try {
     const { entity_id } = req.params;
-    
+
     console.log('Verifying entity ID:', entity_id);
-    
+
     // Fetch entity details
     const entity = await Entity.getById(entity_id);
     console.log('Entity found:', entity);
-    
+
     if (!entity) {
       console.log('Entity not found for ID:', entity_id);
       return res.status(404).json({ error: 'Entity not found' });
     }
-    
+
     // Fetch all treatment records
     const treatments = await Treatment.getByEntity(entity_id);
-    
+
     // Fetch all AMU records
     const amuRecords = await AMU.getByEntityId(entity_id);
-    
+
     // Fetch MRL data for this species and matrix
     const mrlData = await MRL.getBySpeciesAndMatrix(entity.species, entity.matrix);
-    
+
     // Get latest treatment for withdrawal calculation
     const latestTreatment = treatments && treatments.length > 0 ? treatments[0] : null;
-    
+
     let withdrawalStatus = null;
     let withdrawalFinishDate = null;
     let daysFromWithdrawal = null;
     let mrlPass = false;
-    
+
     if (latestTreatment && latestTreatment.withdrawal_end_date) {
       withdrawalFinishDate = new Date(latestTreatment.withdrawal_end_date);
-      
+
       // Calculate days from withdrawal (absolute value for display)
       const today = new Date();
       const timeDiff = withdrawalFinishDate - today;
       daysFromWithdrawal = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-      
+
       // Determine PASS/FAIL
       mrlPass = daysFromWithdrawal <= 0;
       withdrawalStatus = mrlPass ? 'PASS' : 'FAIL';
     }
-    
+
     // Prepare response
     const response = {
       entity_details: {
@@ -94,7 +94,7 @@ router.get('/:entity_id', async (req, res) => {
         message: 'Record verified successfully'
       }
     };
-    
+
     // If browser requests HTML, render a human-friendly verification page
     const accept = req.headers.accept || '';
     if (accept.includes('text/html')) {
@@ -232,7 +232,7 @@ router.get('/:entity_id', async (req, res) => {
     }
 
     res.json(response);
-    
+
   } catch (error) {
     console.error('Error verifying entity:', error);
     res.status(500).json({ error: 'Failed to verify entity' });
@@ -240,62 +240,3 @@ router.get('/:entity_id', async (req, res) => {
 });
 
 module.exports = router;
-// Flexible QR verification route for /verify and /verify/ with query param
-// PUBLIC QR VERIFICATION ROUTE — NO LOGIN REQUIRED
-router.get(['/', ''], async (req, res) => {
-  try {
-    const entityId = req.query.entity_id;
-    if (!entityId) {
-      return res.status(400).json({ error: 'Entity ID missing' });
-    }
-    // Fetch entity details
-    const [entity] = await db.query(
-      'SELECT * FROM animals_or_batches WHERE entity_id = ?',
-      [entityId]
-    );
-    if (entity.length === 0) {
-      return res.status(404).json({ error: 'Entity not found' });
-    }
-    // Fetch treatment history
-    const [treatments] = await db.query(
-      'SELECT * FROM treatment_records WHERE entity_id = ?',
-      [entityId]
-    );
-    return res.json({
-      status: 'success',
-      entity: entity[0],
-      treatments
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Path-based QR verification route: /verify/:entityId
-router.get('/:entityId', async (req, res) => {
-  try {
-    const entityId = req.params.entityId;
-    // Fetch entity details
-    const [entity] = await db.query(
-      'SELECT * FROM animals_or_batches WHERE entity_id = ?',
-      [entityId]
-    );
-    if (entity.length === 0) {
-      return res.status(404).json({ error: 'Entity not found' });
-    }
-    // Fetch treatment history
-    const [treatments] = await db.query(
-      'SELECT * FROM treatment_records WHERE entity_id = ?',
-      [entityId]
-    );
-    return res.json({
-      status: 'success',
-      entity: entity[0],
-      treatments
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});

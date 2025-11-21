@@ -39,21 +39,7 @@ const Crop = {
     return result.insertId;
   },
 
-  // Update crop
-  update: async (id, cropData) => {
-    const { crop_name, variety, planting_date, expected_harvest_date, area_cultivated, status } = cropData;
-    const [result] = await db.query(
-      'UPDATE crops SET crop_name = ?, variety = ?, planting_date = ?, expected_harvest_date = ?, area_cultivated = ?, status = ? WHERE id = ?',
-      [crop_name, variety, planting_date, expected_harvest_date, area_cultivated, status, id]
-    );
-    return result.affectedRows;
-  },
-
-  // Delete crop
-  delete: async (id) => {
-    const [result] = await db.query('DELETE FROM crops WHERE id = ?', [id]);
-    return result.affectedRows;
-  }
+  // ...existing code...
 };
 
 module.exports = Crop;

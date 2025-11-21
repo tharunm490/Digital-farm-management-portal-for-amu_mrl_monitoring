@@ -49,21 +49,7 @@ const Farm = {
     return result.insertId;
   },
 
-  // Update farm
-  update: async (farm_id, farmData) => {
-    const { farm_name, latitude, longitude } = farmData;
-    const [result] = await db.query(
-      'UPDATE farms SET farm_name = ?, latitude = ?, longitude = ? WHERE farm_id = ?',
-      [farm_name, latitude, longitude, farm_id]
-    );
-    return result.affectedRows;
-  },
-
-  // Delete farm
-  delete: async (farm_id) => {
-    const [result] = await db.query('DELETE FROM farms WHERE farm_id = ?', [farm_id]);
-    return result.affectedRows;
-  }
+  // ...existing code...
 };
 
 module.exports = Farm;

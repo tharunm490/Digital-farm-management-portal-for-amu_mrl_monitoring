@@ -22,10 +22,10 @@ router.get('/:batch_id', authMiddleware, async (req, res) => {
   }
 });
 
-// GET /api/amu/farm/:farm_id - Get AMU records by farm
-router.get('/farm/:farm_id', authMiddleware, async (req, res) => {
+// GET /api/amu/farmer/:farmer_id - Get AMU records by farmer
+router.get('/farmer/:farmer_id', authMiddleware, async (req, res) => {
   try {
-    const amuRecords = await AMU.getByFarmId(req.params.farm_id);
+    const amuRecords = await AMU.getByFarmer(req.params.farmer_id);
     res.json(amuRecords);
   } catch (error) {
     console.error('Error fetching AMU records:', error);

@@ -94,7 +94,36 @@ router.get('/:treatmentId', async (req, res) => {
 // Create new treatment with optional AMU records
 router.post('/', async (req, res) => {
   try {
-    const { entity_id, active_ingredient, dose_mg_per_kg, route, frequency_per_day, duration_days, start_date, end_date, withdrawal_period_days } = req.body;
+    const { 
+      entity_id, 
+      medication_type, 
+      medicine, 
+      dose_amount, 
+      dose_unit, 
+      route, 
+      frequency_per_day, 
+      duration_days, 
+      start_date, 
+      end_date, 
+      vet_id, 
+      vet_name, 
+      reason,
+      cause,
+      vaccination_date,
+      vaccine_interval_days,
+      vaccine_total_months
+    } = req.body;
+
+    // Validate required fields
+    if (!entity_id) {
+      return res.status(400).json({ error: 'entity_id is required' });
+    }
+    if (!medicine) {
+      return res.status(400).json({ error: 'medicine is required' });
+    }
+    if (!start_date) {
+      return res.status(400).json({ error: 'start_date is required' });
+    }
 
     // Verify entity exists and belongs to farmer
     const entity = await Entity.getById(entity_id);
@@ -109,23 +138,26 @@ router.post('/', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Validate required fields
-    if (!entity_id || !active_ingredient || !start_date) {
-      return res.status(400).json({ error: 'entity_id, active_ingredient, and start_date are required' });
-    }
-
     // Create treatment
     const treatmentId = await Treatment.create({
       entity_id,
       user_id: req.user.user_id,
-      active_ingredient,
-      dose_mg_per_kg,
+      medication_type,
+      medicine,
+      dose_amount,
+      dose_unit,
       route,
       frequency_per_day,
       duration_days,
       start_date,
       end_date,
-      withdrawal_period_days
+      vet_id,
+      vet_name,
+      reason,
+      cause,
+      vaccination_date,
+      vaccine_interval_days,
+      vaccine_total_months
     });
 
     const treatment = await Treatment.getById(treatmentId);
@@ -266,6 +298,97 @@ router.get('/withdrawals/active', async (req, res) => {
   } catch (error) {
     console.error('Get active withdrawals error:', error);
     res.status(500).json({ error: 'Failed to fetch active withdrawals' });
+  }
+});
+
+// Get vaccination history for a treatment
+router.get('/:treatmentId/vaccination-history', async (req, res) => {
+  try {
+    const treatment = await Treatment.getById(req.params.treatmentId);
+    if (!treatment) {
+      return res.status(404).json({ error: 'Treatment not found' });
+    }
+
+    // Verify ownership
+    const entity = await Entity.getById(treatment.entity_id);
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    
+    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const VaccinationHistory = require('../models/VaccinationHistory');
+    const history = await VaccinationHistory.getByTreatment(req.params.treatmentId);
+    res.json(history);
+  } catch (error) {
+    console.error('Get vaccination history error:', error);
+    res.status(500).json({ error: 'Failed to fetch vaccination history' });
+  }
+});
+
+// Mark vaccination as given (create new vaccination history entry)
+router.post('/:treatmentId/vaccination-history', async (req, res) => {
+  try {
+    const treatment = await Treatment.getById(req.params.treatmentId);
+    if (!treatment) {
+      return res.status(404).json({ error: 'Treatment not found' });
+    }
+
+    // Verify ownership
+    const entity = await Entity.getById(treatment.entity_id);
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    
+    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    if (treatment.medication_type !== 'vaccine') {
+      return res.status(400).json({ error: 'Treatment is not a vaccine' });
+    }
+
+    const VaccinationHistory = require('../models/VaccinationHistory');
+    
+    // Get the latest vaccination history for this treatment
+    const history = await VaccinationHistory.getByTreatment(req.params.treatmentId);
+    const latestEntry = history[0]; // Most recent first
+
+    if (!latestEntry) {
+      return res.status(404).json({ error: 'No vaccination history found for this treatment' });
+    }
+
+    // Check if vaccination cycle is completed
+    const today = new Date().toISOString().split('T')[0];
+    if (today >= latestEntry.vaccine_end_date) {
+      return res.status(400).json({ error: 'Vaccination cycle is already completed' });
+    }
+
+    // Calculate next due date
+    const givenDate = new Date(today);
+    const nextDueDate = new Date(givenDate);
+    nextDueDate.setDate(nextDueDate.getDate() + latestEntry.interval_days);
+
+    // Create new vaccination history entry
+    const vaccId = await VaccinationHistory.create({
+      entity_id: treatment.entity_id,
+      treatment_id: req.params.treatmentId,
+      vaccine_name: latestEntry.vaccine_name,
+      given_date: today,
+      interval_days: latestEntry.interval_days,
+      next_due_date: nextDueDate.toISOString().split('T')[0],
+      vaccine_total_months: latestEntry.vaccine_total_months,
+      vaccine_end_date: latestEntry.vaccine_end_date
+    });
+
+    const newEntry = await VaccinationHistory.getById(vaccId);
+    res.status(201).json({
+      message: 'Vaccination marked as given',
+      vaccination: newEntry
+    });
+  } catch (error) {
+    console.error('Mark vaccination error:', error);
+    res.status(500).json({ error: 'Failed to mark vaccination as given' });
   }
 });
 

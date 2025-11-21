@@ -1,9 +1,7 @@
 // =========================================
 // LOAD ENV VARIABLES
 // =========================================
-require('dotenv').config({
-  path: require('path').join(__dirname, '../.env')
-});
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
@@ -26,7 +24,8 @@ app.get('/health', (req, res) => {
 // =========================================
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
-  process.env.QR_FRONTEND_URL
+  process.env.QR_FRONTEND_URL,
+  'http://localhost:5000'  // Add localhost:5000 as allowed origin
 ].filter(Boolean);
 
 // If there is a hotspot IP (10.x.x.x) detected, add it to allowedOrigins dynamically
@@ -94,10 +93,12 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/farms', require('./routes/farmRoutes'));
 app.use('/api/entities', require('./routes/entityRoutes'));
 app.use('/api/treatments', require('./routes/treatmentRoutes'));
+app.use('/api/vaccinations', require('./routes/vaccinationRoutes'));
 app.use('/api/batches', require('./routes/batchRoutes'));
 app.use('/api/amu', require('./routes/amuRoutes'));
 app.use('/api/qr', require('./routes/qrRoutes'));
 app.use('/api/verify', require('./routes/verifyRoutes'));
+app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

@@ -42,9 +42,11 @@ const User = {
   // Update user
   update: async (user_id, userData) => {
     const { display_name, role } = userData;
+    // Set default role if null or undefined
+    const safeRole = role == null ? 'farmer' : role;
     const [result] = await db.query(
       'UPDATE users SET display_name = ?, role = ? WHERE user_id = ?',
-      [display_name, role, user_id]
+      [display_name, safeRole, user_id]
     );
     return result.affectedRows;
   }

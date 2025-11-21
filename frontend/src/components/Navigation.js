@@ -7,6 +7,7 @@ const Navigation = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
 
   const handleLogout = () => {
     logout();
@@ -15,6 +16,15 @@ const Navigation = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const toggleDropdown = (dropdown) => {
+    setDropdownOpen(dropdownOpen === dropdown ? null : dropdown);
+  };
+
+  const closeAllMenus = () => {
+    setMobileMenuOpen(false);
+    setDropdownOpen(null);
   };
 
   if (!user) return null;
@@ -40,30 +50,78 @@ const Navigation = () => {
               Dashboard
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/farms" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <span className="nav-icon">🏡</span>
-              Farms
-            </Link>
+
+          {/* Management Dropdown */}
+          <li className="nav-item dropdown">
+            <button 
+              className="nav-link dropdown-toggle" 
+              onClick={() => toggleDropdown('management')}
+            >
+              <span className="nav-icon">🏗️</span>
+              Management
+              <span className="dropdown-arrow">▼</span>
+            </button>
+            <ul className={`dropdown-menu ${dropdownOpen === 'management' ? 'show' : ''}`}>
+              <li>
+                <Link to="/farms" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">🏡</span>
+                  Farms
+                </Link>
+              </li>
+              <li>
+                <Link to="/animals" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">🐄</span>
+                  Animals & Batches
+                </Link>
+              </li>
+              <li>
+                <Link to="/treatments" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">💊</span>
+                  Treatments
+                </Link>
+              </li>
+              <li>
+                <Link to="/vaccinations" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">💉</span>
+                  Vaccinations
+                </Link>
+              </li>
+              <li>
+                <Link to="/amu-records" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">📊</span>
+                  AMU Records
+                </Link>
+              </li>
+            </ul>
           </li>
-          <li className="nav-item">
-            <Link to="/animals" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <span className="nav-icon">🐄</span>
-              Animals
-            </Link>
+
+          {/* Tools Dropdown */}
+          <li className="nav-item dropdown">
+            <button 
+              className="nav-link dropdown-toggle" 
+              onClick={() => toggleDropdown('tools')}
+            >
+              <span className="nav-icon">🛠️</span>
+              Tools
+              <span className="dropdown-arrow">▼</span>
+            </button>
+            <ul className={`dropdown-menu ${dropdownOpen === 'tools' ? 'show' : ''}`}>
+              <li>
+                <Link to="/qr-generator" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">📱</span>
+                  QR Code Generator
+                </Link>
+              </li>
+              <li>
+                <Link to="/qr-verification" className="dropdown-item" onClick={closeAllMenus}>
+                  <span className="nav-icon">🔍</span>
+                  QR Verification
+                </Link>
+              </li>
+            </ul>
           </li>
-          <li className="nav-item">
-            <Link to="/treatments" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <span className="nav-icon">💊</span>
-              Treatments
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/qr-generator" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <span className="nav-icon">📱</span>
-              QR Code
-            </Link>
-          </li>
+
+          {/* Account Section */}
           <li className="nav-item">
             <Link to="/profile" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
               <span className="nav-icon">👤</span>

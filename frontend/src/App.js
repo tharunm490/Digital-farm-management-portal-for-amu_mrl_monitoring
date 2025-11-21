@@ -10,10 +10,13 @@ import AddFarm from './pages/AddFarm';
 import FarmList from './pages/FarmList';
 import BatchManagement from './pages/BatchManagement';
 import TreatmentManagement from './pages/TreatmentManagement';
+import VaccinationManagement from './pages/VaccinationManagement';
 import QRGenerator from './pages/QRGenerator';
 import QRVerification from './pages/QRVerification';
 import AuthCallback from './pages/AuthCallback';
 import RoleSelection from './pages/RoleSelection';
+import AMURecords from './pages/AMURecords';
+import Chatbot from './components/Chatbot';
 import './App.css';
 
 // Protected Route Component
@@ -46,7 +49,10 @@ function AppRoutes() {
       <Route path="/animals" element={<ProtectedRoute><BatchManagement /></ProtectedRoute>} />
       <Route path="/treatments" element={<ProtectedRoute><TreatmentManagement /></ProtectedRoute>} />
       <Route path="/treatments/entity/:entity_id" element={<ProtectedRoute><TreatmentManagement /></ProtectedRoute>} />
+      <Route path="/vaccinations" element={<ProtectedRoute><VaccinationManagement /></ProtectedRoute>} />
+      <Route path="/vaccinations/entity/:entity_id" element={<ProtectedRoute><VaccinationManagement /></ProtectedRoute>} />
       <Route path="/qr-generator" element={<ProtectedRoute><QRGenerator /></ProtectedRoute>} />
+      <Route path="/amu-records" element={<ProtectedRoute><AMURecords /></ProtectedRoute>} />
     </Routes>
   );
 }
@@ -57,6 +63,7 @@ function App() {
       <AuthProvider>
         <div className="App">
           <AppRoutes />
+          <Chatbot />
         </div>
       </AuthProvider>
     </Router>

@@ -51,21 +51,7 @@ const Batch = {
     return result.insertId;
   },
 
-  // Update batch
-  update: async (batch_id, batchData) => {
-    const { species, breed, matrix } = batchData;
-    const [result] = await db.query(
-      'UPDATE batches SET species = ?, breed = ?, matrix = ? WHERE batch_id = ?',
-      [species, breed, matrix, batch_id]
-    );
-    return result.affectedRows;
-  },
-
-  // Delete batch
-  delete: async (batch_id) => {
-    const [result] = await db.query('DELETE FROM batches WHERE batch_id = ?', [batch_id]);
-    return result.affectedRows;
-  }
+  // ...existing code...
 };
 
 module.exports = Batch;

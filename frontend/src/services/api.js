@@ -46,6 +46,7 @@ export const batchAPI = {
 // AMU API
 export const amuAPI = {
   getByBatchId: (batch_id) => api.get(`/amu/${batch_id}`),
+  getByFarmer: (farmer_id) => api.get(`/amu/farmer/${farmer_id}`),
   create: (data) => api.post('/amu', data),
 };
 

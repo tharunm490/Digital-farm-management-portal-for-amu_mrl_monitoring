@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navigation from '../components/Navigation';
+import Chatbot from '../components/Chatbot';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -100,6 +101,8 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      <Chatbot />
     </div>
   );
 };

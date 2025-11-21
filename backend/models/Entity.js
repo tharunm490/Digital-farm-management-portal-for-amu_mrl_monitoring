@@ -7,35 +7,29 @@ class Entity {
       farm_id,
       entity_type,
       species,
-      breed,
       tag_id,
       batch_name,
       matrix,
-      dob,
-      age_months,
-      weight_kg,
-      animal_count
+      batch_count
     } = entityData;
 
     const query = `
       INSERT INTO animals_or_batches 
-      (farm_id, entity_type, species, breed, tag_id, batch_name, matrix, dob, age_months, weight_kg, animal_count)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (farm_id, entity_type, species, tag_id, batch_name, matrix, batch_count)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const [result] = await db.execute(query, [
-      farm_id,
-      entity_type,
-      species,
-      breed || null,
-      tag_id || null,
-      batch_name || null,
-      matrix,
-      dob || null,
-      age_months || null,
-      weight_kg || null,
-      animal_count || (entity_type === 'animal' ? 1 : null)
-    ]);
+      // If entity_type is 'animal', batch_count should be 1
+      const finalBatchCount = entity_type === 'animal' ? 1 : (batch_count || null);
+      const [result] = await db.execute(query, [
+        farm_id,
+        entity_type,
+        species,
+        tag_id || null,
+        batch_name || null,
+        matrix,
+        finalBatchCount
+      ]);
 
     return result.insertId;
   }
@@ -104,41 +98,7 @@ class Entity {
     return rows;
   }
 
-  // Update entity
-  static async update(entityId, updateData) {
-    const allowedFields = [
-      'tag_id', 'batch_name', 'species', 'breed', 'matrix',
-      'dob', 'age_months', 'weight_kg', 'animal_count'
-    ];
-    
-    const updates = [];
-    const values = [];
-    
-    Object.keys(updateData).forEach(key => {
-      if (allowedFields.includes(key)) {
-        updates.push(`${key} = ?`);
-        values.push(updateData[key]);
-      }
-    });
-
-    if (updates.length === 0) {
-      throw new Error('No valid fields to update');
-    }
-
-    values.push(entityId);
-    
-    const query = `UPDATE animals_or_batches SET ${updates.join(', ')} WHERE entity_id = ?`;
-    const [result] = await db.execute(query, values);
-    
-    return result.affectedRows > 0;
-  }
-
-  // Delete entity
-  static async delete(entityId) {
-    const query = 'DELETE FROM animals_or_batches WHERE entity_id = ?';
-    const [result] = await db.execute(query, [entityId]);
-    return result.affectedRows > 0;
-  }
+  // ...existing code...
 
   // Get entity with treatment and AMU history
   static async getWithHistory(entityId) {
