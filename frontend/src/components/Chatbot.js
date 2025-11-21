@@ -149,7 +149,7 @@ const Chatbot = () => {
       {/* Chatbot Toggle Button */}
       <div className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)}>
         <div className="chatbot-icon">
-          {isOpen ? '✕' : '💬'}
+          {isOpen ? '✕' : '🚜'}
         </div>
       </div>
 
@@ -158,8 +158,8 @@ const Chatbot = () => {
         <div className="chatbot-container">
           <div className="chatbot-header">
             <div className="chatbot-title">
-              <span className="chatbot-avatar">🤖</span>
-              KrushiAI Assistant
+              <span className="chatbot-avatar">🚜</span>
+              KrushiAI - Farm Assistant
             </div>
             <div className="chatbot-controls">
               <select
@@ -208,7 +208,7 @@ const Chatbot = () => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me about farm management..."
+              placeholder="Ask about livestock health, treatments, vaccinations..."
               disabled={isLoading}
             />
             {isVoiceSupported && (

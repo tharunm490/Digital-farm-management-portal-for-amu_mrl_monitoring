@@ -27,10 +27,15 @@ router.get('/:entity_id', async (req, res) => {
     const treatments = await Treatment.getByEntity(entity_id);
 
     // Fetch all AMU records
-    const amuRecords = await AMU.getByEntityId(entity_id);
+    const amuRecords = await AMU.getByEntity(entity_id);
 
     // Fetch MRL data for this species and matrix
-    const mrlData = await MRL.getBySpeciesAndMatrix(entity.species, entity.matrix);
+    let mrlData = null;
+    try {
+      mrlData = await MRL.getBySpeciesAndMatrix(entity.species, entity.matrix);
+    } catch (error) {
+      console.warn('MRL data not available:', error.message);
+    }
 
     // Get latest treatment for withdrawal calculation
     const latestTreatment = treatments && treatments.length > 0 ? treatments[0] : null;

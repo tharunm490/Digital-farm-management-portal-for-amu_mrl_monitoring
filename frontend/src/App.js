@@ -16,7 +16,6 @@ import QRVerification from './pages/QRVerification';
 import AuthCallback from './pages/AuthCallback';
 import RoleSelection from './pages/RoleSelection';
 import AMURecords from './pages/AMURecords';
-import Chatbot from './components/Chatbot';
 import './App.css';
 
 // Protected Route Component
@@ -63,7 +62,6 @@ function App() {
       <AuthProvider>
         <div className="App">
           <AppRoutes />
-          <Chatbot />
         </div>
       </AuthProvider>
     </Router>

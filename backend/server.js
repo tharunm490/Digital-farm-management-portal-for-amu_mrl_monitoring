@@ -25,7 +25,10 @@ app.get('/health', (req, res) => {
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
   process.env.QR_FRONTEND_URL,
-  'http://localhost:5000'  // Add localhost:5000 as allowed origin
+  'http://localhost:5000',  // Add localhost:5000 as allowed origin
+  'http://localhost:3000',  // Explicitly allow localhost:3000
+  'http://127.0.0.1:3000',  // Also allow 127.0.0.1:3000
+  'http://127.0.0.1:5000'   // Also allow 127.0.0.1:5000
 ].filter(Boolean);
 
 // If there is a hotspot IP (10.x.x.x) detected, add it to allowedOrigins dynamically
