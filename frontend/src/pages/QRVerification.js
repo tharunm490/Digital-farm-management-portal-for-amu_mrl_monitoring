@@ -58,6 +58,12 @@ function QRVerification() {
     return '';
   };
 
+  const getStatusClass = (status) => {
+    if (status === 'PASS') return 'status-pass';
+    if (status === 'FAIL') return 'status-fail';
+    return 'status-unknown';
+  };
+
   if (loading) return <div className="loading">Verifying entity...</div>;
 
   return (
