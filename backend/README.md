@@ -64,7 +64,7 @@ curl http://localhost:5000/api/qr/1
 ### Verify Batch
 
 ```bash
-curl http://localhost:5000/api/verify/1
+curl ${BACKEND_URL}/api/verify/1
 ```
 
 ## API Endpoints

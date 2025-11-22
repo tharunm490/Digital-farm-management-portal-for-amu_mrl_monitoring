@@ -175,6 +175,60 @@ router.post('/', async (req, res) => {
       vaccine_end_date: intToDate(vaccine_end_date)
     });
 
+    // Create AMU record automatically
+    try {
+      const amuId = await AMU.create({
+        treatment_id: treatmentId,
+        entity_id,
+        farm_id: entity.farm_id,
+        user_id: req.user.user_id,
+        species: entity.species,
+        matrix: 'meat', // Default to meat, adjust as needed
+        medication_type,
+        medicine,
+        active_ingredient: medicine,
+        category_type: medication_type,
+        reason,
+        cause,
+        route,
+        dose_amount,
+        dose_unit,
+        frequency_per_day,
+        duration_days,
+        start_date: intToDate(start_date),
+        end_date: intToDate(end_date),
+        predicted_mrl: null,
+        predicted_withdrawal_days: null,
+        predicted_mrl_risk: null,
+        risk_category: 'unknown'
+      });
+
+      // Get predictions and update AMU
+      try {
+        const predictionInput = {
+          species: entity.species,
+          medication_type,
+          medicine,
+          route,
+          dose_amount,
+          dose_unit,
+          frequency_per_day,
+          duration_days,
+          cause,
+          reason,
+          matrix: 'meat'
+        };
+        const predictions = await Treatment.getPredictions(predictionInput);
+        if (!predictions.error) {
+          await Treatment.updateAMUWithPredictions(treatmentId, predictions);
+        }
+      } catch (predError) {
+        console.warn('Failed to get predictions:', predError.message);
+      }
+    } catch (amuError) {
+      console.warn('Failed to create AMU record:', amuError.message);
+    }
+
     const treatment = await Treatment.getById(treatmentId);
 
     res.status(201).json({
@@ -373,8 +427,13 @@ router.post('/:treatmentId/vaccination-history', async (req, res) => {
       return res.status(404).json({ error: 'No vaccination history found for this treatment' });
     }
 
-    // Check if vaccination cycle is completed
+    // Check if vaccination is due
     const today = new Date().toISOString().split('T')[0];
+    if (today < latestEntry.next_due_date) {
+      return res.status(400).json({ error: 'Vaccination is not due yet' });
+    }
+
+    // Check if vaccination cycle is completed
     if (today >= latestEntry.vaccine_end_date) {
       return res.status(400).json({ error: 'Vaccination cycle is already completed' });
     }

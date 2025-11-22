@@ -6,6 +6,14 @@ const Treatment = require('../models/Treatment');
 const AMU = require('../models/AMU');
 const MRL = require('../models/MRL');
 const { TamperProof } = require('../models/QR');
+const fs = require('fs');
+const path = require('path');
+
+// Load s.json
+const sData = JSON.parse(fs.readFileSync(path.join(__dirname, '../ml_models/s.json'), 'utf8'));
+
+// Load dosage data
+const dosageData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dosage_reference_full_extended.json'), 'utf8'));
 
 // GET /api/verify/:entity_id - Complete entity verification data (Public - no auth required for QR scanning)
 router.get('/:entity_id', async (req, res) => {
@@ -25,14 +33,22 @@ router.get('/:entity_id', async (req, res) => {
 
     // Fetch all treatment records
     const treatments = await Treatment.getByEntity(entity_id);
+    console.log('Treatments found:', treatments.length);
 
     // Fetch all AMU records
-    const amuRecords = await AMU.getByEntity(entity_id);
+    let amuRecords = [];
+    try {
+      amuRecords = await AMU.getByEntity(entity_id);
+      console.log('AMU records found:', amuRecords.length);
+    } catch (error) {
+      console.warn('AMU records not available:', error.message);
+    }
 
     // Fetch MRL data for this species and matrix
     let mrlData = null;
     try {
       mrlData = await MRL.getBySpeciesAndMatrix(entity.species, entity.matrix);
+      console.log('MRL data found:', mrlData ? mrlData.length : 0);
     } catch (error) {
       console.warn('MRL data not available:', error.message);
     }
@@ -40,18 +56,32 @@ router.get('/:entity_id', async (req, res) => {
     // Get latest treatment for withdrawal calculation
     const latestTreatment = treatments && treatments.length > 0 ? treatments[0] : null;
 
+    // Get latest AMU record for safe date
+    const latestAMU = amuRecords && amuRecords.length > 0 ? amuRecords[0] : null;
+
     let withdrawalStatus = null;
     let withdrawalFinishDate = null;
     let daysFromWithdrawal = null;
     let mrlPass = false;
+    let withdrawalDate = null;
+    let safeDate = null;
+    let daysRemaining = null;
 
-    if (latestTreatment && latestTreatment.withdrawal_end_date) {
+    if (latestAMU && latestAMU.end_date && latestAMU.predicted_withdrawal_days) {
+      withdrawalDate = new Date(latestAMU.end_date);
+      const withdrawalPeriodDays = latestAMU.predicted_withdrawal_days;
+      safeDate = new Date(withdrawalDate.getTime() + (withdrawalPeriodDays * 24 * 60 * 60 * 1000));
+      withdrawalFinishDate = safeDate;
+    } else if (latestTreatment && latestTreatment.withdrawal_end_date) {
       withdrawalFinishDate = new Date(latestTreatment.withdrawal_end_date);
+    }
 
+    if (withdrawalFinishDate) {
       // Calculate days from withdrawal (absolute value for display)
       const today = new Date();
       const timeDiff = withdrawalFinishDate - today;
       daysFromWithdrawal = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+      daysRemaining = daysFromWithdrawal;
 
       // Determine PASS/FAIL
       mrlPass = daysFromWithdrawal <= 0;
@@ -73,23 +103,58 @@ router.get('/:entity_id', async (req, res) => {
         weight_kg: entity.weight_kg,
         age_months: entity.age_months
       },
-      treatment_records: treatments.map(treatment => ({
-        treatment_id: treatment.treatment_id,
-        active_ingredient: treatment.active_ingredient || treatment.medicine,
-        dose_mg_per_kg: treatment.dose_mg_per_kg,
-        route: treatment.route,
-        frequency_per_day: treatment.frequency_per_day,
-        duration_days: treatment.duration_days,
-        start_date: treatment.start_date,
-        end_date: treatment.end_date,
-        withdrawal_period_days: treatment.withdrawal_period_days,
-        withdrawal_end_date: treatment.withdrawal_end_date
-      })),
+      treatment_records: treatments.map(treatment => {
+        const amu = amuRecords.find(a => a.treatment_id === treatment.treatment_id);
+        let mrlStatus = null;
+        if (amu && amu.predicted_mrl && treatment.species && treatment.medication_type && treatment.medicine && treatment.matrix) {
+          const speciesData = sData.data[treatment.species];
+          if (speciesData && speciesData[treatment.medication_type] && speciesData[treatment.medication_type][treatment.medicine] && speciesData[treatment.medication_type][treatment.medicine][treatment.matrix]) {
+            const thresholds = speciesData[treatment.medication_type][treatment.medicine][treatment.matrix].thresholds;
+            if (thresholds) {
+              const mrl = parseFloat(amu.predicted_mrl);
+              if (mrl <= thresholds.safe_max) {
+                mrlStatus = 'safe';
+              } else if (mrl <= thresholds.borderline_max) {
+                mrlStatus = 'borderline';
+              } else {
+                mrlStatus = 'unsafe';
+              }
+            }
+          }
+        }
+        return {
+          treatment_id: treatment.treatment_id,
+          active_ingredient: treatment.active_ingredient || treatment.medicine,
+          dose_mg_per_kg: treatment.dose_mg_per_kg,
+          dose_amount: treatment.dose_amount || amu?.dose_amount,
+          dose_unit: treatment.dose_unit || amu?.dose_unit,
+          route: treatment.route,
+          frequency_per_day: treatment.frequency_per_day,
+          duration_days: treatment.duration_days,
+          start_date: treatment.start_date,
+          end_date: treatment.end_date,
+          withdrawal_period_days: treatment.withdrawal_period_days || amu?.predicted_withdrawal_days,
+          withdrawal_end_date: treatment.withdrawal_end_date,
+          safe_date: amu?.safe_date,
+          predicted_mrl: amu?.predicted_mrl,
+          predicted_mrl_risk: amu?.predicted_mrl_risk,
+          risk_category: amu?.risk_category,
+          mrl_status: mrlStatus,
+          medication_type: treatment.medication_type,
+          reason: treatment.reason,
+          cause: treatment.cause,
+          vet_id: treatment.vet_id,
+          vet_name: treatment.vet_name
+        };
+      }),
       amu_records: amuRecords || [],
       mrl_limits: mrlData || null,
       withdrawal_info: {
-        withdrawal_period_days: latestTreatment?.withdrawal_period_days || 0,
-        withdrawal_finish_date: withdrawalFinishDate,
+        withdrawal_date: withdrawalDate ? withdrawalDate.toISOString().split('T')[0] : null,
+        withdrawal_period_days: latestAMU ? latestAMU.predicted_withdrawal_days : null,
+        withdrawal_finish_date: withdrawalFinishDate ? withdrawalFinishDate.toISOString().split('T')[0] : null,
+        safe_date: safeDate ? safeDate.toISOString().split('T')[0] : null,
+        days_remaining: daysRemaining,
         days_from_withdrawal: daysFromWithdrawal,
         status: withdrawalStatus,
         mrl_pass: mrlPass
@@ -109,37 +174,41 @@ router.get('/:entity_id', async (req, res) => {
         ? { text: 'PASS', color1: '#dafbe6', color2: '#ffe066', icon: 'fa-solid fa-circle-check', gradient: 'linear-gradient(90deg,#dafbe6,#ffe066)' }
         : { text: 'FAIL', color1: '#ffdede', color2: '#ffe066', icon: 'fa-solid fa-circle-xmark', gradient: 'linear-gradient(90deg,#ffdede,#ffe066)' };
 
-      // Treatment Records as grid cards
-      const treatmentsGridHtml = response.treatment_records.length > 0 ? `
-        <div class="details-grid">
-          ${response.treatment_records.map(t => `
-            <div class="detail-box">
-              <div class="detail-label">Active Ingredient</div>${t.active_ingredient || '-'}
+      // Combined Treatment and AMU Records as cards
+      const combinedRecordsHtml = response.treatment_records && response.treatment_records.length > 0 ? `
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          ${response.treatment_records.map(record => {
+            const medicineData = dosageData[record.species]?.[record.medication_type]?.[record.medicine];
+            const safeMax = medicineData?.recommended_doses?.safe?.max || 0;
+            const overdosageAlert = record.dose_amount > safeMax ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">OVERDOSAGE GIVEN RED ALERT</div>' : '';
+            const unsafeAlert = record.mrl_status === 'unsafe' ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">UNSAFE MRL RED ALERT</div>' : '';
+            return `
+            <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f7fafc;">
+              <h3 style="margin: 0 0 15px 0; color: #2d3748;">${record.active_ingredient || record.medicine}${record.safe_date && new Date(record.safe_date) <= new Date() ? ' <span style="color: green; font-size: 0.8em;">(SAFE)</span>' : ''}</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                ${record.dose_amount ? `<div><strong>Dose:</strong> ${record.dose_amount} ${record.dose_unit}</div>` : ''}
+                <div><strong>Route:</strong> ${record.route}</div>
+                ${record.frequency_per_day ? `<div><strong>Frequency:</strong> ${record.frequency_per_day}x per day</div>` : ''}
+                ${record.duration_days ? `<div><strong>Duration:</strong> ${record.duration_days} days</div>` : ''}
+                <div><strong>Start Date:</strong> ${record.start_date}</div>
+                <div><strong>End Date:</strong> ${record.end_date}</div>
+                ${record.withdrawal_period_days ? `<div><strong>Withdrawal Period:</strong> ${record.withdrawal_period_days} days</div>` : ''}
+                ${record.safe_date ? `<div><strong>Safe Date:</strong> ${record.safe_date}</div>` : ''}
+                ${record.predicted_mrl ? `<div><strong>Predicted MRL:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.predicted_mrl} mcg/kg</span></div>` : ''}
+                ${record.predicted_withdrawal_days ? `<div><strong>Predicted Withdrawal Days:</strong> ${record.predicted_withdrawal_days}</div>` : ''}
+                ${record.mrl_status ? `<div><strong>Risk Category:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.mrl_status}</span></div>` : ''}
+                ${record.medication_type ? `<div><strong>Category:</strong> ${record.medication_type}</div>` : ''}
+                ${record.reason ? `<div><strong>Reason:</strong> ${record.reason}</div>` : ''}
+                ${record.cause ? `<div><strong>Cause:</strong> ${record.cause}</div>` : ''}
+                ${record.vet_name ? `<div><strong>Veterinarian:</strong> ${record.vet_name}</div>` : ''}
+              </div>
+              ${overdosageAlert}
+              ${unsafeAlert}
             </div>
-            <div class="detail-box">
-              <div class="detail-label">Dose (mg/kg)</div>${t.dose_mg_per_kg || '-'}
-            </div>
-            <div class="detail-box">
-              <div class="detail-label">Route</div>${t.route || '-'}
-            </div>
-            <div class="detail-box">
-              <div class="detail-label">Frequency/Day</div>${t.frequency_per_day || '-'}
-            </div>
-            <div class="detail-box">
-              <div class="detail-label">Duration (days)</div>${t.duration_days || '-'}
-            </div>
-            <div class="detail-box">
-              <div class="detail-label">Start Date</div>${t.start_date || '-'}
-            </div>
-            <div class="detail-box">
-              <div class="detail-label">End Date</div>${t.end_date || '-'}
-            </div>
-            <div class="detail-box">
-              <div class="detail-label">Withdrawal End</div>${t.withdrawal_end_date || '-'}
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
-      ` : `<div style="color:#888;font-size:1.05rem;padding:18px;text-align:center;">No treatment records found.</div>`;
+      ` : `<div style="color:#888;font-size:1.05rem;padding:18px;text-align:center;">No treatment or AMU records found.</div>`;
 
       const html = `
         <!doctype html>
@@ -151,34 +220,39 @@ router.get('/:entity_id', async (req, res) => {
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"/>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
           <style>
-            body{background:#f4f7fa;font-family:'Inter',Roboto,Arial,sans-serif;margin:0}
-            .header{position:sticky;top:0;background:#fff;box-shadow:0 2px 8px #0001;padding:18px 0 10px 0;z-index:10}
-            .header-title{font-size:2rem;font-weight:700;color:#2e5c1a;text-align:center;letter-spacing:0.5px}
-            .banner{margin:24px auto 0 auto;max-width:420px;padding:18px 0;border-radius:14px;background:${statusBanner.gradient};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px #0002}
-            .banner-icon{font-size:2.8rem;margin-right:18px;color:#d32f2f}
-            .banner-content{display:flex;flex-direction:column}
-            .banner-title{font-size:1.25rem;font-weight:700;color:#d32f2f;letter-spacing:0.5px}
-            .banner-sub{font-size:1rem;color:#444}
-            .card{background:#fff;border-radius:14px;box-shadow:0 1px 8px #0001;padding:22px;margin:28px auto;max-width:650px;transition:box-shadow 0.2s}
-            .card:hover{box-shadow:0 4px 16px #0002}
-            .card-title{font-size:1.13rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;color:#2e5c1a;letter-spacing:0.2px}
-            .card-title .icon{font-size:1.3rem}
-            .details-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-            .detail-box{background:#f6fbf7;border-radius:8px;padding:14px;text-align:center;font-size:1.05rem;color:#222;box-shadow:0 1px 4px #0001}
-            .detail-label{font-size:0.97rem;color:#6b7280;margin-bottom:4px}
+            body{background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);font-family:'Inter',Roboto,Arial,sans-serif;margin:0;min-height:100vh}
+            .header{position:sticky;top:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 4px 12px rgba(0,0,0,0.1);padding:20px 0;z-index:10;border-bottom:3px solid #5a67d8}
+            .header-title{font-size:2.5rem;font-weight:800;color:#fff;text-align:center;letter-spacing:1px;text-shadow:0 2px 4px rgba(0,0,0,0.3);margin:0}
+            .banner{margin:30px auto;max-width:500px;padding:25px;border-radius:20px;background:${statusBanner.gradient};display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(0,0,0,0.15);border:2px solid rgba(255,255,255,0.2)}
+            .banner-icon{font-size:3.5rem;margin-right:20px;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))}
+            .banner-content{display:flex;flex-direction:column;text-align:center}
+            .banner-title{font-size:1.8rem;font-weight:800;color:#fff;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,0.3);margin:0}
+            .banner-sub{font-size:1.1rem;color:#f0f0f0;margin:5px 0 0 0;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
+            .card{background:#fff;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,0.08);padding:30px;margin:30px auto;max-width:800px;transition:all 0.3s ease;border:1px solid rgba(255,255,255,0.8)}
+            .card:hover{box-shadow:0 12px 40px rgba(0,0,0,0.12);transform:translateY(-2px)}
+            .card-title{font-size:1.4rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:12px;color:#2d3748;letter-spacing:0.5px;border-bottom:2px solid #e2e8f0;padding-bottom:10px}
+            .card-title .icon{font-size:1.5rem;color:#667eea}
+            .details-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+            .detail-box{background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);border-radius:12px;padding:20px;text-align:center;font-size:1.1rem;color:#2d3748;box-shadow:0 2px 8px rgba(0,0,0,0.05);border:1px solid #e2e8f0}
+            .detail-label{font-size:1rem;color:#718096;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
             @media (max-width:720px){.details-grid{grid-template-columns:1fr}}
             @media (max-width:480px){.card{padding:12px;margin:12px;}.details-grid{gap:8px;}.detail-box{padding:10px;font-size:0.97rem;}}
-            table{width:100%;border-collapse:collapse;background:#f6fbf7;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px #0001}
-            th,td{padding:12px;text-align:left;font-size:1rem;border-bottom:1px solid #e6eef0}
-            th{background:#f3f3f3;color:#2e5c1a;font-weight:600}
-            tr:hover{background:#eaf6ff}
+            table{width:100%;border-collapse:collapse;background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);border-radius:15px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.08);border:1px solid #e2e8f0}
+            th,td{padding:15px;text-align:left;font-size:1rem;border-bottom:1px solid #e2e8f0}
+            th{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+            tr:hover{background:linear-gradient(135deg,#edf2f7 0%,#e2e8f0 100%);transition:background 0.2s ease}
             .treatment-label{font-weight:600;color:#2e5c1a}
-            .withdrawal-status{background:#f6fbf7;border-radius:10px;padding:16px;margin-top:10px;box-shadow:0 1px 4px #0001}
-            .withdrawal-label{font-size:1.05rem;color:#6b7280}
-            .withdrawal-value{font-size:1.05rem;color:#222}
-            .withdrawal-fail{color:#d32f2f;font-weight:700}
-            .withdrawal-pass{color:#388e3c;font-weight:700}
-            .verification-status{background:#e8fbef;border-radius:10px;padding:18px;margin-top:24px;max-width:650px;margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px #0001}
+            .withdrawal-status{background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);border-radius:15px;padding:25px;margin-top:15px;box-shadow:0 4px 15px rgba(0,0,0,0.08);border:1px solid #e2e8f0}
+            .status-summary{display:flex;flex-direction:column;gap:15px}
+            .status-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e2e8f0;background:rgba(255,255,255,0.5);border-radius:8px;margin-bottom:8px;padding:15px}
+            .status-item:last-child{border-bottom:none;margin-bottom:0}
+            .withdrawal-label{font-size:1.1rem;color:#4a5568;font-weight:600}
+            .withdrawal-value{font-size:1.1rem;color:#2d3748;font-weight:700}
+            .withdrawal-fail{color:#e53e3e;font-weight:800;text-shadow:0 1px 2px rgba(229,62,62,0.3)}
+            .withdrawal-pass{color:#38a169;font-weight:800;text-shadow:0 1px 2px rgba(56,161,105,0.3)}
+            .warning{color:#d69e2e;font-weight:700}
+            .safe{color:#38a169;font-weight:700}
+            .verification-status{background:linear-gradient(135deg,#c6f6d5 0%,#9ae6b4 100%);border-radius:20px;padding:25px;margin-top:30px;max-width:800px;margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:20px;box-shadow:0 6px 20px rgba(0,0,0,0.1);border:2px solid #68d391}
             .verification-icon{font-size:1.7rem;color:#388e3c}
             .verification-text{font-size:1.07rem;color:#222}
             .print-btn{position:fixed;bottom:24px;right:24px;background:#2e5c1a;color:#fff;border:none;border-radius:50px;padding:12px 24px;font-size:1.1rem;box-shadow:0 2px 8px #0002;cursor:pointer;z-index:99;transition:background 0.2s}
@@ -208,17 +282,31 @@ router.get('/:entity_id', async (req, res) => {
           </div>
 
           <div class="card">
-            <div class="card-title"><span class="icon"><i class="fa-solid fa-notes-medical"></i></span> Treatment Records</div>
-            ${treatmentsGridHtml}
+            <div class="card-title"><span class="icon"><i class="fa-solid fa-notes-medical"></i></span> Treatment and AMU Records</div>
+            ${combinedRecordsHtml}
           </div>
 
           <div class="card">
             <div class="card-title"><span class="icon"><i class="fa-solid fa-clock"></i></span> Withdrawal Period Status</div>
             <div class="withdrawal-status">
-              <div><span class="withdrawal-label">Withdrawal Period:</span> <span class="withdrawal-value">${withdrawal.withdrawal_period_days || '-'}</span></div>
-              <div><span class="withdrawal-label">Withdrawal Finish Date:</span> <span class="withdrawal-value">${withdrawal.withdrawal_finish_date || '-'}</span></div>
-              <div><span class="withdrawal-label">Days from Withdrawal:</span> <span class="withdrawal-value">${withdrawal.days_from_withdrawal == null ? '-' : withdrawal.days_from_withdrawal}</span></div>
-              <div><span class="withdrawal-label">MRL Status:</span> <span class="${withdrawal.mrl_pass ? 'withdrawal-pass' : 'withdrawal-fail'}">${withdrawal.mrl_pass ? '✔ SAFE' : '✗ NOT SAFE'}</span></div>
+              <div class="status-summary">
+                <div className="status-item">
+                  <span class="withdrawal-label">Withdrawal Date:</span>
+                  <span class="withdrawal-value">${withdrawal.withdrawal_date ? new Date(withdrawal.withdrawal_date).toLocaleDateString() : '-'}</span>
+                </div>
+                <div class="status-item">
+                  <span class="withdrawal-label">Safe Date:</span>
+                  <span class="withdrawal-value">${withdrawal.safe_date ? new Date(withdrawal.safe_date).toLocaleDateString() : '-'}</span>
+                </div>
+                <div class="status-item">
+                  <span class="withdrawal-label">Days Remaining:</span>
+                  <span class="withdrawal-value ${withdrawal.days_remaining > 0 ? 'warning' : withdrawal.days_remaining <= 0 ? 'safe' : ''}">${withdrawal.days_remaining == null ? '-' : withdrawal.days_remaining > 0 ? `${withdrawal.days_remaining} days` : withdrawal.days_remaining === 0 ? 'Ready today' : 'Safe'}</span>
+                </div>
+                <div class="status-item">
+                  <span class="withdrawal-label">Status:</span>
+                  <span class="${withdrawal.mrl_pass ? 'withdrawal-pass' : 'withdrawal-fail'}">${withdrawal.mrl_pass ? '✔ SAFE TO CONSUME' : '✗ NOT SAFE'}</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -240,7 +328,8 @@ router.get('/:entity_id', async (req, res) => {
 
   } catch (error) {
     console.error('Error verifying entity:', error);
-    res.status(500).json({ error: 'Failed to verify entity' });
+    console.error('Stack trace:', error.stack);
+    res.status(500).json({ error: 'Failed to verify entity', details: error.message });
   }
 });
 

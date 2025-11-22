@@ -221,4 +221,135 @@ router.get('/upcoming/:days?', async (req, res) => {
   }
 });
 
+// Vaccination History Routes
+
+// Get vaccination history for logged-in farmer
+router.get('/history', async (req, res) => {
+  try {
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    if (!farmer) {
+      return res.status(404).json({ error: 'Farmer profile not found' });
+    }
+
+    const VaccinationHistory = require('../models/VaccinationHistory');
+    const history = await VaccinationHistory.getByFarmer(farmer.farmer_id);
+    res.json(history);
+  } catch (error) {
+    console.error('Get vaccination history error:', error);
+    res.status(500).json({ error: 'Failed to fetch vaccination history' });
+  }
+});
+
+// Get vaccination history for specific entity
+router.get('/history/entity/:entityId', async (req, res) => {
+  try {
+    // Verify entity ownership
+    const entity = await Entity.getById(req.params.entityId);
+    if (!entity) {
+      return res.status(404).json({ error: 'Entity not found' });
+    }
+
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+
+    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const VaccinationHistory = require('../models/VaccinationHistory');
+    const history = await VaccinationHistory.getByEntity(req.params.entityId);
+    res.json(history);
+  } catch (error) {
+    console.error('Get entity vaccination history error:', error);
+    res.status(500).json({ error: 'Failed to fetch entity vaccination history' });
+  }
+});
+
+// Get vaccination history for a treatment
+router.get('/history/treatment/:treatmentId', async (req, res) => {
+  try {
+    const treatment = await require('../models/Treatment').getById(req.params.treatmentId);
+    if (!treatment) {
+      return res.status(404).json({ error: 'Treatment not found' });
+    }
+
+    // Verify ownership
+    const entity = await Entity.getById(treatment.entity_id);
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+
+    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const VaccinationHistory = require('../models/VaccinationHistory');
+    const history = await VaccinationHistory.getByTreatment(req.params.treatmentId);
+    res.json(history);
+  } catch (error) {
+    console.error('Get treatment vaccination history error:', error);
+    res.status(500).json({ error: 'Failed to fetch treatment vaccination history' });
+  }
+});
+
+// Mark vaccination as given (create new vaccination history entry)
+router.post('/history/:vaccId/mark-done', async (req, res) => {
+  try {
+    const VaccinationHistory = require('../models/VaccinationHistory');
+    const vacc = await VaccinationHistory.getById(req.params.vaccId);
+    if (!vacc) {
+      return res.status(404).json({ error: 'Vaccination history entry not found' });
+    }
+
+    // Verify ownership through treatment
+    const treatment = await require('../models/Treatment').getById(vacc.treatment_id);
+    if (!treatment) {
+      return res.status(404).json({ error: 'Treatment not found' });
+    }
+
+    const entity = await Entity.getById(treatment.entity_id);
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+
+    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Check if vaccination is due
+    const today = new Date().toISOString().split('T')[0];
+    if (today < vacc.next_due_date) {
+      return res.status(400).json({ error: 'Vaccination is not due yet' });
+    }
+
+    // Check if vaccination cycle is completed
+    if (today >= vacc.vaccine_end_date) {
+      return res.status(400).json({ error: 'Vaccination cycle is already completed' });
+    }
+
+    // Calculate next due date
+    const givenDate = new Date(today);
+    const nextDueDate = new Date(givenDate.getTime() + (vacc.interval_days * 24 * 60 * 60 * 1000));
+
+    // Create new vaccination history entry
+    const newVaccId = await VaccinationHistory.create({
+      entity_id: vacc.entity_id,
+      treatment_id: vacc.treatment_id,
+      vaccine_name: vacc.vaccine_name,
+      given_date: today,
+      interval_days: vacc.interval_days,
+      next_due_date: nextDueDate.toISOString().split('T')[0],
+      vaccine_total_months: vacc.vaccine_total_months,
+      vaccine_end_date: vacc.vaccine_end_date
+    });
+
+    const newEntry = await VaccinationHistory.getById(newVaccId);
+    res.status(201).json({
+      message: 'Vaccination marked as given',
+      vaccination: newEntry
+    });
+  } catch (error) {
+    console.error('Mark vaccination done error:', error);
+    res.status(500).json({ error: 'Failed to mark vaccination as done' });
+  }
+});
+
 module.exports = router;

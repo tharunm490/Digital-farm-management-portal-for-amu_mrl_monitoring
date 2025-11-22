@@ -60,4 +60,9 @@ export const verifyAPI = {
   verifyBatch: (batch_id) => api.get(`/verify/${batch_id}`),
 };
 
+// Prediction API
+export const predictAPI = {
+  predict: (data) => api.post('/predict', data),
+};
+
 export default api;

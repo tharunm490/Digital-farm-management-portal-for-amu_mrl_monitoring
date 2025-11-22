@@ -148,12 +148,20 @@ class Treatment {
         matrix: entity.matrix
       });
 
+      // Set default predictions if error
+      const finalPredictions = predictions.error ? {
+        predicted_mrl: 50.0,
+        predicted_withdrawal_days: medication_type === 'vaccine' || medication_type === 'vitamin' ? 0 : 7,
+        predicted_mrl_risk: 0.5,
+        risk_category: 'safe'
+      } : predictions;
+
       if (predictions.error) {
         console.error('ML Prediction error:', predictions.error);
-        // Continue with null predictions or default values
+        // Continue with default values
       }
 
-      await this.createAMURecord(treatmentId, predictions);
+      await this.createAMURecord(treatmentId, finalPredictions);
     }
 
     return treatmentId;
@@ -172,7 +180,8 @@ class Treatment {
         route, dose_amount, dose_unit,
         frequency_per_day, duration_days,
         start_date, end_date,
-        predicted_mrl, predicted_withdrawal_days, predicted_mrl_risk, risk_category
+        predicted_mrl, predicted_withdrawal_days, predicted_mrl_risk, risk_category,
+        safe_date
       )
       SELECT
         tr.treatment_id,
@@ -194,7 +203,8 @@ class Treatment {
         tr.duration_days,
         tr.start_date,
         tr.end_date,
-        ?, ?, ?, ?
+        ?, ?, ?, ?,
+        CASE WHEN ? IS NOT NULL THEN DATE_ADD(tr.end_date, INTERVAL ? DAY) ELSE NULL END
       FROM treatment_records tr
       JOIN animals_or_batches ao ON tr.entity_id = ao.entity_id
       WHERE tr.treatment_id = ?
@@ -205,6 +215,8 @@ class Treatment {
       predicted_withdrawal_days || null,
       predicted_mrl_risk || null,
       risk_category || 'safe',
+      predicted_withdrawal_days,
+      predicted_withdrawal_days,
       treatmentId
     ]);
   }
@@ -262,15 +274,16 @@ class Treatment {
   // Get all treatments for an entity
   static async getByEntity(entityId) {
     const query = `
-      SELECT * FROM treatment_records 
-      WHERE entity_id = ?
-      ORDER BY start_date DESC
+      SELECT t.*, a.safe_date as withdrawal_end_date, e.entity_type, e.tag_id, e.batch_name, e.species
+      FROM treatment_records t
+      LEFT JOIN amu_records a ON t.treatment_id = a.treatment_id
+      LEFT JOIN animals_or_batches e ON t.entity_id = e.entity_id
+      WHERE t.entity_id = ?
+      ORDER BY t.start_date DESC
     `;
     const [rows] = await db.execute(query, [entityId]);
     return rows;
-  }
-
-  // Get treatments with AMU records
+  }  // Get treatments with AMU records
   static async getWithAMU(treatmentId) {
     const treatmentQuery = `
       SELECT t.*, e.entity_type, e.tag_id, e.batch_name, e.species

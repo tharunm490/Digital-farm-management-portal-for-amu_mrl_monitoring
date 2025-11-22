@@ -102,6 +102,7 @@ app.use('/api/amu', require('./routes/amuRoutes'));
 app.use('/api/qr', require('./routes/qrRoutes'));
 app.use('/api/verify', require('./routes/verifyRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
+app.use('/api/predict', require('./routes/predictRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

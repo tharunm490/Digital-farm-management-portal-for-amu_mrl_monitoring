@@ -29,8 +29,8 @@ router.post('/generate/:entity_id', authMiddleware, farmerOnly, async (req, res)
     // Check if QR already exists
     let qrRecord = await QR.getByEntityId(entity_id);
     
-    // Generate QR URL (always use localhost for development)
-    const qrUrl = `http://localhost:5000/api/verify/${entity_id}`;
+    // Generate QR URL using environment variable
+    const qrUrl = `${process.env.BACKEND_URL}/api/verify/${entity_id}`;
     
     // Generate QR code as Base64 image
     const qrImage = await QRCode.toDataURL(qrUrl, {

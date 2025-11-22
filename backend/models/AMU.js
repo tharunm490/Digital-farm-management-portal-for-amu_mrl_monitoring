@@ -1,4 +1,72 @@
 const db = require('../config/database');
+const fs = require('fs');
+const path = require('path');
+
+// Load thresholds JSON
+const thresholdsPath = path.join(__dirname, '../ml_models/s.json');
+let thresholdsData = null;
+try {
+    thresholdsData = JSON.parse(fs.readFileSync(thresholdsPath, 'utf8'));
+} catch (e) {
+    console.warn('Failed to load thresholds JSON:', e.message);
+}
+
+function intToDate(intDate) {
+  if (!intDate) return null;
+  const dateStr = intDate.toString();
+  if (dateStr.length !== 8) return null;
+  const year = dateStr.slice(0, 4);
+  const month = dateStr.slice(4, 6);
+  const day = dateStr.slice(6, 8);
+  return `${year}-${month}-${day}`;
+}
+
+function getThresholds(species, matrix, category, medicine) {
+    if (!thresholdsData || !thresholdsData.data) return { safe_max: null, borderline_max: null, unsafe_above: null };
+    const data = thresholdsData.data;
+    species = species.toLowerCase();
+    
+    // Validate matrix for species
+    const validMatrices = {
+        'cattle': ['milk', 'meat'],
+        'goat': ['meat'],
+        'sheep': ['meat'],
+        'pig': ['meat'],
+        'poultry': ['meat', 'eggs']
+    };
+    
+    if (!validMatrices[species] || !validMatrices[species].includes(matrix)) {
+        return { safe_max: null, borderline_max: null, unsafe_above: null };
+    }
+    
+    if (!data[species] || !data[species][category] || !data[species][category][medicine] || !data[species][category][medicine][matrix]) {
+        return { safe_max: null, borderline_max: null, unsafe_above: null };
+    }
+    
+    const thresholds = data[species][category][medicine][matrix].thresholds;
+    if (!thresholds) {
+        return { safe_max: null, borderline_max: null, unsafe_above: null };
+    }
+    
+    return {
+        safe_max: thresholds.safe_max || null,
+        borderline_max: thresholds.borderline_max || null,
+        unsafe_above: thresholds.unsafe_above || null
+    };
+}
+
+function getMrlStatus(predicted_mrl, safe_max, borderline_max, unsafe_above) {
+    if (safe_max === null || safe_max === undefined) {
+        return { status: 'Safe', color: 'green' };
+    }
+    if (predicted_mrl <= safe_max) {
+        return { status: 'Safe', color: 'green' };
+    }
+    if (predicted_mrl <= borderline_max) {
+        return { status: 'Borderline', color: 'yellow' };
+    }
+    return { status: 'Unsafe', color: 'red' };
+}
 
 class AMU {
   // Create new AMU record (auto-filled from treatment)
@@ -29,12 +97,23 @@ class AMU {
       risk_category
     } = amuData;
 
-    // Calculate safe_date as end_date + predicted_withdrawal_days
+    // Override predicted_withdrawal_days for vaccine and vitamin categories
+    let effectiveWithdrawalDays = predicted_withdrawal_days;
+    if (category_type === 'vaccine' || category_type === 'vitamin') {
+      effectiveWithdrawalDays = 0;
+    }
+
+    // Calculate safe_date
     let safe_date = null;
-    if (end_date && predicted_withdrawal_days) {
-      const endDate = new Date(end_date);
-      endDate.setDate(endDate.getDate() + predicted_withdrawal_days);
-      safe_date = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    if (end_date) {
+      const endDateStr = intToDate(end_date);
+      if (endDateStr) {
+        const endDate = new Date(endDateStr);
+        if (effectiveWithdrawalDays > 0) {
+          endDate.setDate(endDate.getDate() + effectiveWithdrawalDays);
+        }
+        safe_date = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      }
     }
 
     const query = `
@@ -71,7 +150,7 @@ class AMU {
       start_date,
       end_date,
       predicted_mrl,
-      predicted_withdrawal_days,
+      effectiveWithdrawalDays,  // Use the overridden value
       safe_date,
       predicted_mrl_risk,
       risk_category
@@ -127,7 +206,12 @@ class AMU {
       ORDER BY a.start_date DESC
     `;
     const [rows] = await db.execute(query, [farmerId]);
-    return rows;
+    // Add thresholds and status to each record
+    return rows.map(row => {
+      const thresholds = getThresholds(row.species, row.matrix, row.medication_type, row.medicine);
+      const status = getMrlStatus(row.predicted_mrl, thresholds.safe_max, thresholds.borderline_max, thresholds.unsafe_above);
+      return { ...row, ...thresholds, ...status };
+    });
   }
 
   // Get AMU records with active withdrawal periods

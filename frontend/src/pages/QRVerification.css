@@ -236,10 +236,19 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.amu-item .value.highlight {
-  color: #4a7c2c;
+.amu-item .value.mrl-safe {
+  color: #4CAF50;
   font-weight: 700;
-  font-size: 15px;
+}
+
+.amu-item .value.mrl-borderline {
+  color: #FF9800;
+  font-weight: 700;
+}
+
+.amu-item .value.mrl-unsafe {
+  color: #f44336;
+  font-weight: 700;
 }
 
 .withdrawal-info,

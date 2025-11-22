@@ -5,6 +5,36 @@ const Farm = require('../models/Farm');
 const { Farmer } = require('../models/User');
 const { authMiddleware, farmerOnly } = require('../middleware/auth');
 
+// Prediction endpoint
+router.post('/predict', authMiddleware, (req, res) => {
+  const { spawn } = require('child_process');
+  const pythonProcess = spawn('python', [require('path').join(__dirname, '../predict.py'), JSON.stringify(req.body)], { cwd: require('path').join(__dirname, '..') });
+
+  let result = '';
+  let errorOutput = '';
+
+  pythonProcess.stdout.on('data', (data) => {
+    result += data.toString();
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    errorOutput += data.toString();
+  });
+
+  pythonProcess.on('close', (code) => {
+    if (code === 0) {
+      try {
+        const prediction = JSON.parse(result.trim());
+        res.json(prediction);
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to parse prediction result', details: e.message });
+      }
+    } else {
+      res.status(500).json({ error: 'Prediction failed', details: errorOutput });
+    }
+  });
+});
+
 // GET /api/amu/:batch_id - Fetch AMU records by batch_id
 router.get('/:batch_id', authMiddleware, async (req, res) => {
   try {
@@ -41,8 +71,14 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     const endDate = new Date(req.body.end_date);
     const daysSinceLastDose = Math.floor((today - endDate) / (1000 * 60 * 60 * 24));
     
+    // Override withdrawal_period_days for vaccine and vitamin categories
+    let effectiveWithdrawalDays = parseInt(req.body.withdrawal_period_days);
+    if (req.body.category_type === 'vaccine' || req.body.category_type === 'vitamin') {
+      effectiveWithdrawalDays = 0;
+    }
+    
     const withdrawalFinishDate = new Date(endDate);
-    withdrawalFinishDate.setDate(withdrawalFinishDate.getDate() + parseInt(req.body.withdrawal_period_days));
+    withdrawalFinishDate.setDate(withdrawalFinishDate.getDate() + effectiveWithdrawalDays);
     const daysFromWithdrawal = Math.floor((today - withdrawalFinishDate) / (1000 * 60 * 60 * 24));
     
     const cumulativeDose = req.body.dose_mg_per_kg * req.body.frequency_per_day * req.body.duration_days;
@@ -54,7 +90,8 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
       days_from_withdrawal: daysFromWithdrawal,
       cumulative_dose: cumulativeDose,
       mrl_risk_prob: req.body.mrl_risk_prob || 0,
-      mrl_risk_category: req.body.mrl_risk_category || 'Low'
+      mrl_risk_category: req.body.mrl_risk_category || 'Low',
+      withdrawal_period_days: effectiveWithdrawalDays  // Use the overridden value
     };
     
     const amuId = await AMU.create(amuData);

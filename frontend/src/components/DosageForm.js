@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dosageData from '../data/dosage_reference_full_extended.json';
+import { predictAPI } from '../services/api';
 
 const DosageForm = () => {
   const [selectedSpecies, setSelectedSpecies] = useState('');
@@ -13,6 +14,8 @@ const DosageForm = () => {
   const [selectedDuration, setSelectedDuration] = useState('');
   const [selectedReason, setSelectedReason] = useState('');
   const [selectedCause, setSelectedCause] = useState('');
+  const [selectedMatrix, setSelectedMatrix] = useState('milk');
+  const [predictionResult, setPredictionResult] = useState(null);
 
   const speciesOptions = Object.keys(dosageData);
   const categoryOptions = selectedSpecies ? Object.keys(dosageData[selectedSpecies]) : [];
@@ -62,6 +65,14 @@ const DosageForm = () => {
     return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.causes_dropdown;
   };
 
+  const getMatrixOptions = () => {
+    if (['cattle'].includes(selectedSpecies)) return ['milk', 'meat'];
+    if (['goat', 'sheep'].includes(selectedSpecies)) return ['meat'];
+    if (['pig'].includes(selectedSpecies)) return ['meat'];
+    if (['poultry'].includes(selectedSpecies)) return ['meat', 'eggs'];
+    return [];
+  };
+
   const isManualAdjustAllowed = () => {
     if (!selectedSpecies || !selectedCategory || !selectedMedicine) return false;
     return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.manual_adjust_allowed;
@@ -82,8 +93,13 @@ const DosageForm = () => {
       setSelectedDuration(getDurationOptions()[0] || '');
       setSelectedReason(getReasonOptions()[0] || '');
       setSelectedCause(getCauseOptions()[0] || '');
+      setPredictionResult(null);
     }
   }, [selectedMedicine]);
+
+  useEffect(() => {
+    setSelectedMatrix(getMatrixOptions()[0] || '');
+  }, [selectedSpecies]);
 
   const handleSpeciesChange = (e) => {
     setSelectedSpecies(e.target.value);
@@ -97,6 +113,8 @@ const DosageForm = () => {
     setSelectedDuration('');
     setSelectedReason('');
     setSelectedCause('');
+    setSelectedMatrix('');
+    setPredictionResult(null);
   };
 
   const handleCategoryChange = (e) => {
@@ -110,41 +128,70 @@ const DosageForm = () => {
     setSelectedDuration('');
     setSelectedReason('');
     setSelectedCause('');
+    setPredictionResult(null);
   };
 
   const handleMedicineChange = (e) => {
     setSelectedMedicine(e.target.value);
   };
 
-  const increaseFrequency = () => {
-    const options = getFrequencyOptions();
-    const currentIndex = options.indexOf(parseInt(selectedFrequency));
-    if (currentIndex < options.length - 1) {
-      setSelectedFrequency(options[currentIndex + 1]);
+  const handlePredict = async () => {
+    const data = {
+      species: selectedSpecies,
+      medication_type: selectedCategory,
+      medicine: selectedMedicine,
+      route: selectedRoute,
+      dose_amount: parseFloat(doseMin),
+      dose_unit: doseUnit,
+      frequency_per_day: parseInt(selectedFrequency),
+      duration_days: parseInt(selectedDuration),
+      cause: selectedCause,
+      reason: selectedReason,
+      matrix: selectedMatrix
+    };
+    try {
+      const result = await predictAPI.predict(data);
+      setPredictionResult(result.data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
+  const increaseFrequency = () => {
+    const current = parseInt(selectedFrequency) || 1;
+    setSelectedFrequency((current + 1).toString());
+  };
+
   const decreaseFrequency = () => {
-    const options = getFrequencyOptions();
-    const currentIndex = options.indexOf(parseInt(selectedFrequency));
-    if (currentIndex > 0) {
-      setSelectedFrequency(options[currentIndex - 1]);
+    const current = parseInt(selectedFrequency) || 1;
+    if (current > 1) {
+      setSelectedFrequency((current - 1).toString());
     }
   };
 
   const increaseDuration = () => {
-    const options = getDurationOptions();
-    const currentIndex = options.indexOf(parseInt(selectedDuration));
-    if (currentIndex < options.length - 1) {
-      setSelectedDuration(options[currentIndex + 1]);
-    }
+    const current = parseInt(selectedDuration) || 1;
+    setSelectedDuration((current + 1).toString());
   };
 
   const decreaseDuration = () => {
-    const options = getDurationOptions();
-    const currentIndex = options.indexOf(parseInt(selectedDuration));
-    if (currentIndex > 0) {
-      setSelectedDuration(options[currentIndex - 1]);
+    const current = parseInt(selectedDuration) || 1;
+    if (current > 1) {
+      setSelectedDuration((current - 1).toString());
+    }
+  };
+
+  const increaseDoseMin = () => {
+    const current = parseFloat(doseMin) || 0;
+    const step = doseUnit === 'mcg/kg' ? 1 : 0.1;
+    setDoseMin((current + step).toFixed(doseUnit === 'mcg/kg' ? 0 : 1));
+  };
+
+  const decreaseDoseMin = () => {
+    const current = parseFloat(doseMin) || 0;
+    const step = doseUnit === 'mcg/kg' ? 1 : 0.1;
+    if (current > 0) {
+      setDoseMin(Math.max(0, current - step).toFixed(doseUnit === 'mcg/kg' ? 0 : 1));
     }
   };
 
@@ -182,7 +229,9 @@ const DosageForm = () => {
         <>
           <div>
             <label>Recommended Dose:</label>
-            <input type="number" value={doseMin} readOnly /> - <input type="number" value={doseMax} readOnly /> {doseUnit}
+            <button onClick={decreaseDoseMin}>-</button>
+            <input type="number" value={doseMin} onChange={(e) => setDoseMin(e.target.value)} step={doseUnit === 'mcg/kg' ? 1 : 0.1} /> - <input type="number" value={doseMax} readOnly /> {doseUnit}
+            <button onClick={increaseDoseMin}>+</button>
           </div>
           <div>
             <label>Route:</label>
@@ -193,18 +242,22 @@ const DosageForm = () => {
             </select>
           </div>
           <div>
+            <label>Matrix:</label>
+            <select value={selectedMatrix} onChange={(e) => setSelectedMatrix(e.target.value)}>
+              {getMatrixOptions().map(matrix => (
+                <option key={matrix} value={matrix}>{matrix}</option>
+              ))}
+            </select>
+          </div>
+          <div>
             <label>Frequency per day:</label>
             <select value={selectedFrequency} onChange={(e) => setSelectedFrequency(e.target.value)}>
               {getFrequencyOptions().map(freq => (
                 <option key={freq} value={freq}>{freq}</option>
               ))}
             </select>
-            {isManualAdjustAllowed() && (
-              <>
-                <button onClick={decreaseFrequency}>-</button>
-                <button onClick={increaseFrequency}>+</button>
-              </>
-            )}
+            <button onClick={decreaseFrequency}>-</button>
+            <button onClick={increaseFrequency}>+</button>
           </div>
           <div>
             <label>Duration (days):</label>
@@ -213,12 +266,8 @@ const DosageForm = () => {
                 <option key={dur} value={dur}>{dur}</option>
               ))}
             </select>
-            {isManualAdjustAllowed() && (
-              <>
-                <button onClick={decreaseDuration}>-</button>
-                <button onClick={increaseDuration}>+</button>
-              </>
-            )}
+            <button onClick={decreaseDuration}>-</button>
+            <button onClick={increaseDuration}>+</button>
           </div>
           <div>
             <label>Reason:</label>
@@ -236,6 +285,13 @@ const DosageForm = () => {
               ))}
             </select>
           </div>
+          <button onClick={handlePredict}>Predict Safety</button>
+          {predictionResult && (
+            <div>
+              Predicted Risk: {predictionResult.risk_category === 'not applicable' ? 'safe' : predictionResult.risk_category}
+              {predictionResult.risk_category === 'unsafe' && <div style={{color: 'red'}}>Over dosage given</div>}
+            </div>
+          )}
           {isVaccine() && (
             <div>
               <h3>Vaccine Specific Fields</h3>

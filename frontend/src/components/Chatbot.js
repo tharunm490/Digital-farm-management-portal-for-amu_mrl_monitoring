@@ -14,6 +14,7 @@ const Chatbot = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState('english');
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isVoiceSupported, setIsVoiceSupported] = useState(false);
   const messagesEndRef = useRef(null);
@@ -21,6 +22,17 @@ const Chatbot = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const clearChat = () => {
+    setMessages([
+      {
+        id: 1,
+        text: "Namaste! I'm KrushiAI, your farming companion. I can help you with livestock management, treatment tracking, vaccination schedules, and farm compliance. What would you like to know about your farm today?",
+        sender: 'bot',
+        timestamp: new Date()
+      }
+    ]);
   };
 
   useEffect(() => {
@@ -135,6 +147,30 @@ const Chatbot = () => {
     }
   };
 
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      if (isSpeaking) {
+        speechSynthesis.cancel();
+        setIsSpeaking(false);
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'english' ? 'en-US' :
+                      language === 'hindi' ? 'hi-IN' :
+                      language === 'kannada' ? 'kn-IN' :
+                      language === 'telugu' ? 'te-IN' :
+                      language === 'tamil' ? 'ta-IN' :
+                      language === 'malayalam' ? 'ml-IN' : 'en-US';
+
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   const languages = [
     { value: 'english', label: 'English' },
     { value: 'kannada', label: 'ಕನ್ನಡ' },
@@ -162,6 +198,9 @@ const Chatbot = () => {
               KrushiAI - Farm Assistant
             </div>
             <div className="chatbot-controls">
+              <button onClick={clearChat} className="clear-button" title="Clear chat">
+                🗑️
+              </button>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
@@ -184,6 +223,15 @@ const Chatbot = () => {
               >
                 <div className="message-content">
                   {message.text}
+                  {message.sender === 'bot' && (
+                    <button
+                      onClick={() => speakText(message.text)}
+                      className="speak-button"
+                      title="Speak this message"
+                    >
+                      {isSpeaking ? '🔊' : '🔈'}
+                    </button>
+                  )}
                 </div>
                 <div className="message-time">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

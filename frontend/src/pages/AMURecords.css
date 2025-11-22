@@ -305,6 +305,11 @@
   font-size: 0.9rem;
 }
 
+.limits {
+  font-size: 0.8rem;
+  color: #666;
+}
+
 .withdrawal-info {
   font-size: 0.8rem;
   color: #666;

@@ -53,6 +53,8 @@ const TreatmentManagement = () => {
   const [showManualCause, setShowManualCause] = useState(false);
   const [manualReason, setManualReason] = useState('');
   const [manualCause, setManualCause] = useState('');
+  const [manualFrequency, setManualFrequency] = useState('');
+  const [manualDuration, setManualDuration] = useState('');
   const [vaccinationHistory, setVaccinationHistory] = useState([]);
   const [showVaccinationSection, setShowVaccinationSection] = useState(false);
   const [selectedMedicineData, setSelectedMedicineData] = useState(null);
@@ -269,6 +271,8 @@ const TreatmentManagement = () => {
     setShowManualCause(false);
     setManualReason('');
     setManualCause('');
+    setManualFrequency('');
+    setManualDuration('');
   };
 
   const handleInputChange = (e) => {
@@ -349,6 +353,8 @@ const TreatmentManagement = () => {
         setDoseSuggestions([]);
         setShowManualFrequency(false);
         setShowManualDuration(false);
+        setManualFrequency('');
+        setManualDuration('');
         setShowManualReason(false);
         setShowManualCause(false);
         setFormData(prev => ({
@@ -1207,7 +1213,7 @@ const TreatmentManagement = () => {
                           </button>
                         </div>
                         <small className="form-help">
-                          💡 Use +/- buttons to adjust or select from dropdown
+                          💡 Select from recommended frequency options
                         </small>
                       </div>
 
@@ -1228,7 +1234,17 @@ const TreatmentManagement = () => {
                           </button>
                           <select
                             value={formData.duration_days}
-                            onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === 'manual_entry') {
+                                setShowManualDuration(true);
+                                setFormData(prev => ({ ...prev, duration_days: '' }));
+                              } else {
+                                setShowManualDuration(false);
+                                setManualDuration('');
+                                setFormData(prev => ({ ...prev, duration_days: value }));
+                              }
+                            }}
                             required
                             className="form-control"
                           >
@@ -1238,6 +1254,7 @@ const TreatmentManagement = () => {
                                 {duration} days
                               </option>
                             ))}
+                            <option value="manual_entry">➕ Enter manually</option>
                           </select>
                           <button
                             type="button"
@@ -1511,6 +1528,31 @@ const TreatmentManagement = () => {
                     </div>
                   )}
 
+                  {/* Manual Duration Input */}
+                  {showManualDuration && (
+                    <div className="manual-entry-section">
+                      <div className="form-group">
+                        <label>Enter Duration Manually (days) *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={manualDuration}
+                          onChange={(e) => {
+                            setManualDuration(e.target.value);
+                            setFormData(prev => ({ ...prev, duration_days: e.target.value }));
+                          }}
+                          required
+                          className="form-control"
+                          placeholder="e.g., 7"
+                          autoFocus
+                        />
+                        <small className="form-help">
+                          💡 Enter the total number of days for the treatment duration
+                        </small>
+                      </div>
+                    </div>
+                  )}
+
                   {/* MRL Information */}
                   {mrlData.length > 0 && (
                     <div className="mrl-section">
@@ -1595,7 +1637,7 @@ const TreatmentManagement = () => {
                   <div key={treatment.treatment_id} className="treatment-card">
                     <div className="treatment-header">
                       <div className="treatment-title">
-                        <h3>{treatment.medicine || treatment.active_ingredient}</h3>
+                        <h3>{treatment.species} - {treatment.entity_type === 'animal' ? (treatment.tag_id || 'No Tag') : (treatment.batch_name || 'No Batch')} - {treatment.medicine || treatment.active_ingredient} ({treatment.medication_type})</h3>
                         <span className={`status-badge ${new Date() > new Date(treatment.end_date) ? 'completed' : 'active'}`}>
                           {new Date() > new Date(treatment.end_date) ? 'Completed' : 'Active'}
                         </span>

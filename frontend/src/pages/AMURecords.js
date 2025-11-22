@@ -33,15 +33,28 @@ function AMURecords() {
     }
   };
 
+  const intToDate = (dateInt) => {
+    if (typeof dateInt === 'number') {
+      const dateStr = dateInt.toString();
+      const year = dateStr.slice(0, 4);
+      const month = dateStr.slice(4, 6);
+      const day = dateStr.slice(6, 8);
+      return `${year}-${month}-${day}`;
+    }
+    return dateInt;
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    const date = new Date(dateString);
+    const dateStr = intToDate(dateString);
+    const date = new Date(dateStr);
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
 
   const calculateSafeDate = (endDate, withdrawalDays) => {
-    if (!endDate || !withdrawalDays) return 'N/A';
-    const end = new Date(endDate);
+    if (!endDate || withdrawalDays === null || withdrawalDays === undefined) return 'N/A';
+    const endStr = intToDate(endDate);
+    const end = new Date(endStr);
     end.setDate(end.getDate() + withdrawalDays);
     return formatDate(end.toISOString().split('T')[0]);
   };
@@ -55,33 +68,44 @@ function AMURecords() {
     return diffDays;
   };
 
-  const getRiskClass = (riskCategory) => {
-    switch (riskCategory?.toLowerCase()) {
-      case 'safe': return 'risk-safe';
-      case 'borderline': return 'risk-borderline';
-      case 'unsafe': return 'risk-unsafe';
+  const getMrlStatus = (predicted_mrl, safe_max, borderline_max, unsafe_above) => {
+    if (safe_max === null || safe_max === undefined) {
+        return { status: 'Safe', color: 'green' };
+    }
+    if (predicted_mrl <= safe_max) {
+        return { status: 'Safe', color: 'green' };
+    }
+    if (predicted_mrl <= borderline_max) {
+        return { status: 'Borderline', color: 'yellow' };
+    }
+    return { status: 'Unsafe', color: 'red' };
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'Safe': return 'risk-safe';
+      case 'Borderline': return 'risk-borderline';
+      case 'Unsafe': return 'risk-unsafe';
       default: return 'risk-unknown';
     }
   };
 
-  const getRiskIcon = (riskCategory) => {
-    switch (riskCategory?.toLowerCase()) {
-      case 'safe': return '✅';
-      case 'borderline': return '⚠️';
-      case 'unsafe': return '❌';
+  const getRiskIcon = (status) => {
+    switch (status) {
+      case 'Safe': return '✅';
+      case 'Borderline': return '⚠️';
+      case 'Unsafe': return '❌';
       default: return '❓';
     }
   };
 
   const filteredRecords = amuRecords.filter(record => {
-    const daysUntilSafe = getDaysUntilSafe(record.safe_date);
-    const isSafe = daysUntilSafe !== null && daysUntilSafe <= 0;
-    const effectiveRiskCategory = isSafe ? 'safe' : (record.risk_category || 'unknown');
+    const effectiveRiskCategory = record.status ? record.status.toLowerCase().replace(' ', '-') : 'unknown';
 
     const matchesFilter = filter === 'all' ||
-      (filter === 'safe' && effectiveRiskCategory?.toLowerCase() === 'safe') ||
-      (filter === 'borderline' && effectiveRiskCategory?.toLowerCase() === 'borderline') ||
-      (filter === 'unsafe' && effectiveRiskCategory?.toLowerCase() === 'unsafe');
+      (filter === 'safe' && effectiveRiskCategory === 'safe') ||
+      (filter === 'borderline' && effectiveRiskCategory === 'borderline') ||
+      (filter === 'unsafe' && effectiveRiskCategory === 'unsafe');
 
     const matchesSearch = !searchTerm ||
       record.medicine?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -101,21 +125,9 @@ function AMURecords() {
 
   const getStats = () => {
     const total = amuRecords.length;
-    const safe = amuRecords.filter(r => {
-      const daysUntilSafe = getDaysUntilSafe(r.safe_date);
-      const isSafe = daysUntilSafe !== null && daysUntilSafe <= 0;
-      return isSafe || r.risk_category?.toLowerCase() === 'safe';
-    }).length;
-    const borderline = amuRecords.filter(r => {
-      const daysUntilSafe = getDaysUntilSafe(r.safe_date);
-      const isSafe = daysUntilSafe !== null && daysUntilSafe <= 0;
-      return !isSafe && r.risk_category?.toLowerCase() === 'borderline';
-    }).length;
-    const unsafe = amuRecords.filter(r => {
-      const daysUntilSafe = getDaysUntilSafe(r.safe_date);
-      const isSafe = daysUntilSafe !== null && daysUntilSafe <= 0;
-      return !isSafe && r.risk_category?.toLowerCase() === 'unsafe';
-    }).length;
+    const safe = amuRecords.filter(r => r.status === 'Safe').length;
+    const borderline = amuRecords.filter(r => r.status === 'Borderline').length;
+    const unsafe = amuRecords.filter(r => r.status === 'Unsafe').length;
 
     return { total, safe, borderline, unsafe };
   };
@@ -238,10 +250,11 @@ function AMURecords() {
                 <div className="col-status">Risk Status</div>
               </div>
               {currentRecords.map((record) => {
+                // Override withdrawal days for vaccine and vitamin categories
+                const effectiveWithdrawalDays = (record.category_type === 'vaccine' || record.category_type === 'vitamin') ? 0 : (record.predicted_withdrawal_days || 0);
+                
                 const daysUntilSafe = getDaysUntilSafe(record.safe_date);
-                const safeDate = record.safe_date ? formatDate(record.safe_date) : calculateSafeDate(record.end_date, record.predicted_withdrawal_days);
-                const isSafe = daysUntilSafe !== null && daysUntilSafe <= 0;
-                const effectiveRiskCategory = isSafe ? 'safe' : (record.risk_category || 'unknown');
+                const safeDate = record.safe_date ? formatDate(record.safe_date) : calculateSafeDate(record.end_date, effectiveWithdrawalDays);
 
                 return (
                   <div key={record.amu_id} className={`table-row ${viewMode}`}>
@@ -315,12 +328,25 @@ function AMURecords() {
                     <div className="col-safety">
                       <div className="safety-item">
                         <div className="mrl-value">
-                          {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}
+                          Predicted MRL: {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}
                         </div>
+                        {!(record.safe_max === null && record.borderline_max === null && record.unsafe_above === null) && (
+                          <>
+                            <div className="limits">
+                              Safe limit: {record.safe_max !== null ? record.safe_max : '–'}
+                            </div>
+                            <div className="limits">
+                              Borderline limit: {record.borderline_max !== null ? record.borderline_max : '–'}
+                            </div>
+                            <div className="limits">
+                              Unsafe above: {record.unsafe_above !== null ? record.unsafe_above : '–'}
+                            </div>
+                          </>
+                        )}
                         {viewMode === 'detailed' ? (
                           <div className="withdrawal-info">
-                            <div className="withdrawal-days">{record.predicted_withdrawal_days || 0} days withdrawal</div>
-                            <div className={`safe-date ${isSafe ? 'safe' : 'pending'}`}>
+                            <div className="withdrawal-days">{effectiveWithdrawalDays} days withdrawal</div>
+                            <div className={`safe-date ${daysUntilSafe !== null && daysUntilSafe <= 0 ? 'safe' : 'pending'}`}>
                               Safe: {safeDate}
                               {daysUntilSafe !== null && (
                                 <span className="days-remaining">
@@ -331,7 +357,7 @@ function AMURecords() {
                           </div>
                         ) : (
                           <div className="compact-safety">
-                            {record.predicted_withdrawal_days || 0} days • Safe: {safeDate}
+                            {effectiveWithdrawalDays} days • Safe: {safeDate}
                             {daysUntilSafe !== null && daysUntilSafe > 0 && (
                               <span className="days-remaining"> ({daysUntilSafe} left)</span>
                             )}
@@ -340,8 +366,8 @@ function AMURecords() {
                       </div>
                     </div>
                     <div className="col-status">
-                      <span className={`risk-badge ${getRiskClass(effectiveRiskCategory)}`}>
-                        {getRiskIcon(effectiveRiskCategory)} {effectiveRiskCategory || 'Unknown'}
+                      <span className={`risk-badge ${getStatusClass(record.status)}`}>
+                        {getRiskIcon(record.status)} {record.status}
                       </span>
                       {viewMode === 'detailed' && record.predicted_mrl_risk && (
                         <div className="risk-percentage">
