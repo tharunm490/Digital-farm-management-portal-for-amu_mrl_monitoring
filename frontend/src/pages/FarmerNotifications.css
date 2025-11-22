@@ -52,7 +52,7 @@
   border-left: 4px solid #2196f3;
 }
 
-.stat-card.overdue {
+.stat-card.alerts {
   border-left: 4px solid #f44336;
 }
 
@@ -161,7 +161,7 @@
   background: linear-gradient(90deg, #fff3e0, #fafafa);
 }
 
-.notification-card.overdue {
+.notification-card.alert {
   border-left: 4px solid #f44336;
   background: linear-gradient(90deg, #ffebee, #fafafa);
 }
@@ -205,6 +205,11 @@
 }
 
 .notification-card.overdue .notification-urgency {
+  background: #f44336;
+  color: white;
+}
+
+.notification-card.alert .notification-urgency {
   background: #f44336;
   color: white;
 }

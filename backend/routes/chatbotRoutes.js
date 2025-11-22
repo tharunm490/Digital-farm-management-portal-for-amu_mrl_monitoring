@@ -61,7 +61,7 @@ router.post('/chat', async (req, res) => {
     }
 
     // Use correct Gemini model
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Build prompt
     let prompt = SYSTEM_PROMPT + "\n\n";
@@ -107,7 +107,7 @@ router.post('/translate', async (req, res) => {
       return res.status(400).json({ error: "Text and target language are required" });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `Translate this from ${sourceLanguage} to ${targetLanguage}. Only the translation:\n\n${text}`;
 

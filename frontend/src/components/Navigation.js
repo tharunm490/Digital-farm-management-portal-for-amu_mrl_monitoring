@@ -123,6 +123,12 @@ const Navigation = () => {
 
           {/* Account Section */}
           <li className="nav-item">
+            <Link to="/notifications" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <span className="nav-icon">🔔</span>
+              Notifications
+            </Link>
+          </li>
+          <li className="nav-item">
             <Link to="/profile" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
               <span className="nav-icon">👤</span>
               Profile

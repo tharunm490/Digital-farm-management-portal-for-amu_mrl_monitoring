@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const fs = require('fs');
 const path = require('path');
+const Notification = require('./Notification');
 
 // Load thresholds JSON
 const thresholdsPath = path.join(__dirname, '../ml_models/s.json');
@@ -9,6 +10,15 @@ try {
     thresholdsData = JSON.parse(fs.readFileSync(thresholdsPath, 'utf8'));
 } catch (e) {
     console.warn('Failed to load thresholds JSON:', e.message);
+}
+
+// Load dosage reference JSON
+const dosageRefPath = path.join(__dirname, '../dosage_reference_full_extended.json');
+let dosageRef = null;
+try {
+    dosageRef = JSON.parse(fs.readFileSync(dosageRefPath, 'utf8'));
+} catch (e) {
+    console.warn('Failed to load dosage reference JSON:', e.message);
 }
 
 function intToDate(intDate) {
@@ -156,6 +166,21 @@ class AMU {
       risk_category
     ]);
 
+    const amuId = result.insertId;
+
+    // Create notification if unsafe
+    if (risk_category === 'unsafe') {
+      await Notification.create({
+        user_id,
+        type: 'alert',
+        subtype: 'unsafe_mrl',
+        message: `Unsafe condition detected for ${medicine} in ${species}. Risk category: ${risk_category}`,
+        entity_id,
+        treatment_id,
+        amu_id: amuId
+      });
+    }
+
     return result.insertId;
   }
 
@@ -209,8 +234,9 @@ class AMU {
     // Add thresholds and status to each record
     return rows.map(row => {
       const thresholds = getThresholds(row.species, row.matrix, row.medication_type, row.medicine);
-      const status = getMrlStatus(row.predicted_mrl, thresholds.safe_max, thresholds.borderline_max, thresholds.unsafe_above);
-      return { ...row, ...thresholds, ...status };
+      // Use risk_category for status, capitalize it
+      const status = row.risk_category ? row.risk_category.charAt(0).toUpperCase() + row.risk_category.slice(1) : 'Unknown';
+      return { ...row, ...thresholds, status };
     });
   }
 

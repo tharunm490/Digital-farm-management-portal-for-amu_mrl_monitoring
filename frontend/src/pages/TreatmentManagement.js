@@ -46,7 +46,6 @@ const TreatmentManagement = () => {
   const [unit, setUnit] = useState('');
   const [manualUnit, setManualUnit] = useState('');
   const [showManualUnitInput, setShowManualUnitInput] = useState(false);
-  const [showManualUnit, setShowManualUnit] = useState(false);
   const [showManualFrequency, setShowManualFrequency] = useState(false);
   const [showManualDuration, setShowManualDuration] = useState(false);
   const [showManualReason, setShowManualReason] = useState(false);
@@ -262,17 +261,12 @@ const TreatmentManagement = () => {
     setShowManualInput(false);
     setManualCategory('');
     setShowManualCategoryInput(false);
-    setShowManualUnit(false);
     setSelectedMedicineData(null);
     setDoseSuggestions([]);
-    setShowManualFrequency(false);
-    setShowManualDuration(false);
     setShowManualReason(false);
     setShowManualCause(false);
     setManualReason('');
     setManualCause('');
-    setManualFrequency('');
-    setManualDuration('');
   };
 
   const handleInputChange = (e) => {
@@ -348,7 +342,6 @@ const TreatmentManagement = () => {
         setMedicine('');
         setManualMedicine('');
         setShowManualInput(false);
-        setShowManualUnit(false);
         setSelectedMedicineData(null);
         setDoseSuggestions([]);
         setShowManualFrequency(false);
@@ -1188,19 +1181,15 @@ const TreatmentManagement = () => {
                           >
                             -
                           </button>
-                          <select
+                          <input
+                            type="number"
                             value={formData.frequency_per_day}
                             onChange={(e) => setFormData(prev => ({ ...prev, frequency_per_day: e.target.value }))}
+                            min="1"
+                            max="5"
                             required
                             className="form-control"
-                          >
-                            <option value="">Select Frequency</option>
-                            {getAllFrequencyOptions().map(freq => (
-                              <option key={freq} value={freq.toString()}>
-                                {freq}x per day
-                              </option>
-                            ))}
-                          </select>
+                          />
                           <button
                             type="button"
                             className="adjust-btn"
@@ -1213,7 +1202,7 @@ const TreatmentManagement = () => {
                           </button>
                         </div>
                         <small className="form-help">
-                          💡 Select from recommended frequency options
+                          💡 Use +/- buttons to adjust
                         </small>
                       </div>
 
@@ -1232,30 +1221,14 @@ const TreatmentManagement = () => {
                           >
                             -
                           </button>
-                          <select
+                          <input
+                            type="number"
                             value={formData.duration_days}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === 'manual_entry') {
-                                setShowManualDuration(true);
-                                setFormData(prev => ({ ...prev, duration_days: '' }));
-                              } else {
-                                setShowManualDuration(false);
-                                setManualDuration('');
-                                setFormData(prev => ({ ...prev, duration_days: value }));
-                              }
-                            }}
+                            onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
+                            min="1"
                             required
                             className="form-control"
-                          >
-                            <option value="">Select Duration</option>
-                            {getAllDurationOptions().map(duration => (
-                              <option key={duration} value={duration.toString()}>
-                                {duration} days
-                              </option>
-                            ))}
-                            <option value="manual_entry">➕ Enter manually</option>
-                          </select>
+                          />
                           <button
                             type="button"
                             className="adjust-btn"
@@ -1268,7 +1241,7 @@ const TreatmentManagement = () => {
                           </button>
                         </div>
                         <small className="form-help">
-                          💡 Use +/- buttons to adjust or select from dropdown
+                          💡 Use +/- buttons to adjust
                         </small>
                       </div>
                     </div>
@@ -1528,30 +1501,7 @@ const TreatmentManagement = () => {
                     </div>
                   )}
 
-                  {/* Manual Duration Input */}
-                  {showManualDuration && (
-                    <div className="manual-entry-section">
-                      <div className="form-group">
-                        <label>Enter Duration Manually (days) *</label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={manualDuration}
-                          onChange={(e) => {
-                            setManualDuration(e.target.value);
-                            setFormData(prev => ({ ...prev, duration_days: e.target.value }));
-                          }}
-                          required
-                          className="form-control"
-                          placeholder="e.g., 7"
-                          autoFocus
-                        />
-                        <small className="form-help">
-                          💡 Enter the total number of days for the treatment duration
-                        </small>
-                      </div>
-                    </div>
-                  )}
+
 
                   {/* MRL Information */}
                   {mrlData.length > 0 && (

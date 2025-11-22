@@ -221,6 +221,22 @@ router.get('/upcoming/:days?', async (req, res) => {
   }
 });
 
+// Get overdue vaccinations
+router.get('/overdue', async (req, res) => {
+  try {
+    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    if (!farmer) {
+      return res.status(404).json({ error: 'Farmer profile not found' });
+    }
+
+    const vaccinations = await Vaccination.getOverdue(farmer.farmer_id);
+    res.json(vaccinations);
+  } catch (error) {
+    console.error('Get overdue vaccinations error:', error);
+    res.status(500).json({ error: 'Failed to fetch overdue vaccinations' });
+  }
+});
+
 // Vaccination History Routes
 
 // Get vaccination history for logged-in farmer
@@ -338,7 +354,8 @@ router.post('/history/:vaccId/mark-done', async (req, res) => {
       interval_days: vacc.interval_days,
       next_due_date: nextDueDate.toISOString().split('T')[0],
       vaccine_total_months: vacc.vaccine_total_months,
-      vaccine_end_date: vacc.vaccine_end_date
+      vaccine_end_date: vacc.vaccine_end_date,
+      user_id: req.user.user_id
     });
 
     const newEntry = await VaccinationHistory.getById(newVaccId);

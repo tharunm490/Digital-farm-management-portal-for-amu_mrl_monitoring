@@ -50,9 +50,18 @@ export const amuAPI = {
   create: (data) => api.post('/amu', data),
 };
 
-// QR API
-export const qrAPI = {
-  generate: (batch_id) => api.get(`/qr/${batch_id}`),
+// Vaccination API
+export const vaccinationAPI = {
+  getAll: () => api.get('/vaccinations'),
+  getUpcoming: (userId, days = 30) => api.get(`/vaccinations/upcoming/${days}`),
+  getOverdue: (userId) => api.get('/vaccinations/overdue'),
+  getByEntity: (entityId) => api.get(`/vaccinations/entity/${entityId}`),
+  getById: (id) => api.get(`/vaccinations/${id}`),
+  create: (data) => api.post('/vaccinations', data),
+  update: (id, data) => api.put(`/vaccinations/${id}`, data),
+  delete: (id) => api.delete(`/vaccinations/${id}`),
+  getHistory: () => api.get('/vaccinations/history'),
+  markDone: (vaccId) => api.post(`/vaccinations/history/${vaccId}/mark-done`),
 };
 
 // Verification API
@@ -63,6 +72,14 @@ export const verifyAPI = {
 // Prediction API
 export const predictAPI = {
   predict: (data) => api.post('/predict', data),
+};
+
+// Notification API
+export const notificationAPI = {
+  getAll: (limit = 50) => api.get(`/notifications?limit=${limit}`),
+  getByType: (type, limit = 50) => api.get(`/notifications/type/${type}?limit=${limit}`),
+  getUnread: () => api.get('/notifications/unread'),
+  markAsRead: (id) => api.put(`/notifications/${id}/read`),
 };
 
 export default api;

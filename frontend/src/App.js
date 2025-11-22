@@ -16,6 +16,7 @@ import QRVerification from './pages/QRVerification';
 import AuthCallback from './pages/AuthCallback';
 import RoleSelection from './pages/RoleSelection';
 import AMURecords from './pages/AMURecords';
+import FarmerNotifications from './pages/FarmerNotifications';
 import './App.css';
 
 // Protected Route Component
@@ -41,6 +42,7 @@ function AppRoutes() {
       <Route path="/role-selection" element={<RoleSelection />} />
       <Route path="/verify" element={<QRVerification />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><FarmerNotifications /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/farms" element={<ProtectedRoute><FarmList /></ProtectedRoute>} />
       <Route path="/add-farm" element={<ProtectedRoute><AddFarm /></ProtectedRoute>} />

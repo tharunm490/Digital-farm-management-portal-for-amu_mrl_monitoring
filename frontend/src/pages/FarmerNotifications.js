@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navigation from '../components/Navigation';
-import { vaccinationAPI } from '../services/api';
+import { notificationAPI } from '../services/api';
 import './FarmerNotifications.css';
 
 const FarmerNotifications = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState({
-    upcoming: [],
-    overdue: []
+    vaccinations: [],
+    mrlAlerts: [],
+    dosageAlerts: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('upcoming');
+  const [activeTab, setActiveTab] = useState('vaccinations');
 
   useEffect(() => {
     if (user) {
@@ -23,14 +24,18 @@ const FarmerNotifications = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const [upcomingRes, overdueRes] = await Promise.all([
-        vaccinationAPI.getUpcoming(user.user_id),
-        vaccinationAPI.getOverdue(user.user_id)
+      
+      // Fetch notifications by type
+      const [vaccRes, mrlRes, dosageRes] = await Promise.all([
+        notificationAPI.getByType('vaccination'),
+        notificationAPI.getByType('mrl_alert'),
+        notificationAPI.getByType('high_dosage')
       ]);
-
+      
       setNotifications({
-        upcoming: upcomingRes.data,
-        overdue: overdueRes.data
+        vaccinations: vaccRes.data,
+        mrlAlerts: mrlRes.data,
+        dosageAlerts: dosageRes.data
       });
     } catch (err) {
       setError('Failed to fetch notifications');
@@ -95,17 +100,24 @@ const FarmerNotifications = () => {
         {/* Notification Stats */}
         <div className="notification-stats">
           <div className="stat-card upcoming">
-            <div className="stat-icon">📅</div>
+            <div className="stat-icon">💉</div>
             <div className="stat-content">
-              <div className="stat-number">{notifications.upcoming.length}</div>
-              <div className="stat-label">Upcoming Vaccinations</div>
+              <div className="stat-number">{notifications.vaccinations.length}</div>
+              <div className="stat-label">Vaccination Notifications</div>
             </div>
           </div>
-          <div className="stat-card overdue">
-            <div className="stat-icon">🚨</div>
+          <div className="stat-card alerts">
+            <div className="stat-icon">🔴</div>
             <div className="stat-content">
-              <div className="stat-number">{notifications.overdue.length}</div>
-              <div className="stat-label">Overdue Vaccinations</div>
+              <div className="stat-number">{notifications.mrlAlerts.length}</div>
+              <div className="stat-label">MRL Alerts</div>
+            </div>
+          </div>
+          <div className="stat-card alerts">
+            <div className="stat-icon">⚠️</div>
+            <div className="stat-content">
+              <div className="stat-number">{notifications.dosageAlerts.length}</div>
+              <div className="stat-label">Dosage Alerts</div>
             </div>
           </div>
         </div>
@@ -113,76 +125,53 @@ const FarmerNotifications = () => {
         {/* Tab Navigation */}
         <div className="notification-tabs">
           <button
-            className={`tab-btn ${activeTab === 'upcoming' ? 'active' : ''}`}
-            onClick={() => setActiveTab('upcoming')}
+            className={`tab-btn ${activeTab === 'vaccinations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('vaccinations')}
           >
-            📅 Upcoming ({notifications.upcoming.length})
+            💉 Vaccinations ({notifications.vaccinations.length})
           </button>
           <button
-            className={`tab-btn ${activeTab === 'overdue' ? 'active' : ''}`}
-            onClick={() => setActiveTab('overdue')}
+            className={`tab-btn ${activeTab === 'alerts' ? 'active' : ''}`}
+            onClick={() => setActiveTab('alerts')}
           >
-            🚨 Overdue ({notifications.overdue.length})
+            🔴 Alerts ({notifications.mrlAlerts.length + notifications.dosageAlerts.length})
           </button>
         </div>
 
         {/* Notifications List */}
         <div className="notifications-content">
-          {activeTab === 'upcoming' && (
+          {activeTab === 'vaccinations' && (
             <div className="notification-section">
-              <h2>Upcoming Vaccinations</h2>
-              {notifications.upcoming.length === 0 ? (
+              <h2>Vaccination Notifications</h2>
+              {notifications.vaccinations.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon">✅</div>
-                  <h3>All caught up!</h3>
-                  <p>No upcoming vaccinations scheduled.</p>
+                  <h3>No vaccination notifications!</h3>
+                  <p>All vaccinations are up to date.</p>
                 </div>
               ) : (
                 <div className="notifications-list">
-                  {notifications.upcoming.map((notification) => (
-                    <div key={notification.vacc_id} className={`notification-card ${getUrgencyClass(notification.days_until_due)}`}>
+                  {notifications.vaccinations.map((notification) => (
+                    <div key={notification.notification_id} className={`notification-card ${notification.severity}`}>
                       <div className="notification-header">
-                        <div className="notification-icon">
-                          {getUrgencyIcon(notification.days_until_due)}
-                        </div>
+                        <div className="notification-icon">💉</div>
                         <div className="notification-title">
-                          <h3>{notification.vaccine_name}</h3>
-                          <span className="entity-info">
-                            {notification.entity_type === 'animal' ? `🐄 ${notification.tag_id}` : `📦 ${notification.batch_name}`}
-                            ({notification.species})
+                          <h3>{notification.title}</h3>
+                          <span className="notification-time">
+                            {new Date(notification.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <div className="notification-urgency">
-                          {getDaysText(notification.days_until_due)}
+                        <div className="notification-severity">
+                          {notification.severity.toUpperCase()}
                         </div>
                       </div>
 
                       <div className="notification-details">
-                        <div className="detail-grid">
-                          <div className="detail-item">
-                            <span className="label">Farm:</span>
-                            <span className="value">{notification.farm_name}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">Next Due:</span>
-                            <span className="value">{formatDate(notification.next_due_date)}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">Interval:</span>
-                            <span className="value">{notification.interval_days} days</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">Last Given:</span>
-                            <span className="value">{formatDate(notification.given_date)}</span>
-                          </div>
-                        </div>
+                        <p>{notification.message}</p>
                       </div>
 
                       <div className="notification-actions">
                         <button className="btn-primary">
-                          Mark as Completed
-                        </button>
-                        <button className="btn-secondary">
                           View Details
                         </button>
                       </div>
@@ -193,57 +182,71 @@ const FarmerNotifications = () => {
             </div>
           )}
 
-          {activeTab === 'overdue' && (
+          {activeTab === 'alerts' && (
             <div className="notification-section">
-              <h2>Overdue Vaccinations</h2>
-              {notifications.overdue.length === 0 ? (
+              <h2>Alerts</h2>
+              {notifications.mrlAlerts.length === 0 && notifications.dosageAlerts.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-icon">🎉</div>
-                  <h3>No overdue vaccinations!</h3>
-                  <p>All vaccinations are up to date.</p>
+                  <div className="empty-icon">✅</div>
+                  <h3>No alerts!</h3>
+                  <p>All treatments are safe.</p>
                 </div>
               ) : (
                 <div className="notifications-list">
-                  {notifications.overdue.map((notification) => (
-                    <div key={notification.vacc_id} className="notification-card overdue">
+                  {/* MRL Alerts */}
+                  {notifications.mrlAlerts.map((notification) => (
+                    <div key={notification.notification_id} className={`notification-card ${notification.severity}`}>
                       <div className="notification-header">
-                        <div className="notification-icon">🚨</div>
+                        <div className="notification-icon">🔴</div>
                         <div className="notification-title">
-                          <h3>{notification.vaccine_name}</h3>
-                          <span className="entity-info">
-                            {notification.entity_type === 'animal' ? `🐄 ${notification.tag_id}` : `📦 ${notification.batch_name}`}
-                            ({notification.species})
+                          <h3>{notification.title}</h3>
+                          <span className="notification-time">
+                            {new Date(notification.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <div className="notification-urgency">
-                          {Math.abs(notification.days_overdue)} days overdue
+                        <div className="notification-severity">
+                          {notification.severity.toUpperCase()}
                         </div>
                       </div>
 
                       <div className="notification-details">
-                        <div className="detail-grid">
-                          <div className="detail-item">
-                            <span className="label">Farm:</span>
-                            <span className="value">{notification.farm_name}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">Due Date:</span>
-                            <span className="value">{formatDate(notification.next_due_date)}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">Interval:</span>
-                            <span className="value">{notification.interval_days} days</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">Last Given:</span>
-                            <span className="value">{formatDate(notification.given_date)}</span>
-                          </div>
-                        </div>
+                        <p>{notification.message}</p>
                       </div>
 
                       <div className="notification-actions">
                         <button className="btn-primary urgent">
-                          Schedule Now
+                          Review Treatment
+                        </button>
+                        <button className="btn-secondary">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Dosage Alerts */}
+                  {notifications.dosageAlerts.map((notification) => (
+                    <div key={notification.notification_id} className={`notification-card ${notification.severity}`}>
+                      <div className="notification-header">
+                        <div className="notification-icon">⚠️</div>
+                        <div className="notification-title">
+                          <h3>{notification.title}</h3>
+                          <span className="notification-time">
+                            {new Date(notification.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="notification-severity">
+                          {notification.severity.toUpperCase()}
+                        </div>
+                      </div>
+
+                      <div className="notification-details">
+                        <p>{notification.message}</p>
+                      </div>
+
+                      <div className="notification-actions">
+                        <button className="btn-primary urgent">
+                          Review Treatment
                         </button>
                         <button className="btn-secondary">
                           View Details

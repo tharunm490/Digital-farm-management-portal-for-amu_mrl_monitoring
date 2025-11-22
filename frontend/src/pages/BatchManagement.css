@@ -567,6 +567,28 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .batch-content {
+    padding: 1.5rem;
+  }
+
+  .page-header {
+    padding: 2rem;
+  }
+
+  .header-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .entities-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
 @media (max-width: 1024px) {
   .batch-content {
     padding: 1rem;
@@ -645,6 +667,83 @@
   .filter-tabs {
     flex-wrap: wrap;
   }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn-primary,
+  .form-actions .btn-secondary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .batch-content {
+    padding: 0.5rem;
+  }
+
+  .page-header {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-subtitle {
+    font-size: 1rem;
+  }
+
+  .page-header .btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .form-card {
+    margin-bottom: 1rem;
+  }
+
+  .form-header {
+    padding: 1rem;
+  }
+
+  .form-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .entity-form {
+    padding: 1rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .entities-section {
+    padding: 1rem;
+  }
+
+  .entity-card.modern {
+    margin-bottom: 1rem;
+  }
+
+  .card-header,
+  .card-content,
+  .card-footer {
+    padding: 1rem;
+  }
+
+  .entity-title {
+    font-size: 1.1rem;
+  }
+
+  .btn-outline {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -665,5 +764,17 @@
   .card-content,
   .card-footer {
     padding: 1rem;
+  }
+
+  .radio-option {
+    padding: 0.75rem;
+  }
+
+  .radio-content strong {
+    font-size: 0.9rem;
+  }
+
+  .radio-content small {
+    font-size: 0.8rem;
   }
 }

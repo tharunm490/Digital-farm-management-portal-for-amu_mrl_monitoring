@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const Notification = require('./Notification');
 
 class Vaccination {
   // Create new vaccination record
@@ -39,6 +40,18 @@ class Vaccination {
         notes || null,
         user_id
       ]);
+
+      // Create vaccination notification
+      await Notification.create({
+        user_id,
+        entity_id,
+        type: 'Vaccination Alerts',
+        title: 'Vaccination Completed',
+        message: `Vaccination for ${vaccine_name} completed on ${vaccination_date}. Next due date: ${next_due_date || 'Not scheduled'}.`,
+        severity: 'info',
+        related_record_id: result.insertId,
+        related_table: 'vaccination_record'
+      });
 
       return result.insertId;
     } catch (error) {
@@ -155,6 +168,27 @@ class Vaccination {
         ORDER BY v.next_due_date ASC
       `;
       const [rows] = await db.execute(query, [farmer_id, days]);
+      return rows;
+    } catch (error) {
+      console.warn('Vaccinations table not available:', error.message);
+      return [];
+    }
+  }
+
+  // Get overdue vaccinations
+  static async getOverdue(farmer_id) {
+    try {
+      const query = `
+        SELECT v.*, e.tag_id, e.batch_name, e.species, e.entity_type, f.farm_name,
+               DATEDIFF(CURDATE(), v.next_due_date) as days_overdue
+        FROM vaccinations v
+        JOIN animals_or_batches e ON v.entity_id = e.entity_id
+        JOIN farms f ON e.farm_id = f.farm_id
+        WHERE f.farmer_id = ? AND v.next_due_date IS NOT NULL
+        AND v.next_due_date < CURDATE()
+        ORDER BY v.next_due_date ASC
+      `;
+      const [rows] = await db.execute(query, [farmer_id]);
       return rows;
     } catch (error) {
       console.warn('Vaccinations table not available:', error.message);

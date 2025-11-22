@@ -21,7 +21,6 @@ const DosageForm = () => {
   const categoryOptions = selectedSpecies ? Object.keys(dosageData[selectedSpecies]) : [];
   const medicineOptions = selectedSpecies && selectedCategory ? Object.keys(dosageData[selectedSpecies][selectedCategory]) : [];
 
-  // Species restrictions for routes
   const getAllowedRoutes = (species) => {
     if (['cattle', 'goat', 'sheep'].includes(species)) {
       return ['IM', 'IV', 'SC', 'oral'];
@@ -46,40 +45,17 @@ const DosageForm = () => {
   };
 
   const getFrequencyOptions = () => {
-    if (!selectedSpecies || !selectedCategory || !selectedMedicine) return [];
-    return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.frequency_dropdown;
+    return [1, 2, 3, 4, 5];
   };
 
-  const getDurationOptions = () => {
-    if (!selectedSpecies || !selectedCategory || !selectedMedicine) return [];
-    return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.duration_dropdown;
+  const adjustFrequency = (delta) => {
+    const newVal = parseInt(selectedFrequency) + delta;
+    if (newVal >= 1 && newVal <= 5) setSelectedFrequency(newVal.toString());
   };
 
-  const getReasonOptions = () => {
-    if (!selectedSpecies || !selectedCategory || !selectedMedicine) return [];
-    return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.reasons_dropdown;
-  };
-
-  const getCauseOptions = () => {
-    if (!selectedSpecies || !selectedCategory || !selectedMedicine) return [];
-    return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.causes_dropdown;
-  };
-
-  const getMatrixOptions = () => {
-    if (['cattle'].includes(selectedSpecies)) return ['milk', 'meat'];
-    if (['goat', 'sheep'].includes(selectedSpecies)) return ['meat'];
-    if (['pig'].includes(selectedSpecies)) return ['meat'];
-    if (['poultry'].includes(selectedSpecies)) return ['meat', 'eggs'];
-    return [];
-  };
-
-  const isManualAdjustAllowed = () => {
-    if (!selectedSpecies || !selectedCategory || !selectedMedicine) return false;
-    return dosageData[selectedSpecies][selectedCategory][selectedMedicine].ui.manual_adjust_allowed;
-  };
-
-  const isVaccine = () => {
-    return selectedCategory === 'vaccine';
+  const adjustDuration = (delta) => {
+    const newVal = parseInt(selectedDuration) + delta;
+    if (newVal >= 1) setSelectedDuration(newVal.toString());
   };
 
   useEffect(() => {
@@ -91,49 +67,13 @@ const DosageForm = () => {
       setSelectedRoute(getDefaultRoute());
       setSelectedFrequency(getFrequencyOptions()[0] || '');
       setSelectedDuration(getDurationOptions()[0] || '');
-      setSelectedReason(getReasonOptions()[0] || '');
-      setSelectedCause(getCauseOptions()[0] || '');
       setPredictionResult(null);
     }
   }, [selectedMedicine]);
 
   useEffect(() => {
-    setSelectedMatrix(getMatrixOptions()[0] || '');
+    setSelectedMatrix(selectedSpecies ? (['cattle'].includes(selectedSpecies) ? 'milk' : 'meat') : '');
   }, [selectedSpecies]);
-
-  const handleSpeciesChange = (e) => {
-    setSelectedSpecies(e.target.value);
-    setSelectedCategory('');
-    setSelectedMedicine('');
-    setDoseMin('');
-    setDoseMax('');
-    setDoseUnit('');
-    setSelectedRoute('');
-    setSelectedFrequency('');
-    setSelectedDuration('');
-    setSelectedReason('');
-    setSelectedCause('');
-    setSelectedMatrix('');
-    setPredictionResult(null);
-  };
-
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-    setSelectedMedicine('');
-    setDoseMin('');
-    setDoseMax('');
-    setDoseUnit('');
-    setSelectedRoute('');
-    setSelectedFrequency('');
-    setSelectedDuration('');
-    setSelectedReason('');
-    setSelectedCause('');
-    setPredictionResult(null);
-  };
-
-  const handleMedicineChange = (e) => {
-    setSelectedMedicine(e.target.value);
-  };
 
   const handlePredict = async () => {
     const data = {
@@ -145,8 +85,6 @@ const DosageForm = () => {
       dose_unit: doseUnit,
       frequency_per_day: parseInt(selectedFrequency),
       duration_days: parseInt(selectedDuration),
-      cause: selectedCause,
-      reason: selectedReason,
       matrix: selectedMatrix
     };
     try {
@@ -157,50 +95,12 @@ const DosageForm = () => {
     }
   };
 
-  const increaseFrequency = () => {
-    const current = parseInt(selectedFrequency) || 1;
-    setSelectedFrequency((current + 1).toString());
-  };
-
-  const decreaseFrequency = () => {
-    const current = parseInt(selectedFrequency) || 1;
-    if (current > 1) {
-      setSelectedFrequency((current - 1).toString());
-    }
-  };
-
-  const increaseDuration = () => {
-    const current = parseInt(selectedDuration) || 1;
-    setSelectedDuration((current + 1).toString());
-  };
-
-  const decreaseDuration = () => {
-    const current = parseInt(selectedDuration) || 1;
-    if (current > 1) {
-      setSelectedDuration((current - 1).toString());
-    }
-  };
-
-  const increaseDoseMin = () => {
-    const current = parseFloat(doseMin) || 0;
-    const step = doseUnit === 'mcg/kg' ? 1 : 0.1;
-    setDoseMin((current + step).toFixed(doseUnit === 'mcg/kg' ? 0 : 1));
-  };
-
-  const decreaseDoseMin = () => {
-    const current = parseFloat(doseMin) || 0;
-    const step = doseUnit === 'mcg/kg' ? 1 : 0.1;
-    if (current > 0) {
-      setDoseMin(Math.max(0, current - step).toFixed(doseUnit === 'mcg/kg' ? 0 : 1));
-    }
-  };
-
   return (
     <div>
       <h2>Dosage Form</h2>
       <div>
         <label>Species:</label>
-        <select value={selectedSpecies} onChange={handleSpeciesChange}>
+        <select value={selectedSpecies} onChange={e => setSelectedSpecies(e.target.value)}>
           <option value="">Select Species</option>
           {speciesOptions.map(species => (
             <option key={species} value={species}>{species}</option>
@@ -209,7 +109,7 @@ const DosageForm = () => {
       </div>
       <div>
         <label>Category:</label>
-        <select value={selectedCategory} onChange={handleCategoryChange} disabled={!selectedSpecies}>
+        <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} disabled={!selectedSpecies}>
           <option value="">Select Category</option>
           {categoryOptions.map(category => (
             <option key={category} value={category}>{category}</option>
@@ -218,7 +118,7 @@ const DosageForm = () => {
       </div>
       <div>
         <label>Medicine:</label>
-        <select value={selectedMedicine} onChange={handleMedicineChange} disabled={!selectedCategory}>
+        <select value={selectedMedicine} onChange={e => setSelectedMedicine(e.target.value)} disabled={!selectedCategory}>
           <option value="">Select Medicine</option>
           {medicineOptions.map(medicine => (
             <option key={medicine} value={medicine}>{medicine}</option>
@@ -229,13 +129,11 @@ const DosageForm = () => {
         <>
           <div>
             <label>Recommended Dose:</label>
-            <button onClick={decreaseDoseMin}>-</button>
-            <input type="number" value={doseMin} onChange={(e) => setDoseMin(e.target.value)} step={doseUnit === 'mcg/kg' ? 1 : 0.1} /> - <input type="number" value={doseMax} readOnly /> {doseUnit}
-            <button onClick={increaseDoseMin}>+</button>
+            <input type="number" value={doseMin} onChange={e => setDoseMin(e.target.value)} /> - <input type="number" value={doseMax} readOnly /> {doseUnit}
           </div>
           <div>
             <label>Route:</label>
-            <select value={selectedRoute} onChange={(e) => setSelectedRoute(e.target.value)}>
+            <select value={selectedRoute} onChange={e => setSelectedRoute(e.target.value)}>
               {getFilteredRoutes().map(route => (
                 <option key={route} value={route}>{route}</option>
               ))}
@@ -243,63 +141,51 @@ const DosageForm = () => {
           </div>
           <div>
             <label>Matrix:</label>
-            <select value={selectedMatrix} onChange={(e) => setSelectedMatrix(e.target.value)}>
-              {getMatrixOptions().map(matrix => (
-                <option key={matrix} value={matrix}>{matrix}</option>
-              ))}
+            <select value={selectedMatrix} onChange={e => setSelectedMatrix(e.target.value)}>
+              <option value="milk">milk</option>
+              <option value="meat">meat</option>
             </select>
           </div>
-          <div>
-            <label>Frequency per day:</label>
-            <select value={selectedFrequency} onChange={(e) => setSelectedFrequency(e.target.value)}>
-              {getFrequencyOptions().map(freq => (
-                <option key={freq} value={freq}>{freq}</option>
-              ))}
-            </select>
-            <button onClick={decreaseFrequency}>-</button>
-            <button onClick={increaseFrequency}>+</button>
-          </div>
-          <div>
-            <label>Duration (days):</label>
-            <select value={selectedDuration} onChange={(e) => setSelectedDuration(e.target.value)}>
-              {getDurationOptions().map(dur => (
-                <option key={dur} value={dur}>{dur}</option>
-              ))}
-            </select>
-            <button onClick={decreaseDuration}>-</button>
-            <button onClick={increaseDuration}>+</button>
-          </div>
-          <div>
-            <label>Reason:</label>
-            <select value={selectedReason} onChange={(e) => setSelectedReason(e.target.value)}>
-              {getReasonOptions().map(reason => (
-                <option key={reason} value={reason}>{reason}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Cause:</label>
-            <select value={selectedCause} onChange={(e) => setSelectedCause(e.target.value)}>
-              {getCauseOptions().map(cause => (
-                <option key={cause} value={cause}>{cause}</option>
-              ))}
-            </select>
-          </div>
-          <button onClick={handlePredict}>Predict Safety</button>
-          {predictionResult && (
-            <div>
-              Predicted Risk: {predictionResult.risk_category === 'not applicable' ? 'safe' : predictionResult.risk_category}
-              {predictionResult.risk_category === 'unsafe' && <div style={{color: 'red'}}>Over dosage given</div>}
+          <div className="form-row two-cols">
+            <div className="form-group">
+              <label>Frequency (per day) *</label>
+              <div className="frequency-input-group">
+                <button type="button" className="adjust-btn" onClick={() => adjustFrequency(-1)}>-</button>
+                <input
+                  type="number"
+                  value={selectedFrequency}
+                  onChange={e => setSelectedFrequency(e.target.value)}
+                  min="1"
+                  max="5"
+                  className="form-control"
+                  required
+                />
+                <button type="button" className="adjust-btn" onClick={() => adjustFrequency(1)}>+</button>
+              </div>
+              <small className="form-help">💡 Select from recommended frequency options</small>
             </div>
-          )}
-          {isVaccine() && (
-            <div>
-              <h3>Vaccine Specific Fields</h3>
-              {/* Add vaccine specific fields here, e.g., batch number, expiry date, etc. */}
-              <label>Batch Number:</label>
-              <input type="text" />
-              <label>Expiry Date:</label>
-              <input type="date" />
+            <div className="form-group">
+              <label>Duration (days) *</label>
+              <div className="duration-input-group">
+                <button type="button" className="adjust-btn" onClick={() => adjustDuration(-1)}>-</button>
+                <input
+                  type="number"
+                  value={selectedDuration}
+                  onChange={e => setSelectedDuration(e.target.value)}
+                  min="1"
+                  className="form-control"
+                  required
+                />
+                <button type="button" className="adjust-btn" onClick={() => adjustDuration(1)}>+</button>
+              </div>
+              <small className="form-help">💡 Use +/- buttons to adjust or select from dropdown</small>
+            </div>
+          </div>
+          <button style={{ marginTop: '20px' }} onClick={handlePredict}>Predict Safety</button>
+          {predictionResult && (
+            <div style={{ marginTop: '10px' }}>
+              Predicted Risk: {predictionResult.risk_category}
+              {predictionResult.risk_category === 'unsafe' && <div style={{color: 'red'}}>Over dosage given</div>}
             </div>
           )}
         </>

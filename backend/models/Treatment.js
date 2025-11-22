@@ -1,7 +1,9 @@
 const db = require('../config/database');
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 const VaccinationHistory = require('./VaccinationHistory');
+const Notification = require('./Notification');
 
 class Treatment {
   // Create new treatment record
@@ -128,7 +130,8 @@ class Treatment {
         interval_days: vaccine_interval_days,
         next_due_date: final_next_due_date,
         vaccine_total_months,
-        vaccine_end_date: final_vaccine_end_date
+        vaccine_end_date: final_vaccine_end_date,
+        user_id
       });
     }
 
@@ -148,20 +151,59 @@ class Treatment {
         matrix: entity.matrix
       });
 
-      // Set default predictions if error
-      const finalPredictions = predictions.error ? {
+      // Load dosage reference
+      let dosageRef = null;
+      try {
+        dosageRef = JSON.parse(fs.readFileSync(path.join(__dirname, '../dosage_reference_full_extended.json'), 'utf8'));
+      } catch (e) {
+        console.warn('Failed to load dosage reference JSON:', e.message);
+      }
+
+      let finalPredictions = predictions.error ? {
         predicted_mrl: 50.0,
         predicted_withdrawal_days: medication_type === 'vaccine' || medication_type === 'vitamin' ? 0 : 7,
         predicted_mrl_risk: 0.5,
         risk_category: 'safe'
       } : predictions;
 
+      let subtype = null;
+      if (finalPredictions.risk_category === 'unsafe') {
+        subtype = 'unsafe_mrl';
+      }
+
+      // Check dose
+      let recommended = null;
+      if (dosageRef && dosageRef[entity.species] && dosageRef[entity.species][medicine]) {
+        const medData = dosageRef[entity.species][medicine];
+        if (medData.dose && medData.dose.max) {
+          recommended = medData.dose.max;
+        }
+      }
+
+      if (recommended && dose_amount > recommended) {
+        finalPredictions.risk_category = 'unsafe';
+        subtype = 'high_dosage';
+      }
+
       if (predictions.error) {
         console.error('ML Prediction error:', predictions.error);
         // Continue with default values
       }
 
-      await this.createAMURecord(treatmentId, finalPredictions);
+      const amuId = await this.createAMURecord(treatmentId, finalPredictions);
+
+      // Create notification if unsafe
+      if (finalPredictions.risk_category === 'unsafe') {
+        await Notification.create({
+          user_id,
+          type: 'alert',
+          subtype,
+          message: subtype === 'high_dosage' ? `High dosage alert: ${dose_amount} ${dose_unit} exceeds recommended ${recommended} ${dose_unit} for ${medicine} in ${entity.species}.` : `Unsafe MRL alert: Predicted MRL ${finalPredictions.predicted_mrl} for ${medicine} in ${entity.species} (${entity.matrix}).`,
+          entity_id,
+          treatment_id: treatmentId,
+          amu_id: amuId
+        });
+      }
     }
 
     return treatmentId;
@@ -210,7 +252,7 @@ class Treatment {
       WHERE tr.treatment_id = ?
     `;
 
-    await db.execute(insertQuery, [
+    const [result] = await db.execute(insertQuery, [
       predicted_mrl || null,
       predicted_withdrawal_days || null,
       predicted_mrl_risk || null,
@@ -219,6 +261,8 @@ class Treatment {
       predicted_withdrawal_days,
       treatmentId
     ]);
+
+    return result.insertId;
   }
 
   // Get ML predictions

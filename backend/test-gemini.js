@@ -3,11 +3,13 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 async function testGeminiAPI() {
   try {
     const genAI = new GoogleGenerativeAI('AIzaSyDBZC_Lj5QRrdVzDCMc9k9MLGjG1wPiINE');
+    
+    // Try with gemini-2.0-flash
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = "Hello Gemini, can you hear me? Please respond with a simple greeting.";
 
-    console.log('Testing Gemini API...');
+    console.log('Testing Gemini API with gemini-pro...');
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();

@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const Notification = require('./Notification');
 
 class VaccinationHistory {
   // Create new vaccination history record
@@ -11,7 +12,8 @@ class VaccinationHistory {
       interval_days,
       next_due_date,
       vaccine_total_months,
-      vaccine_end_date
+      vaccine_end_date,
+      user_id
     } = vaccData;
 
     const query = `
@@ -30,6 +32,16 @@ class VaccinationHistory {
       vaccine_total_months || null,
       vaccine_end_date || null
     ]);
+
+    // Create notification
+    await Notification.create({
+      user_id,
+      type: 'vaccination',
+      message: `Vaccination for ${vaccine_name} given on ${given_date}, next due ${next_due_date}.`,
+      entity_id,
+      treatment_id,
+      vacc_id: result.insertId
+    });
 
     return result.insertId;
   }

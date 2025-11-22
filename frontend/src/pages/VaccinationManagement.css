@@ -468,3 +468,117 @@
     gap: 0.5rem;
   }
 }
+
+@media (max-width: 600px) {
+  .vaccination-container {
+    padding: 0.5rem;
+  }
+
+  .vaccination-header {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .vaccination-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .vaccination-form-card {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .vaccination-form-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .entity-info-card {
+    padding: 0.75rem;
+  }
+
+  .entity-info-card h4 {
+    font-size: 0.9rem;
+  }
+
+  .vaccine-schedules-section,
+  .vaccination-history-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .vaccination-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .vaccine-schedule-card {
+    padding: 1rem;
+  }
+
+  .schedule-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .history-item {
+    padding: 0.75rem;
+  }
+
+  .btn-vaccine {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vaccination-container {
+    padding: 0.5rem;
+  }
+
+  .vaccination-header {
+    padding: 0.75rem;
+  }
+
+  .vaccination-form-card {
+    padding: 1rem;
+  }
+
+  .form-section {
+    padding: 0.75rem;
+  }
+
+  .vaccine-schedules-section,
+  .vaccination-history-section {
+    padding: 1rem;
+  }
+
+  .vaccine-schedule-card {
+    padding: 0.75rem;
+  }
+
+  .history-item {
+    padding: 0.5rem;
+  }
+
+  .entity-details span {
+    font-size: 0.8rem;
+  }
+
+  .schedule-details .detail-row .label,
+  .schedule-details .detail-row .value {
+    font-size: 0.8rem;
+  }
+}
