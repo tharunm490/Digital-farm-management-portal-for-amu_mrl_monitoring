@@ -60,7 +60,7 @@ router.post('/chat', async (req, res) => {
       });
     }
 
-    // Use correct Gemini model
+    // Use correct Gemini model - try gemini-2.0-flash
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Build prompt

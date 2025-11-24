@@ -1,38 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const AMU = require('../models/AMU');
+const Treatment = require('../models/Treatment');
 const Farm = require('../models/Farm');
 const { Farmer } = require('../models/User');
 const { authMiddleware, farmerOnly } = require('../middleware/auth');
 
 // Prediction endpoint
 router.post('/predict', authMiddleware, (req, res) => {
-  const { spawn } = require('child_process');
-  const pythonProcess = spawn('python', [require('path').join(__dirname, '../predict.py'), JSON.stringify(req.body)], { cwd: require('path').join(__dirname, '..') });
+  try {
+    const {
+      species,
+      medication_type,
+      medicine,
+      dose_amount,
+      duration_days,
+      frequency_per_day
+    } = req.body;
 
-  let result = '';
-  let errorOutput = '';
+    // Use formula-based calculation instead of ML
+    const prediction = Treatment.calculateMRLAndWithdrawal(
+      species,
+      medication_type,
+      medicine,
+      dose_amount ? parseFloat(dose_amount) : null,
+      duration_days ? parseInt(duration_days) : null,
+      frequency_per_day ? parseInt(frequency_per_day) : null
+    );
 
-  pythonProcess.stdout.on('data', (data) => {
-    result += data.toString();
-  });
-
-  pythonProcess.stderr.on('data', (data) => {
-    errorOutput += data.toString();
-  });
-
-  pythonProcess.on('close', (code) => {
-    if (code === 0) {
-      try {
-        const prediction = JSON.parse(result.trim());
-        res.json(prediction);
-      } catch (e) {
-        res.status(500).json({ error: 'Failed to parse prediction result', details: e.message });
-      }
-    } else {
-      res.status(500).json({ error: 'Prediction failed', details: errorOutput });
-    }
-  });
+    res.json(prediction);
+  } catch (error) {
+    console.error('Prediction error:', error);
+    res.status(500).json({ error: 'Prediction failed', details: error.message });
+  }
 });
 
 // GET /api/amu/:batch_id - Fetch AMU records by batch_id
@@ -52,8 +52,19 @@ router.get('/:batch_id', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/amu/entity/:entity_id - Get AMU records by entity
+router.get('/entity/:entity_id', authMiddleware, farmerOnly, async (req, res) => {
+  try {
+    const amuRecords = await AMU.getByEntity(req.params.entity_id);
+    res.json(amuRecords);
+  } catch (error) {
+    console.error('Error fetching AMU records:', error);
+    res.status(500).json({ error: 'Failed to fetch AMU records' });
+  }
+});
+
 // GET /api/amu/farmer/:farmer_id - Get AMU records by farmer
-router.get('/farmer/:farmer_id', authMiddleware, async (req, res) => {
+router.get('/farmer/:farmer_id', authMiddleware, farmerOnly, async (req, res) => {
   try {
     const amuRecords = await AMU.getByFarmer(req.params.farmer_id);
     res.json(amuRecords);

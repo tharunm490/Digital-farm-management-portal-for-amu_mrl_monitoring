@@ -52,14 +52,32 @@ class Notification {
 
   // Get notifications by type for a user
   static async getByType(user_id, type, subtype = null, limit = 50) {
-    const query = `
-      SELECT * FROM notification_history
-      WHERE user_id = ? AND type = ? AND (subtype = ? OR ? IS NULL)
-      ORDER BY created_at DESC
-      LIMIT ?
-    `;
-    const [rows] = await db.execute(query, [user_id, type, subtype, subtype, limit]);
-    return rows;
+    console.log('getByType called with:', { user_id, type, subtype, limit });
+
+    let query;
+    let params;
+
+    if (subtype) {
+      query = `
+        SELECT * FROM notification_history
+        WHERE user_id = ? AND type = ? AND subtype = ?
+        ORDER BY created_at DESC
+      `;
+      params = [user_id, type, subtype];
+    } else {
+      query = `
+        SELECT * FROM notification_history
+        WHERE user_id = ? AND type = ?
+        ORDER BY created_at DESC
+      `;
+      params = [user_id, type];
+    }
+
+    console.log('Executing query:', query);
+    console.log('With params:', params);
+
+    const [rows] = await db.execute(query, params);
+    return rows.slice(0, limit); // Apply limit in JavaScript
   }
 
   // Get unread notifications

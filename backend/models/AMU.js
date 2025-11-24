@@ -3,17 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const Notification = require('./Notification');
 
-// Load thresholds JSON
-const thresholdsPath = path.join(__dirname, '../ml_models/s.json');
-let thresholdsData = null;
-try {
-    thresholdsData = JSON.parse(fs.readFileSync(thresholdsPath, 'utf8'));
-} catch (e) {
-    console.warn('Failed to load thresholds JSON:', e.message);
-}
-
 // Load dosage reference JSON
-const dosageRefPath = path.join(__dirname, '../dosage_reference_full_extended.json');
+const dosageRefPath = path.join(__dirname, '../data/dosage_reference_full_extended_with_mrl.json');
 let dosageRef = null;
 try {
     dosageRef = JSON.parse(fs.readFileSync(dosageRefPath, 'utf8'));
@@ -29,40 +20,6 @@ function intToDate(intDate) {
   const month = dateStr.slice(4, 6);
   const day = dateStr.slice(6, 8);
   return `${year}-${month}-${day}`;
-}
-
-function getThresholds(species, matrix, category, medicine) {
-    if (!thresholdsData || !thresholdsData.data) return { safe_max: null, borderline_max: null, unsafe_above: null };
-    const data = thresholdsData.data;
-    species = species.toLowerCase();
-    
-    // Validate matrix for species
-    const validMatrices = {
-        'cattle': ['milk', 'meat'],
-        'goat': ['meat'],
-        'sheep': ['meat'],
-        'pig': ['meat'],
-        'poultry': ['meat', 'eggs']
-    };
-    
-    if (!validMatrices[species] || !validMatrices[species].includes(matrix)) {
-        return { safe_max: null, borderline_max: null, unsafe_above: null };
-    }
-    
-    if (!data[species] || !data[species][category] || !data[species][category][medicine] || !data[species][category][medicine][matrix]) {
-        return { safe_max: null, borderline_max: null, unsafe_above: null };
-    }
-    
-    const thresholds = data[species][category][medicine][matrix].thresholds;
-    if (!thresholds) {
-        return { safe_max: null, borderline_max: null, unsafe_above: null };
-    }
-    
-    return {
-        safe_max: thresholds.safe_max || null,
-        borderline_max: thresholds.borderline_max || null,
-        unsafe_above: thresholds.unsafe_above || null
-    };
 }
 
 function getMrlStatus(predicted_mrl, safe_max, borderline_max, unsafe_above) {
@@ -103,7 +60,7 @@ class AMU {
       end_date,
       predicted_mrl,
       predicted_withdrawal_days,
-      predicted_mrl_risk,
+      overdosage,
       risk_category
     } = amuData;
 
@@ -135,7 +92,7 @@ class AMU {
         route, dose_amount, dose_unit,
         frequency_per_day, duration_days,
         start_date, end_date,
-        predicted_mrl, predicted_withdrawal_days, safe_date, predicted_mrl_risk, risk_category
+        predicted_mrl, predicted_withdrawal_days, safe_date, overdosage, risk_category
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
@@ -162,7 +119,7 @@ class AMU {
       predicted_mrl,
       effectiveWithdrawalDays,  // Use the overridden value
       safe_date,
-      predicted_mrl_risk,
+      overdosage,
       risk_category
     ]);
 
@@ -175,6 +132,19 @@ class AMU {
         type: 'alert',
         subtype: 'unsafe_mrl',
         message: `Unsafe condition detected for ${medicine} in ${species}. Risk category: ${risk_category}`,
+        entity_id,
+        treatment_id,
+        amu_id: amuId
+      });
+    }
+
+    // Create notification if overdosage
+    if (overdosage) {
+      await Notification.create({
+        user_id,
+        type: 'alert',
+        subtype: 'overdosage',
+        message: `Overdosage detected for ${medicine} in ${species}. Please review the treatment.`,
         entity_id,
         treatment_id,
         amu_id: amuId
@@ -231,12 +201,11 @@ class AMU {
       ORDER BY a.start_date DESC
     `;
     const [rows] = await db.execute(query, [farmerId]);
-    // Add thresholds and status to each record
+    // Add status to each record
     return rows.map(row => {
-      const thresholds = getThresholds(row.species, row.matrix, row.medication_type, row.medicine);
       // Use risk_category for status, capitalize it
       const status = row.risk_category ? row.risk_category.charAt(0).toUpperCase() + row.risk_category.slice(1) : 'Unknown';
-      return { ...row, ...thresholds, status };
+      return { ...row, status };
     });
   }
 

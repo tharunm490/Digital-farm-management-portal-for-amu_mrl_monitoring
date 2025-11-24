@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const data = JSON.parse(fs.readFileSync('dosage_reference_full_extended.json', 'utf8'));
+const data = JSON.parse(fs.readFileSync('data/dosage_reference_full_extended_with_mrl.json', 'utf8'));
 
 const result = {};
 

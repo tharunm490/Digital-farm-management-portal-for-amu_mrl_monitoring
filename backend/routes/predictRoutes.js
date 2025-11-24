@@ -1,29 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const { spawn } = require('child_process');
+const Treatment = require('../models/Treatment');
 
 router.post('/', (req, res) => {
-  const inputData = req.body;
-  const pythonProcess = spawn('python', ['predict.py', JSON.stringify(inputData)], { cwd: __dirname + '/../' });
+  try {
+    const {
+      species,
+      medication_type,
+      medicine,
+      dose_amount,
+      duration_days,
+      frequency_per_day
+    } = req.body;
 
-  let result = '';
+    // Use formula-based calculation instead of ML
+    const prediction = Treatment.calculateMRLAndWithdrawal(
+      species,
+      medication_type,
+      medicine,
+      dose_amount ? parseFloat(dose_amount) : null,
+      duration_days ? parseInt(duration_days) : null,
+      frequency_per_day ? parseInt(frequency_per_day) : null
+    );
 
-  pythonProcess.stdout.on('data', (data) => {
-    result += data.toString();
-  });
-
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(data.toString());
-  });
-
-  pythonProcess.on('close', (code) => {
-    try {
-      const prediction = JSON.parse(result);
-      res.json(prediction);
-    } catch (e) {
-      res.status(500).json({ error: 'Prediction failed' });
-    }
-  });
+    res.json(prediction);
+  } catch (error) {
+    console.error('Prediction error:', error);
+    res.status(500).json({ error: 'Prediction failed', details: error.message });
+  }
 });
 
 module.exports = router;

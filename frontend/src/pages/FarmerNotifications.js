@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { notificationAPI } from '../services/api';
 import './FarmerNotifications.css';
 
 const FarmerNotifications = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState({
     vaccinations: [],
     mrlAlerts: [],
-    dosageAlerts: []
+    dosageAlerts: [],
+    overdosageAlerts: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,16 +29,18 @@ const FarmerNotifications = () => {
       setLoading(true);
       
       // Fetch notifications by type
-      const [vaccRes, mrlRes, dosageRes] = await Promise.all([
+      const [vaccRes, mrlRes, dosageRes, overdosageRes] = await Promise.all([
         notificationAPI.getByType('vaccination'),
         notificationAPI.getByType('mrl_alert'),
-        notificationAPI.getByType('high_dosage')
+        notificationAPI.getByType('high_dosage'),
+        notificationAPI.getByType('overdosage')
       ]);
       
       setNotifications({
         vaccinations: vaccRes.data,
         mrlAlerts: mrlRes.data,
-        dosageAlerts: dosageRes.data
+        dosageAlerts: dosageRes.data,
+        overdosageAlerts: overdosageRes.data
       });
     } catch (err) {
       setError('Failed to fetch notifications');
@@ -51,25 +56,70 @@ const FarmerNotifications = () => {
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
 
-  const getDaysText = (days) => {
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Tomorrow';
-    if (days < 0) return `${Math.abs(days)} days ago`;
-    return `In ${days} days`;
+  const getNotificationTitle = (notification) => {
+    if (notification.type === 'vaccination') {
+      return 'Vaccination Reminder';
+    } else if (notification.type === 'alert') {
+      if (notification.subtype === 'unsafe_mrl') {
+        return 'Unsafe MRL Alert';
+      } else if (notification.subtype === 'high_dosage') {
+        return 'High Dosage Alert';
+      } else if (notification.subtype === 'overdosage') {
+        return 'Overdosage Alert';
+      }
+    }
+    return 'Notification';
   };
 
-  const getUrgencyClass = (days) => {
-    if (days < 0) return 'overdue';
-    if (days <= 3) return 'urgent';
-    if (days <= 7) return 'warning';
+  const getNotificationSeverity = (notification) => {
+    if (notification.type === 'vaccination') {
+      return 'info';
+    } else if (notification.type === 'alert') {
+      return 'urgent';
+    }
     return 'normal';
   };
 
-  const getUrgencyIcon = (days) => {
-    if (days < 0) return '🚨';
-    if (days <= 3) return '🔴';
-    if (days <= 7) return '🟡';
-    return '🟢';
+  const getNotificationIcon = (notification) => {
+    if (notification.type === 'vaccination') {
+      return '💉';
+    } else if (notification.type === 'alert') {
+      if (notification.subtype === 'unsafe_mrl') {
+        return '🔴';
+      } else if (notification.subtype === 'high_dosage') {
+        return '⚠️';
+      } else if (notification.subtype === 'overdosage') {
+        return '🚨';
+      }
+    }
+    return '🔔';
+  };
+
+  const handleReviewTreatment = (notification) => {
+    // Navigate to treatment management page for the specific entity
+    if (notification.entity_id) {
+      navigate(`/treatments/entity/${notification.entity_id}`);
+    } else {
+      navigate('/treatments');
+    }
+  };
+
+  const handleViewDetails = (notification) => {
+    // For vaccination notifications, go to vaccination management
+    if (notification.type === 'vaccination') {
+      if (notification.entity_id) {
+        navigate(`/vaccinations/entity/${notification.entity_id}`);
+      } else {
+        navigate('/vaccinations');
+      }
+    } else {
+      // For treatment alerts, go to treatment management
+      if (notification.entity_id) {
+        navigate(`/treatments/entity/${notification.entity_id}`);
+      } else {
+        navigate('/treatments');
+      }
+    }
   };
 
   if (loading) {
@@ -120,6 +170,13 @@ const FarmerNotifications = () => {
               <div className="stat-label">Dosage Alerts</div>
             </div>
           </div>
+          <div className="stat-card alerts">
+            <div className="stat-icon">🚨</div>
+            <div className="stat-content">
+              <div className="stat-number">{notifications.overdosageAlerts.length}</div>
+              <div className="stat-label">Overdosage Alerts</div>
+            </div>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -134,7 +191,7 @@ const FarmerNotifications = () => {
             className={`tab-btn ${activeTab === 'alerts' ? 'active' : ''}`}
             onClick={() => setActiveTab('alerts')}
           >
-            🔴 Alerts ({notifications.mrlAlerts.length + notifications.dosageAlerts.length})
+            🔴 Alerts ({notifications.mrlAlerts.length + notifications.dosageAlerts.length + notifications.overdosageAlerts.length})
           </button>
         </div>
 
@@ -152,17 +209,17 @@ const FarmerNotifications = () => {
               ) : (
                 <div className="notifications-list">
                   {notifications.vaccinations.map((notification) => (
-                    <div key={notification.notification_id} className={`notification-card ${notification.severity}`}>
+                    <div key={notification.notification_id} className={`notification-card ${getNotificationSeverity(notification)}`}>
                       <div className="notification-header">
-                        <div className="notification-icon">💉</div>
+                        <div className="notification-icon">{getNotificationIcon(notification)}</div>
                         <div className="notification-title">
-                          <h3>{notification.title}</h3>
+                          <h3>{getNotificationTitle(notification)}</h3>
                           <span className="notification-time">
                             {new Date(notification.created_at).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="notification-severity">
-                          {notification.severity.toUpperCase()}
+                          {getNotificationSeverity(notification).toUpperCase()}
                         </div>
                       </div>
 
@@ -171,7 +228,7 @@ const FarmerNotifications = () => {
                       </div>
 
                       <div className="notification-actions">
-                        <button className="btn-primary">
+                        <button className="btn-primary" onClick={() => handleViewDetails(notification)}>
                           View Details
                         </button>
                       </div>
@@ -185,7 +242,7 @@ const FarmerNotifications = () => {
           {activeTab === 'alerts' && (
             <div className="notification-section">
               <h2>Alerts</h2>
-              {notifications.mrlAlerts.length === 0 && notifications.dosageAlerts.length === 0 ? (
+              {notifications.mrlAlerts.length === 0 && notifications.dosageAlerts.length === 0 && notifications.overdosageAlerts.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon">✅</div>
                   <h3>No alerts!</h3>
@@ -195,17 +252,17 @@ const FarmerNotifications = () => {
                 <div className="notifications-list">
                   {/* MRL Alerts */}
                   {notifications.mrlAlerts.map((notification) => (
-                    <div key={notification.notification_id} className={`notification-card ${notification.severity}`}>
+                    <div key={notification.notification_id} className={`notification-card ${getNotificationSeverity(notification)}`}>
                       <div className="notification-header">
-                        <div className="notification-icon">🔴</div>
+                        <div className="notification-icon">{getNotificationIcon(notification)}</div>
                         <div className="notification-title">
-                          <h3>{notification.title}</h3>
+                          <h3>{getNotificationTitle(notification)}</h3>
                           <span className="notification-time">
                             {new Date(notification.created_at).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="notification-severity">
-                          {notification.severity.toUpperCase()}
+                          {getNotificationSeverity(notification).toUpperCase()}
                         </div>
                       </div>
 
@@ -214,10 +271,10 @@ const FarmerNotifications = () => {
                       </div>
 
                       <div className="notification-actions">
-                        <button className="btn-primary urgent">
+                        <button className="btn-primary urgent" onClick={() => handleReviewTreatment(notification)}>
                           Review Treatment
                         </button>
-                        <button className="btn-secondary">
+                        <button className="btn-secondary" onClick={() => handleViewDetails(notification)}>
                           View Details
                         </button>
                       </div>
@@ -226,17 +283,17 @@ const FarmerNotifications = () => {
 
                   {/* Dosage Alerts */}
                   {notifications.dosageAlerts.map((notification) => (
-                    <div key={notification.notification_id} className={`notification-card ${notification.severity}`}>
+                    <div key={notification.notification_id} className={`notification-card ${getNotificationSeverity(notification)}`}>
                       <div className="notification-header">
-                        <div className="notification-icon">⚠️</div>
+                        <div className="notification-icon">{getNotificationIcon(notification)}</div>
                         <div className="notification-title">
-                          <h3>{notification.title}</h3>
+                          <h3>{getNotificationTitle(notification)}</h3>
                           <span className="notification-time">
                             {new Date(notification.created_at).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="notification-severity">
-                          {notification.severity.toUpperCase()}
+                          {getNotificationSeverity(notification).toUpperCase()}
                         </div>
                       </div>
 
@@ -245,10 +302,41 @@ const FarmerNotifications = () => {
                       </div>
 
                       <div className="notification-actions">
-                        <button className="btn-primary urgent">
+                        <button className="btn-primary urgent" onClick={() => handleReviewTreatment(notification)}>
                           Review Treatment
                         </button>
-                        <button className="btn-secondary">
+                        <button className="btn-secondary" onClick={() => handleViewDetails(notification)}>
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Overdosage Alerts */}
+                  {notifications.overdosageAlerts.map((notification) => (
+                    <div key={notification.notification_id} className={`notification-card ${getNotificationSeverity(notification)}`}>
+                      <div className="notification-header">
+                        <div className="notification-icon">{getNotificationIcon(notification)}</div>
+                        <div className="notification-title">
+                          <h3>{getNotificationTitle(notification)}</h3>
+                          <span className="notification-time">
+                            {new Date(notification.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="notification-severity">
+                          {getNotificationSeverity(notification).toUpperCase()}
+                        </div>
+                      </div>
+
+                      <div className="notification-details">
+                        <p>{notification.message}</p>
+                      </div>
+
+                      <div className="notification-actions">
+                        <button className="btn-primary urgent" onClick={() => handleReviewTreatment(notification)}>
+                          Review Treatment
+                        </button>
+                        <button className="btn-secondary" onClick={() => handleViewDetails(notification)}>
                           View Details
                         </button>
                       </div>

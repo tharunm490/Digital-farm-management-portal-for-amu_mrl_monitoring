@@ -223,7 +223,7 @@ function QRVerification() {
                       )}
                       {record.predicted_mrl && (
                         <div className="amu-item">
-                          <span className="label">Predicted MRL:</span>
+                          <span className="label">Predicted Residual Limit:</span>
                           <span className={`value ${getMrlClass(record.mrl_status)}`}>{record.predicted_mrl}</span>
                         </div>
                       )}

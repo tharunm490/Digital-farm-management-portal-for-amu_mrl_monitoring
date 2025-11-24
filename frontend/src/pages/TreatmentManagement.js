@@ -4,7 +4,7 @@ import Navigation from '../components/Navigation';
 import { commonMedicines } from '../data/medicines';
 import medicineMap from '../data/medicineMap';
 import api from '../services/api';
-import dosageReference from '../data/dosage_reference_full_extended.json';
+import dosageReference from '../data/dosage_reference_full_extended_with_mrl.json';
 import './TreatmentManagement.css';
 
 const TreatmentManagement = () => {
@@ -57,7 +57,7 @@ const TreatmentManagement = () => {
   const [vaccinationHistory, setVaccinationHistory] = useState([]);
   const [showVaccinationSection, setShowVaccinationSection] = useState(false);
   const [selectedMedicineData, setSelectedMedicineData] = useState(null);
-  const [doseSuggestions, setDoseSuggestions] = useState([]);
+  const [amuRecords, setAmuRecords] = useState([]);
   
   const navigate = useNavigate();
   const { entity_id } = useParams();
@@ -100,8 +100,12 @@ const TreatmentManagement = () => {
   const fetchTreatmentsByEntity = async (id) => {
     try {
       setLoading(true);
-      const response = await api.get(`/treatments/entity/${id}`);
-      setTreatments(response.data);
+      const [treatmentsResponse, amuResponse] = await Promise.all([
+        api.get(`/treatments/entity/${id}`),
+        api.get(`/amu/entity/${id}`)
+      ]);
+      setTreatments(treatmentsResponse.data);
+      setAmuRecords(amuResponse.data);
       
       // Get entity details
       const entity = entities.find(e => e.entity_id === parseInt(id));
@@ -175,14 +179,14 @@ const TreatmentManagement = () => {
       return;
     }
 
-    if (['cattle', 'goat', 'sheep'].includes(species)) {
+    if (['cattle', 'goat', 'sheep', 'pig'].includes(species)) {
       if (!formData.vet_id || !formData.vet_name) {
-        setError('Vet ID and Vet Name are required for cattle, goat, and sheep');
+        setError('Vet ID and Vet Name are required for cattle, goat, sheep, and pig');
         return;
       }
-    } else if (['pig', 'chicken', 'poultry'].includes(species)) {
+    } else if (['chicken', 'poultry'].includes(species)) {
       if (formData.vet_id || formData.vet_name) {
-        setError('Vet information should not be provided for pig or poultry');
+        setError('Vet information should not be provided for poultry');
         return;
       }
     }
@@ -262,7 +266,6 @@ const TreatmentManagement = () => {
     setManualCategory('');
     setShowManualCategoryInput(false);
     setSelectedMedicineData(null);
-    setDoseSuggestions([]);
     setShowManualReason(false);
     setShowManualCause(false);
     setManualReason('');
@@ -343,7 +346,6 @@ const TreatmentManagement = () => {
         setManualMedicine('');
         setShowManualInput(false);
         setSelectedMedicineData(null);
-        setDoseSuggestions([]);
         setShowManualFrequency(false);
         setShowManualDuration(false);
         setManualFrequency('');
@@ -370,7 +372,6 @@ const TreatmentManagement = () => {
       setShowManualInput(true);
       setMedicine(value);
       setSelectedMedicineData(null);
-      setDoseSuggestions([]);
       setFormData(prev => ({
         ...prev,
         medicine: ''
@@ -461,9 +462,9 @@ const TreatmentManagement = () => {
   const getAllowedRoutesForSpecies = (species) => {
     if (!species) return [];
     const lowerSpecies = species.toLowerCase();
-    if (['cattle', 'goat', 'sheep'].includes(lowerSpecies)) {
-      return ['IM', 'IV', 'SC', 'oral'];
-    } else if (['pig', 'chicken', 'poultry'].includes(lowerSpecies)) {
+    if (['cattle', 'goat', 'sheep', 'pig'].includes(lowerSpecies)) {
+      return ['IM', 'IV', 'SC', 'oral', 'water', 'feed'];
+    } else if (['chicken', 'poultry'].includes(lowerSpecies)) {
       return ['water', 'feed', 'oral'];
     }
     return ['IM', 'IV', 'SC', 'oral', 'water', 'feed'];
@@ -493,7 +494,7 @@ const TreatmentManagement = () => {
 
   // Check if vet fields are required
   const isVetRequired = () => {
-    return selectedEntity?.species && ['cattle', 'goat', 'sheep'].includes(selectedEntity.species.toLowerCase());
+    return selectedEntity?.species && ['cattle', 'goat', 'sheep', 'pig'].includes(selectedEntity.species.toLowerCase());
   };
   const getAllRouteOptions = () => {
     if (!selectedEntity?.species || !formData.medication_type) return [];
@@ -508,16 +509,37 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
+    
     if (!speciesData || !speciesData[formData.medication_type]) return [];
+    
+    // Get allowed routes for this species
+    const allowedRoutes = getAllowedRoutesForSpecies(selectedEntity.species);
     
     const routes = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
       if (medicine.ui?.route_dropdown) {
-        medicine.ui.route_dropdown.forEach(route => routes.add(route));
+        medicine.ui.route_dropdown.forEach(route => {
+          // Only include routes that are allowed for this species
+          if (allowedRoutes.includes(route)) {
+            routes.add(route);
+          }
+        });
       }
     });
     
-    return Array.from(routes);
+    const routeArray = Array.from(routes);
+    
+    // Sort routes so recommended route comes first
+    if (selectedMedicineData?.ui?.route_default) {
+      const recommendedRoute = selectedMedicineData.ui.route_default;
+      routeArray.sort((a, b) => {
+        if (a === recommendedRoute) return -1;
+        if (b === recommendedRoute) return 1;
+        return 0;
+      });
+    }
+    
+    return routeArray;
   };
 
   const getAllFrequencyOptions = () => {
@@ -533,12 +555,13 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
+    
     if (!speciesData || !speciesData[formData.medication_type]) return [];
     
     const frequencies = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
-      if (medicine.ui?.frequency_dropdown) {
-        medicine.ui.frequency_dropdown.forEach(freq => frequencies.add(freq));
+      if (medicine.frequency_per_day) {
+        medicine.frequency_per_day.forEach(freq => frequencies.add(freq));
       }
     });
     
@@ -558,12 +581,13 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
+    
     if (!speciesData || !speciesData[formData.medication_type]) return [];
     
     const durations = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
-      if (medicine.ui?.duration_dropdown) {
-        medicine.ui.duration_dropdown.forEach(duration => durations.add(duration));
+      if (medicine.duration_days) {
+        medicine.duration_days.forEach(duration => durations.add(duration));
       }
     });
     
@@ -583,12 +607,13 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
+    
     if (!speciesData || !speciesData[formData.medication_type]) return [];
     
     const reasons = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
-      if (medicine.ui?.reasons_dropdown) {
-        medicine.ui.reasons_dropdown.forEach(reason => reasons.add(reason));
+      if (medicine.common_reasons) {
+        medicine.common_reasons.forEach(reason => reasons.add(reason));
       }
     });
     
@@ -608,23 +633,46 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
+    
     if (!speciesData || !speciesData[formData.medication_type]) return [];
     
     const causes = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
-      if (medicine.ui?.causes_dropdown) {
-        medicine.ui.causes_dropdown.forEach(cause => causes.add(cause));
+      if (medicine.common_causes) {
+        medicine.common_causes.forEach(cause => causes.add(cause));
       }
     });
     
     return Array.from(causes);
   };
 
-  // Get duration suggestions based on medicine ui data
+  // Get dose level based on recommended doses
+  const getDoseLevel = (dose, unit) => {
+    if (!selectedMedicineData?.recommended_doses || !dose || !unit) return 'unknown';
+    
+    const numDose = parseFloat(dose);
+    if (isNaN(numDose)) return 'unknown';
+    
+    const safe = selectedMedicineData.recommended_doses.safe;
+    const moderate = selectedMedicineData.recommended_doses.moderate;
+    const overdose = selectedMedicineData.recommended_doses.overdose;
+    
+    // Check if units match
+    if (safe?.unit !== unit || moderate?.unit !== unit || overdose?.unit !== unit) return 'unknown';
+    
+    if (numDose < (safe?.min || 0)) return 'under-dose';
+    if (numDose <= (safe?.max || 0)) return 'safe';
+    if (moderate?.max && numDose <= moderate.max) return 'moderate';
+    if (numDose > (moderate?.max || safe?.max || 0)) return 'overdose';
+    
+    return 'unknown';
+  };
+
+  // Get duration suggestions based on medicine duration_days
   const getDurationSuggestions = () => {
     if (!selectedMedicineData) return [];
 
-    const durations = selectedMedicineData.ui?.duration_dropdown || selectedMedicineData.duration_days || [];
+    const durations = selectedMedicineData.duration_days || [];
     return durations.map((duration, index) => ({
       value: duration.toString(),
       label: index === 0 ? `Recommended: ${duration} days` : `${duration} days`,
@@ -632,11 +680,11 @@ const TreatmentManagement = () => {
     }));
   };
 
-  // Get frequency suggestions based on medicine ui data
+  // Get frequency suggestions based on medicine frequency_per_day
   const getFrequencySuggestions = () => {
     if (!selectedMedicineData) return [];
 
-    const frequencies = selectedMedicineData.ui?.frequency_dropdown || selectedMedicineData.frequency_per_day || [];
+    const frequencies = selectedMedicineData.frequency_per_day || [];
     return frequencies.map((freq, index) => ({
       value: freq.toString(),
       label: index === 0 ? `Recommended: ${freq}x per day` : `${freq}x per day`,
@@ -664,8 +712,8 @@ const TreatmentManagement = () => {
   const getUnitSuggestions = () => {
     const medicineUnits = new Set();
 
-    if (selectedMedicineData?.ui?.dose_unit_default) {
-      medicineUnits.add(selectedMedicineData.ui.dose_unit_default);
+    if (selectedMedicineData?.ui_dropdown_options?.dose_unit_default) {
+      medicineUnits.add(selectedMedicineData.ui_dropdown_options.dose_unit_default);
     }
 
     // Also add units from recommended_doses
@@ -687,26 +735,40 @@ const TreatmentManagement = () => {
     }));
   };
 
-  // Get dose level based on amount and medicine data
-  const getDoseLevel = (amount, unit) => {
-    if (!selectedMedicineData || !amount) return 'unknown';
+  // Get dose suggestions based on medicine recommended_doses
+  const getDoseSuggestions = () => {
+    if (!selectedMedicineData?.recommended_doses) return [];
 
-    const safe = selectedMedicineData.recommended_doses?.safe;
-    const moderate = selectedMedicineData.recommended_doses?.moderate;
+    const suggestions = [];
 
-    if (!safe || !moderate) return 'unknown';
-
-    const numAmount = parseFloat(amount);
-
-    if (numAmount >= safe.min && numAmount <= safe.max) {
-      return 'safe';
-    } else if (numAmount >= moderate.min && numAmount <= moderate.max) {
-      return 'moderate';
-    } else if (numAmount > moderate.max) {
-      return 'overdose';
-    } else {
-      return 'under-dose';
+    if (selectedMedicineData.recommended_doses.safe && selectedMedicineData.recommended_doses.safe.max !== null) {
+      suggestions.push({
+        value: selectedMedicineData.recommended_doses.safe.max.toString(),
+        label: `Safe: ${selectedMedicineData.recommended_doses.safe.max} ${selectedMedicineData.recommended_doses.safe.unit}`,
+        level: 'safe',
+        unit: selectedMedicineData.recommended_doses.safe.unit
+      });
     }
+
+    if (selectedMedicineData.recommended_doses.moderate && selectedMedicineData.recommended_doses.moderate.max !== null) {
+      suggestions.push({
+        value: selectedMedicineData.recommended_doses.moderate.max.toString(),
+        label: `Moderate: ${selectedMedicineData.recommended_doses.moderate.max} ${selectedMedicineData.recommended_doses.moderate.unit}`,
+        level: 'moderate',
+        unit: selectedMedicineData.recommended_doses.moderate.unit
+      });
+    }
+
+    if (selectedMedicineData.recommended_doses.overdose && selectedMedicineData.recommended_doses.overdose.min !== null) {
+      suggestions.push({
+        value: (selectedMedicineData.recommended_doses.overdose.min + 0.1).toString(),
+        label: `Avoid: >${selectedMedicineData.recommended_doses.overdose.min} ${selectedMedicineData.recommended_doses.overdose.unit}`,
+        level: 'overdose',
+        unit: selectedMedicineData.recommended_doses.overdose.unit
+      });
+    }
+
+    return suggestions;
   };
 
   const adjustDose = (delta) => {
@@ -876,7 +938,6 @@ const TreatmentManagement = () => {
                           {(() => {
                             if (!selectedEntity?.species) return null;
                             
-                            // Map species names to match JSON keys
                             const speciesMap = {
                               'cow': 'cattle',
                               'goat': 'goat',
@@ -886,13 +947,10 @@ const TreatmentManagement = () => {
                               'poultry': 'poultry'
                             };
                             const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
-                            
                             const speciesData = dosageReference[speciesKey];
-                            if (!speciesData) {
-                              return <option value="" disabled>No data available for this species ({speciesKey})</option>;
-                            }
+                            const availableCategories = Object.keys(speciesData || {});
                             
-                            return Object.keys(speciesData).map(category => {
+                            return availableCategories.map(category => {
                               const displayName = category.split('-').map(word => 
                                 word.charAt(0).toUpperCase() + word.slice(1)
                               ).join(' ');
@@ -922,7 +980,6 @@ const TreatmentManagement = () => {
                           {(() => {
                             if (!selectedEntity?.species || !formData.medication_type) return null;
                             
-                            // Map species names to match JSON keys
                             const speciesMap = {
                               'cow': 'cattle',
                               'goat': 'goat',
@@ -938,7 +995,9 @@ const TreatmentManagement = () => {
                               return <option value="" disabled>No data available for this selection</option>;
                             }
                             
-                            return Object.keys(speciesData[formData.medication_type]).map(medName => (
+                            const availableMedicines = Object.keys(speciesData[formData.medication_type]);
+                            
+                            return availableMedicines.map(medName => (
                               <option key={medName} value={medName}>
                                 {medName}
                               </option>
@@ -1041,32 +1100,32 @@ const TreatmentManagement = () => {
                           <div className="dose-recommendations">
                             <small>💡 Quick reference - {selectedMedicineData.medicine}:</small>
                             <div className="dose-ranges">
-                              {selectedMedicineData.recommended_doses?.safe && selectedMedicineData.recommended_doses.safe.min !== null && (
+                              {selectedMedicineData.recommended_doses?.safe && selectedMedicineData.recommended_doses.safe.max !== null && (
                                 <button
                                   type="button"
                                   className="dose-range-btn safe"
                                   onClick={() => setFormData(prev => ({
                                     ...prev,
-                                    dose_amount: selectedMedicineData.recommended_doses.safe.min?.toString() || '',
+                                    dose_amount: selectedMedicineData.recommended_doses.safe.max?.toString() || '',
                                     dose_unit: selectedMedicineData.recommended_doses.safe.unit || prev.dose_unit
                                   }))}
                                   title={`Safe range: ${selectedMedicineData.recommended_doses.safe.min || 'N/A'}-${selectedMedicineData.recommended_doses.safe.max || 'N/A'} ${selectedMedicineData.recommended_doses.safe.unit}`}
                                 >
-                                  Safe: {selectedMedicineData.recommended_doses.safe.min || 'N/A'} {selectedMedicineData.recommended_doses.safe.unit}
+                                  Safe: {selectedMedicineData.recommended_doses.safe.max || 'N/A'} {selectedMedicineData.recommended_doses.safe.unit}
                                 </button>
                               )}
-                              {selectedMedicineData.recommended_doses?.moderate && selectedMedicineData.recommended_doses.moderate.min !== null && (
+                              {selectedMedicineData.recommended_doses?.moderate && selectedMedicineData.recommended_doses.moderate.max !== null && (
                                 <button
                                   type="button"
                                   className="dose-range-btn moderate"
                                   onClick={() => setFormData(prev => ({
                                     ...prev,
-                                    dose_amount: selectedMedicineData.recommended_doses.moderate.min?.toString() || '',
+                                    dose_amount: selectedMedicineData.recommended_doses.moderate.max?.toString() || '',
                                     dose_unit: selectedMedicineData.recommended_doses.moderate.unit || prev.dose_unit
                                   }))}
                                   title={`Moderate range: ${selectedMedicineData.recommended_doses.moderate.min || 'N/A'}-${selectedMedicineData.recommended_doses.moderate.max || 'N/A'} ${selectedMedicineData.recommended_doses.moderate.unit}`}
                                 >
-                                  Moderate: {selectedMedicineData.recommended_doses.moderate.min || 'N/A'} {selectedMedicineData.recommended_doses.moderate.unit}
+                                  Moderate: {selectedMedicineData.recommended_doses.moderate.max || 'N/A'} {selectedMedicineData.recommended_doses.moderate.unit}
                                 </button>
                               )}
                               {selectedMedicineData.recommended_doses?.overdose && selectedMedicineData.recommended_doses.overdose.min !== null && (
@@ -1075,7 +1134,7 @@ const TreatmentManagement = () => {
                                   className="dose-range-btn overdose"
                                   onClick={() => setFormData(prev => ({
                                     ...prev,
-                                    dose_amount: selectedMedicineData.recommended_doses.overdose.min?.toString() || '',
+                                    dose_amount: (selectedMedicineData.recommended_doses.overdose.min + 0.1)?.toString() || '',
                                     dose_unit: selectedMedicineData.recommended_doses.overdose.unit || prev.dose_unit
                                   }))}
                                   title={`Avoid doses above: ${selectedMedicineData.recommended_doses.overdose.min || 'N/A'} ${selectedMedicineData.recommended_doses.overdose.unit}`}
@@ -1086,30 +1145,23 @@ const TreatmentManagement = () => {
                             </div>
                           </div>
                         )}
-                        {doseSuggestions.length > 0 && (
+                        {getDoseSuggestions().length > 0 && (
                           <div className="dose-suggestions">
-                            <small>Quick select:</small>
+                            <small>💡 Quick select doses:</small>
                             <div className="suggestion-buttons">
-                              {doseSuggestions.map((suggestion, index) => (
+                              {getDoseSuggestions().map((dose, index) => (
                                 <button
-                                  key={index}
+                                  key={dose.value}
                                   type="button"
-                                  className={`suggestion-btn ${suggestion.level}`}
-                                  onClick={() => {
-                                    // Parse the dose range and set a reasonable value
-                                    const rangeMatch = suggestion.value.match(/(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)/);
-                                    if (rangeMatch) {
-                                      const min = parseFloat(rangeMatch[1]);
-                                      const max = parseFloat(rangeMatch[2]);
-                                      const suggestedValue = (min + max) / 2; // Use middle value
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        dose_amount: suggestedValue.toString()
-                                      }));
-                                    }
-                                  }}
+                                  className={`suggestion-btn ${dose.level}`}
+                                  onClick={() => setFormData(prev => ({ 
+                                    ...prev, 
+                                    dose_amount: dose.value,
+                                    dose_unit: dose.unit || prev.dose_unit
+                                  }))}
+                                  title={`${dose.level.charAt(0).toUpperCase() + dose.level.slice(1)} dose: ${dose.label}`}
                                 >
-                                  {suggestion.label}
+                                  {dose.label}
                                 </button>
                               ))}
                             </div>
@@ -1129,6 +1181,25 @@ const TreatmentManagement = () => {
                         <small className="form-help">
                           💡 Dose unit is auto-filled from the selected medicine and cannot be changed
                         </small>
+                        {getUnitSuggestions().length > 0 && (
+                          <div className="dose-suggestions">
+                            <small>💡 Quick select units:</small>
+                            <div className="suggestion-buttons">
+                              {getUnitSuggestions().map((unit, index) => (
+                                <button
+                                  key={unit.value}
+                                  type="button"
+                                  className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
+                                  onClick={() => setFormData(prev => ({ ...prev, dose_unit: unit.value }))}
+                                  title={index === 0 ? 'Recommended unit' : 'Alternative unit'}
+                                >
+                                  {unit.label}
+                                  {index === 0 ? ' ⭐' : ''}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="form-group">
@@ -1141,7 +1212,7 @@ const TreatmentManagement = () => {
                           className="form-control"
                         >
                           <option value="">Select Route</option>
-                          {getAllRouteOptions().map(route => {
+                          {getAllRouteOptions().map((route) => {
                             const isRecommended = selectedMedicineData?.ui?.route_default === route;
                             return (
                               <option key={route} value={route}>
@@ -1154,13 +1225,30 @@ const TreatmentManagement = () => {
                             );
                           })}
                         </select>
-                        {getRecommendedRoute() && getRecommendedRoute() !== formData.route && (
-                          <small className="form-help">
-                            💡 Recommended route: {getRecommendedRoute() === 'IM' ? 'Intramuscular (IM)' :
-                                                   getRecommendedRoute() === 'IV' ? 'Intravenous (IV)' :
-                                                   getRecommendedRoute() === 'SC' ? 'Subcutaneous (SC)' :
-                                                   getRecommendedRoute().charAt(0).toUpperCase() + getRecommendedRoute().slice(1)}
-                          </small>
+                        {getAllRouteOptions().length > 0 && (
+                          <div className="dose-suggestions">
+                            <small>💡 Quick select routes:</small>
+                            <div className="suggestion-buttons">
+                              {getAllRouteOptions().map((route) => {
+                                const isRecommended = selectedMedicineData?.ui?.route_default === route;
+                                return (
+                                  <button
+                                    key={route}
+                                    type="button"
+                                    className={`suggestion-btn ${isRecommended ? 'recommended' : ''}`}
+                                    onClick={() => setFormData(prev => ({ ...prev, route }))}
+                                    title={isRecommended ? 'Recommended route' : 'Alternative route'}
+                                  >
+                                    {route === 'IM' ? 'Intramuscular (IM)' :
+                                     route === 'IV' ? 'Intravenous (IV)' :
+                                     route === 'SC' ? 'Subcutaneous (SC)' :
+                                     route.charAt(0).toUpperCase() + route.slice(1)}
+                                    {isRecommended ? ' ⭐' : ''}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1204,6 +1292,25 @@ const TreatmentManagement = () => {
                         <small className="form-help">
                           💡 Use +/- buttons to adjust
                         </small>
+                        {getFrequencySuggestions().length > 0 && (
+                          <div className="frequency-suggestions">
+                            <small>💡 Quick select frequencies:</small>
+                            <div className="suggestion-buttons">
+                              {getFrequencySuggestions().map((freq, index) => (
+                                <button
+                                  key={freq.value}
+                                  type="button"
+                                  className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
+                                  onClick={() => setFormData(prev => ({ ...prev, frequency_per_day: freq.value }))}
+                                  title={index === 0 ? 'Recommended frequency' : 'Alternative frequency'}
+                                >
+                                  {freq.label}
+                                  {index === 0 ? ' ⭐' : ''}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="form-group">
@@ -1243,6 +1350,25 @@ const TreatmentManagement = () => {
                         <small className="form-help">
                           💡 Use +/- buttons to adjust
                         </small>
+                        {getDurationSuggestions().length > 0 && (
+                          <div className="duration-suggestions">
+                            <small>💡 Quick select durations:</small>
+                            <div className="suggestion-buttons">
+                              {getDurationSuggestions().map((dur, index) => (
+                                <button
+                                  key={dur.value}
+                                  type="button"
+                                  className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
+                                  onClick={() => setFormData(prev => ({ ...prev, duration_days: dur.value }))}
+                                  title={index === 0 ? 'Recommended duration' : 'Alternative duration'}
+                                >
+                                  {dur.label}
+                                  {index === 0 ? ' ⭐' : ''}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1315,11 +1441,11 @@ const TreatmentManagement = () => {
                     </div>
                   )}
 
-                  {/* Warning for Pig/Poultry */}
-                  {formData.species && ['pig', 'chicken', 'poultry'].includes(formData.species.toLowerCase()) && (formData.vet_id || formData.vet_name) && (
+                  {/* Warning for Poultry */}
+                  {formData.species && ['chicken', 'poultry'].includes(formData.species.toLowerCase()) && (formData.vet_id || formData.vet_name) && (
                     <div className="alert alert-warning">
                       <span className="alert-icon">⚠️</span>
-                      Warning: Veterinary information should not be assigned to pig or poultry treatments. Vet ID and Vet Name will be set to NULL.
+                      Warning: Veterinary information should not be assigned to poultry treatments. Vet ID and Vet Name will be set to NULL.
                     </div>
                   )}
 
@@ -1583,7 +1709,9 @@ const TreatmentManagement = () => {
               </div>
             ) : (
               <div className="treatments-grid">
-                {treatments.map(treatment => (
+                {treatments.map(treatment => {
+                  const amu = amuRecords.find(a => a.treatment_id === treatment.treatment_id);
+                  return (
                   <div key={treatment.treatment_id} className="treatment-card">
                     <div className="treatment-header">
                       <div className="treatment-title">
@@ -1641,6 +1769,30 @@ const TreatmentManagement = () => {
                             <span className="label">Reason:</span>
                             <span className="value">{treatment.reason}</span>
                           </div>
+                        )}
+                        {amu && (
+                          <>
+                            <div className="detail-row">
+                              <span className="label">Predicted Residual Limit:</span>
+                              <span className="value">{amu.predicted_mrl} µg/kg</span>
+                            </div>
+                            <div className="detail-row">
+                              <span className="label">Predicted Withdrawal Days:</span>
+                              <span className="value">{amu.predicted_withdrawal_days} days</span>
+                            </div>
+                            <div className="detail-row">
+                              <span className="label">Risk Category:</span>
+                              <span className={`value risk-${amu.risk_category?.toLowerCase()}`}>
+                                {amu.risk_category}
+                              </span>
+                            </div>
+                            {amu.overdosage && (
+                              <div className="detail-row">
+                                <span className="label">Overdosage:</span>
+                                <span className="value overdosage-alert">⚠️ OVERDOSAGE DETECTED</span>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
 
@@ -1746,7 +1898,8 @@ const TreatmentManagement = () => {
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

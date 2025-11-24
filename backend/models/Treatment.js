@@ -1,11 +1,111 @@
 const db = require('../config/database');
-const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const VaccinationHistory = require('./VaccinationHistory');
 const Notification = require('./Notification');
 
 class Treatment {
+  // Load dosage reference JSON
+  static loadDosageReference() {
+    try {
+      const filePath = path.join(__dirname, '../data/dosage_reference_full_extended_with_mrl.json');
+      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (error) {
+      console.error('Failed to load dosage reference:', error);
+      return null;
+    }
+  }
+
+  // Calculate MRL and withdrawal using JSON values only
+  static calculateMRLAndWithdrawal(species, category, medicine, dose, freq, duration, matrix) {
+    const data = this.loadDosageReference();
+    if (!data) {
+      return {
+        predicted_mrl: '50.0',
+        predicted_withdrawal_days: category === 'vaccine' || category === 'vitamin' ? 0 : 7,
+        status: 'safe',
+        overdosage: false,
+        safe_date: null
+      };
+    }
+
+    // Map species names to match JSON keys
+    const speciesMap = {
+      'cow': 'cattle',
+      'goat': 'goat',
+      'sheep': 'sheep',
+      'pig': 'pig',
+      'chicken': 'poultry',
+      'poultry': 'poultry'
+    };
+    const speciesKey = speciesMap[species.toLowerCase()] || species.toLowerCase();
+
+    // Find the medicine in the JSON: data[speciesKey][category][medicine]
+    let item = null;
+    if (data[speciesKey] && data[speciesKey][category] && data[speciesKey][category][medicine]) {
+      item = data[speciesKey][category][medicine];
+    }
+
+    if (!item || !item.mrl_by_matrix || !item.mrl_by_matrix[matrix]) {
+      // Fallback if not found
+      return {
+        predicted_mrl: '50.0',
+        predicted_withdrawal_days: category === 'vaccine' || category === 'vitamin' ? 0 : 7,
+        status: 'safe',
+        overdosage: false,
+        safe_date: null
+      };
+    }
+
+    const matrixData = item.mrl_by_matrix[matrix];
+    const baseMRL = parseFloat(matrixData.base_mrl) || 0;
+    const baseWD = parseFloat(matrixData.base_withdrawal_days) || 0;
+    const factor = parseFloat(matrixData.persistence_factor) || 0;
+    const thresholds = matrixData.mrl_ug_per_kg;
+
+    // Calculate total dose - ensure all values are numbers
+    const safeDose = dose && !isNaN(dose) ? dose : 0;
+    const safeFreq = freq && !isNaN(freq) ? freq : 1;
+    const safeDuration = duration && !isNaN(duration) ? duration : 1;
+    const totalDose = safeDose * safeFreq * safeDuration;
+
+    // Calculate predicted residual limit
+    const predictedMRL = baseMRL + (totalDose * factor);
+
+    // Ensure predictedMRL is a valid number
+    const safePredictedMRL = isNaN(predictedMRL) ? 50.0 : predictedMRL;
+
+    // Calculate withdrawal days
+    const withdrawalDays = Math.ceil(baseWD + (totalDose * factor));
+
+    // Determine status based on thresholds
+    let status = 'safe';
+    if (thresholds && safePredictedMRL > thresholds.safe && safePredictedMRL <= thresholds.borderline) {
+      status = 'borderline';
+    } else if (thresholds && safePredictedMRL > thresholds.borderline) {
+      status = 'unsafe';
+    }
+
+    // Check for overdosage
+    let overdosage = false;
+    if (item.recommended_doses && item.recommended_doses.overdose && item.recommended_doses.overdose.min !== null) {
+      if (safeDose > item.recommended_doses.overdose.min) {
+        overdosage = true;
+        status = 'unsafe'; // Force unsafe if overdosage
+      }
+    }
+
+    // If category is vaccine or vitamin, set withdrawal to 0
+    const finalWithdrawalDays = (category === 'vaccine' || category === 'vitamin') ? 0 : withdrawalDays;
+
+    return {
+      predicted_mrl: safePredictedMRL.toFixed(2),
+      predicted_withdrawal_days: finalWithdrawalDays,
+      status,
+      overdosage,
+      safe_date: null
+    };
+  }
   // Create new treatment record
   static async create(treatmentData) {
     const {
@@ -41,25 +141,26 @@ class Treatment {
       throw new Error('Entity not found');
     }
 
-    // Validate species group rules
-    const isLargeAnimal = ['cattle', 'goat', 'sheep'].includes(entity.species);
-    const isSmallAnimal = ['pig', 'poultry'].includes(entity.species);
+    // Validate species group rules - pigs require vets like cattle/goat/sheep
+    const requiresVet = ['cattle', 'goat', 'sheep', 'pig'].includes(entity.species);
+    const noVetRequired = ['poultry'].includes(entity.species);
 
-    if (isLargeAnimal) {
+    if (requiresVet) {
       if (!vet_id || !vet_name) {
-        throw new Error('Veterinarian details are required for cattle, goat, and sheep treatments');
-      }
-      if (!['IM', 'IV', 'SC', 'oral'].includes(route)) {
-        throw new Error('Invalid route for large animals. Must be IM, IV, SC, or oral');
-      }
-    } else if (isSmallAnimal) {
-      if (vet_id || vet_name) {
-        throw new Error('Veterinarian details should not be provided for pig and poultry treatments');
-      }
-      if (!['water', 'feed', 'oral'].includes(route)) {
-        throw new Error('Invalid route for small animals. Must be water, feed, or oral');
+        throw new Error('Veterinarian details are required for cattle, goat, sheep, and pig treatments');
       }
     }
+
+    // Route validation - only poultry has restrictions
+    if (noVetRequired) {
+      if (vet_id || vet_name) {
+        throw new Error('Veterinarian details should not be provided for poultry treatments');
+      }
+      if (!['water', 'feed', 'oral'].includes(route)) {
+        throw new Error('Invalid route for poultry. Must be water, feed, or oral');
+      }
+    }
+    // Pigs, cattle, goat, sheep can use all routes: IM, IV, SC, oral, water, feed
 
     // Handle vaccine validation
     const final_is_vaccine = medication_type === 'vaccine';
@@ -135,43 +236,34 @@ class Treatment {
       });
     }
 
-    // Auto-create AMU record with ML predictions (only for non-vaccine treatments)
+    // Auto-create AMU record with formula-based predictions (only for non-vaccine treatments)
     if (!final_is_vaccine) {
-      const predictions = await this.getPredictions({
-        species: entity.species,
+      const predictions = this.calculateMRLAndWithdrawal(
+        entity.species,
         medication_type,
         medicine,
-        route,
-        dose_amount: dose_amount ? parseFloat(dose_amount) : null,
-        dose_unit,
-        frequency_per_day: frequency_per_day ? parseInt(frequency_per_day) : null,
-        duration_days: duration_days ? parseInt(duration_days) : null,
-        cause,
-        reason,
-        matrix: entity.matrix
-      });
+        dose_amount ? parseFloat(dose_amount) : null,
+        duration_days ? parseInt(duration_days) : null,
+        frequency_per_day ? parseInt(frequency_per_day) : null,
+        entity.matrix
+      );
 
-      // Load dosage reference
+      // Load dosage reference for additional validation
       let dosageRef = null;
       try {
-        dosageRef = JSON.parse(fs.readFileSync(path.join(__dirname, '../dosage_reference_full_extended.json'), 'utf8'));
+        dosageRef = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dosage_reference_full_extended_with_mrl.json'), 'utf8'));
       } catch (e) {
         console.warn('Failed to load dosage reference JSON:', e.message);
       }
 
-      let finalPredictions = predictions.error ? {
-        predicted_mrl: 50.0,
-        predicted_withdrawal_days: medication_type === 'vaccine' || medication_type === 'vitamin' ? 0 : 7,
-        predicted_mrl_risk: 0.5,
-        risk_category: 'safe'
-      } : predictions;
+      let finalPredictions = predictions;
 
       let subtype = null;
-      if (finalPredictions.risk_category === 'unsafe') {
+      if (finalPredictions.status === 'unsafe') {
         subtype = 'unsafe_mrl';
       }
 
-      // Check dose
+      // Check dose against recommended values
       let recommended = null;
       if (dosageRef && dosageRef[entity.species] && dosageRef[entity.species][medicine]) {
         const medData = dosageRef[entity.species][medicine];
@@ -181,24 +273,31 @@ class Treatment {
       }
 
       if (recommended && dose_amount > recommended) {
-        finalPredictions.risk_category = 'unsafe';
+        finalPredictions.status = 'unsafe';
         subtype = 'high_dosage';
       }
 
-      if (predictions.error) {
-        console.error('ML Prediction error:', predictions.error);
-        // Continue with default values
-      }
+      const amuId = await this.createAMURecord(treatmentId, finalPredictions, end_date);
 
-      const amuId = await this.createAMURecord(treatmentId, finalPredictions);
+      // Create notification if unsafe or overdosage
+      if (finalPredictions.status === 'unsafe' || finalPredictions.overdosage) {
+        let notificationSubtype = subtype;
+        let notificationMessage = '';
 
-      // Create notification if unsafe
-      if (finalPredictions.risk_category === 'unsafe') {
+        if (finalPredictions.overdosage) {
+          notificationSubtype = 'overdosage';
+          notificationMessage = `Overdosage alert: ${dose_amount} ${dose_unit} exceeds safe limits for ${medicine} in ${entity.species}.`;
+        } else if (subtype === 'high_dosage') {
+          notificationMessage = `High dosage alert: ${dose_amount} ${dose_unit} exceeds recommended ${recommended} ${dose_unit} for ${medicine} in ${entity.species}.`;
+        } else {
+          notificationMessage = `Unsafe residual limit alert: Predicted Residual Limit ${finalPredictions.predicted_mrl} for ${medicine} in ${entity.species} (${entity.matrix}).`;
+        }
+
         await Notification.create({
           user_id,
           type: 'alert',
-          subtype,
-          message: subtype === 'high_dosage' ? `High dosage alert: ${dose_amount} ${dose_unit} exceeds recommended ${recommended} ${dose_unit} for ${medicine} in ${entity.species}.` : `Unsafe MRL alert: Predicted MRL ${finalPredictions.predicted_mrl} for ${medicine} in ${entity.species} (${entity.matrix}).`,
+          subtype: notificationSubtype,
+          message: notificationMessage,
           entity_id,
           treatment_id: treatmentId,
           amu_id: amuId
@@ -210,8 +309,16 @@ class Treatment {
   }
 
   // Auto-create AMU record
-  static async createAMURecord(treatmentId, predictions) {
-    const { predicted_mrl, predicted_withdrawal_days, predicted_mrl_risk, risk_category } = predictions;
+  static async createAMURecord(treatmentId, predictions, end_date) {
+    const { predicted_mrl, predicted_withdrawal_days, status, overdosage } = predictions;
+
+    // Calculate safe_date: end_date + predicted_withdrawal_days
+    let safe_date = null;
+    if (end_date && predicted_withdrawal_days > 0) {
+      const endDate = new Date(end_date);
+      endDate.setDate(endDate.getDate() + predicted_withdrawal_days);
+      safe_date = endDate.toISOString().split('T')[0];
+    }
 
     const insertQuery = `
       INSERT INTO amu_records (
@@ -222,7 +329,7 @@ class Treatment {
         route, dose_amount, dose_unit,
         frequency_per_day, duration_days,
         start_date, end_date,
-        predicted_mrl, predicted_withdrawal_days, predicted_mrl_risk, risk_category,
+        predicted_mrl, predicted_withdrawal_days, overdosage, risk_category,
         safe_date
       )
       SELECT
@@ -246,7 +353,7 @@ class Treatment {
         tr.start_date,
         tr.end_date,
         ?, ?, ?, ?,
-        CASE WHEN ? IS NOT NULL THEN DATE_ADD(tr.end_date, INTERVAL ? DAY) ELSE NULL END
+        ?
       FROM treatment_records tr
       JOIN animals_or_batches ao ON tr.entity_id = ao.entity_id
       WHERE tr.treatment_id = ?
@@ -255,53 +362,16 @@ class Treatment {
     const [result] = await db.execute(insertQuery, [
       predicted_mrl || null,
       predicted_withdrawal_days || null,
-      predicted_mrl_risk || null,
-      risk_category || 'safe',
-      predicted_withdrawal_days,
-      predicted_withdrawal_days,
+      overdosage ? 1 : 0,
+      status || 'safe',
+      safe_date,
       treatmentId
     ]);
 
     return result.insertId;
   }
 
-  // Get ML predictions
-  static async getPredictions(inputData) {
-    return new Promise((resolve) => {
-      const pythonProcess = spawn('python', [
-        path.join(__dirname, '../predict.py'),
-        JSON.stringify(inputData)
-      ]);
 
-      let output = '';
-      let errorOutput = '';
-
-      pythonProcess.stdout.on('data', (data) => {
-        output += data.toString();
-      });
-
-      pythonProcess.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-      });
-
-      pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-          resolve({ error: `Python process exited with code ${code}: ${errorOutput}` });
-        } else {
-          try {
-            const result = JSON.parse(output.trim());
-            resolve(result);
-          } catch (e) {
-            resolve({ error: `Failed to parse prediction output: ${output}` });
-          }
-        }
-      });
-
-      pythonProcess.on('error', (err) => {
-        resolve({ error: `Failed to start Python process: ${err.message}` });
-      });
-    });
-  }
 
   // Get treatment by ID
   static async getById(treatmentId) {

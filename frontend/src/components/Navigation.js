@@ -112,12 +112,6 @@ const Navigation = () => {
                   QR Code Generator
                 </Link>
               </li>
-              <li>
-                <Link to="/qr-verification" className="dropdown-item" onClick={closeAllMenus}>
-                  <span className="nav-icon">🔍</span>
-                  QR Verification
-                </Link>
-              </li>
             </ul>
           </li>
 

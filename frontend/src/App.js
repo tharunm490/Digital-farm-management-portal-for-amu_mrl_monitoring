@@ -12,7 +12,6 @@ import BatchManagement from './pages/BatchManagement';
 import TreatmentManagement from './pages/TreatmentManagement';
 import VaccinationManagement from './pages/VaccinationManagement';
 import QRGenerator from './pages/QRGenerator';
-import QRVerification from './pages/QRVerification';
 import AuthCallback from './pages/AuthCallback';
 import RoleSelection from './pages/RoleSelection';
 import AMURecords from './pages/AMURecords';
@@ -40,7 +39,6 @@ function AppRoutes() {
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/role-selection" element={<RoleSelection />} />
-      <Route path="/verify" element={<QRVerification />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><FarmerNotifications /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

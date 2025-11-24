@@ -328,7 +328,7 @@ function AMURecords() {
                     <div className="col-safety">
                       <div className="safety-item">
                         <div className="mrl-value">
-                          Predicted MRL: {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}
+                          Predicted Residual Limit: {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}
                         </div>
                         {!(record.safe_max === null && record.borderline_max === null && record.unsafe_above === null) && (
                           <>
@@ -369,9 +369,9 @@ function AMURecords() {
                       <span className={`risk-badge ${getStatusClass(record.status)}`}>
                         {getRiskIcon(record.status)} {record.status}
                       </span>
-                      {viewMode === 'detailed' && record.predicted_mrl_risk && (
+                      {viewMode === 'detailed' && record.overdosage && (
                         <div className="risk-percentage">
-                          {(record.predicted_mrl_risk * 100).toFixed(1)}% risk
+                          ⚠️ OVERDOSAGE DETECTED
                         </div>
                       )}
                     </div>

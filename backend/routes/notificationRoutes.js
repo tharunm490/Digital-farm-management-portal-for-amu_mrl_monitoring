@@ -36,6 +36,9 @@ router.get('/type/:type', authMiddleware, async (req, res) => {
     } else if (type === 'high_dosage') {
       actualType = 'alert';
       subtype = 'high_dosage';
+    } else if (type === 'overdosage') {
+      actualType = 'alert';
+      subtype = 'overdosage';
     } else if (type !== 'vaccination') {
       return res.status(400).json({ error: 'Invalid notification type' });
     }

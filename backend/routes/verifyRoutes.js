@@ -9,11 +9,8 @@ const { TamperProof } = require('../models/QR');
 const fs = require('fs');
 const path = require('path');
 
-// Load s.json
-const sData = JSON.parse(fs.readFileSync(path.join(__dirname, '../ml_models/s.json'), 'utf8'));
-
 // Load dosage data
-const dosageData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dosage_reference_full_extended.json'), 'utf8'));
+const dosageData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dosage_reference_full_extended_with_mrl.json'), 'utf8'));
 
 // GET /api/verify/:entity_id - Complete entity verification data (Public - no auth required for QR scanning)
 router.get('/:entity_id', async (req, res) => {
@@ -105,23 +102,6 @@ router.get('/:entity_id', async (req, res) => {
       },
       treatment_records: treatments.map(treatment => {
         const amu = amuRecords.find(a => a.treatment_id === treatment.treatment_id);
-        let mrlStatus = null;
-        if (amu && amu.predicted_mrl && treatment.species && treatment.medication_type && treatment.medicine && treatment.matrix) {
-          const speciesData = sData.data[treatment.species];
-          if (speciesData && speciesData[treatment.medication_type] && speciesData[treatment.medication_type][treatment.medicine] && speciesData[treatment.medication_type][treatment.medicine][treatment.matrix]) {
-            const thresholds = speciesData[treatment.medication_type][treatment.medicine][treatment.matrix].thresholds;
-            if (thresholds) {
-              const mrl = parseFloat(amu.predicted_mrl);
-              if (mrl <= thresholds.safe_max) {
-                mrlStatus = 'safe';
-              } else if (mrl <= thresholds.borderline_max) {
-                mrlStatus = 'borderline';
-              } else {
-                mrlStatus = 'unsafe';
-              }
-            }
-          }
-        }
         return {
           treatment_id: treatment.treatment_id,
           active_ingredient: treatment.active_ingredient || treatment.medicine,
@@ -137,9 +117,9 @@ router.get('/:entity_id', async (req, res) => {
           withdrawal_end_date: treatment.withdrawal_end_date,
           safe_date: amu?.safe_date,
           predicted_mrl: amu?.predicted_mrl,
-          predicted_mrl_risk: amu?.predicted_mrl_risk,
+          overdosage: amu?.overdosage,
           risk_category: amu?.risk_category,
-          mrl_status: mrlStatus,
+          mrl_status: amu?.risk_category,
           medication_type: treatment.medication_type,
           reason: treatment.reason,
           cause: treatment.cause,
@@ -180,7 +160,7 @@ router.get('/:entity_id', async (req, res) => {
           ${response.treatment_records.map(record => {
             const medicineData = dosageData[record.species]?.[record.medication_type]?.[record.medicine];
             const safeMax = medicineData?.recommended_doses?.safe?.max || 0;
-            const overdosageAlert = record.dose_amount > safeMax ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">OVERDOSAGE GIVEN RED ALERT</div>' : '';
+            const overdosageAlert = record.overdosage ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">OVERDOSAGE GIVEN RED ALERT</div>' : '';
             const unsafeAlert = record.mrl_status === 'unsafe' ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">UNSAFE MRL RED ALERT</div>' : '';
             return `
             <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f7fafc;">
@@ -194,7 +174,8 @@ router.get('/:entity_id', async (req, res) => {
                 <div><strong>End Date:</strong> ${record.end_date}</div>
                 ${record.withdrawal_period_days ? `<div><strong>Withdrawal Period:</strong> ${record.withdrawal_period_days} days</div>` : ''}
                 ${record.safe_date ? `<div><strong>Safe Date:</strong> ${record.safe_date}</div>` : ''}
-                ${record.predicted_mrl ? `<div><strong>Predicted MRL:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.predicted_mrl} mcg/kg</span></div>` : ''}
+                ${record.predicted_mrl ? `<div><strong>Predicted Residual Limit:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.predicted_mrl} mcg/kg</span></div>` : ''}
+                ${record.predicted_mrl && medicineData?.mrl_by_matrix?.[record.matrix]?.mrl_ug_per_kg?.safe ? `<div><strong>Safe Residual Limit:</strong> ${medicineData.mrl_by_matrix[record.matrix].mrl_ug_per_kg.safe} mcg/kg</div>` : ''}
                 ${record.predicted_withdrawal_days ? `<div><strong>Predicted Withdrawal Days:</strong> ${record.predicted_withdrawal_days}</div>` : ''}
                 ${record.mrl_status ? `<div><strong>Risk Category:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.mrl_status}</span></div>` : ''}
                 ${record.medication_type ? `<div><strong>Category:</strong> ${record.medication_type}</div>` : ''}

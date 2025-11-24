@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import dosageData from '../data/dosage_reference_full_extended.json';
+import dosageData from '../data/dosage_reference_full_extended_with_mrl.json';
 import { predictAPI } from '../services/api';
 
 const DosageForm = () => {
@@ -17,9 +17,14 @@ const DosageForm = () => {
   const [selectedMatrix, setSelectedMatrix] = useState('milk');
   const [predictionResult, setPredictionResult] = useState(null);
 
-  const speciesOptions = Object.keys(dosageData);
-  const categoryOptions = selectedSpecies ? Object.keys(dosageData[selectedSpecies]) : [];
-  const medicineOptions = selectedSpecies && selectedCategory ? Object.keys(dosageData[selectedSpecies][selectedCategory]) : [];
+  const speciesOptions = dosageData.species_master || [];
+  const categoryOptions = selectedSpecies ? Object.keys(dosageData.categories || {}).filter(cat => {
+    const medicines = dosageData.categories[cat].medicines || {};
+    return Object.values(medicines).some(med => (med.species || []).includes(selectedSpecies));
+  }) : [];
+  const medicineOptions = selectedSpecies && selectedCategory ? Object.keys(dosageData.categories[selectedCategory]?.medicines || {}).filter(med => {
+    return (dosageData.categories[selectedCategory].medicines[med].species || []).includes(selectedSpecies);
+  }) : [];
 
   const getAllowedRoutes = (species) => {
     if (['cattle', 'goat', 'sheep'].includes(species)) {
@@ -32,20 +37,26 @@ const DosageForm = () => {
 
   const getFilteredRoutes = () => {
     if (!selectedSpecies || !selectedCategory || !selectedMedicine) return [];
-    const medicineData = dosageData[selectedSpecies][selectedCategory][selectedMedicine];
+    const medicineData = dosageData.categories[selectedCategory].medicines[selectedMedicine];
     const allowedRoutes = getAllowedRoutes(selectedSpecies);
-    return medicineData.ui.route_dropdown.filter(route => allowedRoutes.includes(route));
+    return (medicineData.ui_dropdown_options?.route_suggestions || []).filter(route => allowedRoutes.includes(route));
   };
 
   const getDefaultRoute = () => {
     const filteredRoutes = getFilteredRoutes();
-    const medicineData = dosageData[selectedSpecies][selectedCategory][selectedMedicine];
-    const defaultRoute = medicineData.ui.route_default;
-    return filteredRoutes.includes(defaultRoute) ? defaultRoute : filteredRoutes[0] || '';
+    return filteredRoutes[0] || '';
   };
 
   const getFrequencyOptions = () => {
-    return [1, 2, 3, 4, 5];
+    if (!selectedMedicine) return [1, 2, 3, 4, 5];
+    const medicineData = dosageData.categories[selectedCategory].medicines[selectedMedicine];
+    return medicineData.frequency_per_day || [1, 2];
+  };
+
+  const getDurationOptions = () => {
+    if (!selectedMedicine) return [1, 3, 5, 7];
+    const medicineData = dosageData.categories[selectedCategory].medicines[selectedMedicine];
+    return medicineData.duration_days || [1, 3, 5, 7];
   };
 
   const adjustFrequency = (delta) => {
@@ -60,7 +71,7 @@ const DosageForm = () => {
 
   useEffect(() => {
     if (selectedMedicine) {
-      const medicineData = dosageData[selectedSpecies][selectedCategory][selectedMedicine];
+      const medicineData = dosageData.categories[selectedCategory].medicines[selectedMedicine];
       setDoseMin(medicineData.recommended_doses.safe.min);
       setDoseMax(medicineData.recommended_doses.safe.max);
       setDoseUnit(medicineData.recommended_doses.safe.unit);
