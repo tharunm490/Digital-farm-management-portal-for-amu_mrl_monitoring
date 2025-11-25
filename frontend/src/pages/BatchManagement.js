@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import api from '../services/api';
 import { getAllSpecies, getBreedsBySpecies } from '../data/speciesBreeds';
 import './BatchManagement.css';
 
 const BatchManagement = () => {
+  const { farm_id } = useParams();
   const safeValue = (val) => {
     if (val == null) return '';
     if (typeof val === 'object') return '';
@@ -13,6 +14,7 @@ const BatchManagement = () => {
   };
 
   const navigate = useNavigate();
+  const [filteredEntities, setFilteredEntities] = useState([]);
   const [entities, setEntities] = useState([]);
   const [farms, setFarms] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -38,18 +40,25 @@ const BatchManagement = () => {
     return [];
   };
 
-  const species = getSpeciesOptions();
+  const currentFarm = farms.find(f => f.farm_id == farm_id);
 
   useEffect(() => {
     fetchEntities();
     fetchFarms();
   }, []);
 
+  useEffect(() => {
+    if (farm_id) {
+      setFormData(prev => ({ ...prev, farm_id }));
+    }
+  }, [farm_id]);
+
   const fetchEntities = async () => {
     try {
       setLoading(true);
       const response = await api.get('/entities');
       setEntities(response.data);
+      setFilteredEntities(farm_id ? response.data.filter(e => e.farm_id == farm_id) : response.data);
       setError('');
     } catch (err) {
       console.error('Fetch entities error:', err);
@@ -90,7 +99,7 @@ const BatchManagement = () => {
     setError('');
 
     try {
-      if (!formData.farm_id) return setError('Please select a farm');
+      if (!farm_id && !formData.farm_id) return setError('Please select a farm');
       if (formData.entity_type === 'animal' && !formData.tag_id)
         return setError('Tag ID is required for animals');
       if (formData.entity_type === 'batch' && !formData.batch_name)
@@ -99,7 +108,7 @@ const BatchManagement = () => {
         return setError('Number of animals is required for batches');
 
       const dataToSubmit = {
-        farm_id: parseInt(formData.farm_id),
+        farm_id: farm_id || parseInt(formData.farm_id),
         entity_type: formData.entity_type,
         species: formData.species,
         tag_id: formData.entity_type === 'animal' ? formData.tag_id : null,
@@ -144,9 +153,12 @@ const BatchManagement = () => {
 
       <div className="batch-content">
         <div className="page-header">
+          {farm_id && (
+            <button onClick={() => navigate('/farms')} className="btn-back">← Back to Farms</button>
+          )}
           <div className="header-content">
-            <h1>🐄 Animal & Batch Management</h1>
-            <p className="header-subtitle">Manage your livestock and poultry batches</p>
+            <h1>🐄 {farm_id ? `Batches for ${currentFarm?.farm_name || 'Farm'}` : 'Animal & Batch Management'}</h1>
+            <p className="header-subtitle">{farm_id ? 'Manage batches for this farm' : 'Manage your livestock and poultry batches'}</p>
           </div>
           <button onClick={() => setShowForm(!showForm)} className="btn-primary">
             <span className="btn-icon">+</span>
@@ -178,20 +190,26 @@ const BatchManagement = () => {
                 <div className="form-grid">
                   <div className="form-group">
                     <label>Farm Location *</label>
-                    <select
-                      name="farm_id"
-                      value={formData.farm_id}
-                      onChange={handleChange}
-                      required
-                      className="form-control"
-                    >
-                      <option value="">Select Farm</option>
-                      {farms.map((farm) => (
-                        <option key={farm.farm_id} value={farm.farm_id}>
-                          {farm.farm_name}
-                        </option>
-                      ))}
-                    </select>
+                    {farm_id ? (
+                      <div className="form-control disabled">
+                        {currentFarm?.farm_name || 'Loading...'}
+                      </div>
+                    ) : (
+                      <select
+                        name="farm_id"
+                        value={formData.farm_id}
+                        onChange={handleChange}
+                        required
+                        className="form-control"
+                      >
+                        <option value="">Select Farm</option>
+                        {farms.map((farm) => (
+                          <option key={farm.farm_id} value={farm.farm_id}>
+                            {farm.farm_name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -310,7 +328,7 @@ const BatchManagement = () => {
                       className="form-control"
                     >
                       <option value="">Select Species</option>
-                      {species.map((s) => (
+                      {getSpeciesOptions().map((s) => (
                         <option key={s} value={s}>
                           {s.charAt(0).toUpperCase() + s.slice(1)}
                         </option>
@@ -354,7 +372,7 @@ const BatchManagement = () => {
 
         <div className="entities-section">
           <div className="section-header">
-            <h2>Your Entities ({entities.length})</h2>
+            <h2>Your Entities ({filteredEntities.length})</h2>
             <div className="filter-tabs">
               <button className="tab active">All</button>
               <button className="tab">Animals</button>
@@ -367,7 +385,7 @@ const BatchManagement = () => {
               <div className="loading-spinner"></div>
               <p>Loading your entities...</p>
             </div>
-          ) : entities.length === 0 ? (
+          ) : filteredEntities.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">🐄</div>
               <h3>No entities found</h3>
@@ -378,7 +396,7 @@ const BatchManagement = () => {
             </div>
           ) : (
             <div className="entities-grid">
-              {entities.map((entity) => (
+              {filteredEntities.map((entity) => (
                 <div key={entity.entity_id} className="entity-card modern">
                   <div className="card-header">
                     <div className="entity-info">

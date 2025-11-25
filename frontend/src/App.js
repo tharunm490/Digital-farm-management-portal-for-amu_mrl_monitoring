@@ -45,6 +45,7 @@ function AppRoutes() {
       <Route path="/farms" element={<ProtectedRoute><FarmList /></ProtectedRoute>} />
       <Route path="/add-farm" element={<ProtectedRoute><AddFarm /></ProtectedRoute>} />
       <Route path="/batches" element={<ProtectedRoute><BatchManagement /></ProtectedRoute>} />
+      <Route path="/batches/farm/:farm_id" element={<ProtectedRoute><BatchManagement /></ProtectedRoute>} />
       <Route path="/animals" element={<ProtectedRoute><BatchManagement /></ProtectedRoute>} />
       <Route path="/treatments" element={<ProtectedRoute><TreatmentManagement /></ProtectedRoute>} />
       <Route path="/treatments/entity/:entity_id" element={<ProtectedRoute><TreatmentManagement /></ProtectedRoute>} />

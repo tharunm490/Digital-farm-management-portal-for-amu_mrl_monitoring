@@ -330,19 +330,6 @@ function AMURecords() {
                         <div className="mrl-value">
                           Predicted Residual Limit: {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}
                         </div>
-                        {!(record.safe_max === null && record.borderline_max === null && record.unsafe_above === null) && (
-                          <>
-                            <div className="limits">
-                              Safe limit: {record.safe_max !== null ? record.safe_max : '–'}
-                            </div>
-                            <div className="limits">
-                              Borderline limit: {record.borderline_max !== null ? record.borderline_max : '–'}
-                            </div>
-                            <div className="limits">
-                              Unsafe above: {record.unsafe_above !== null ? record.unsafe_above : '–'}
-                            </div>
-                          </>
-                        )}
                         {viewMode === 'detailed' ? (
                           <div className="withdrawal-info">
                             <div className="withdrawal-days">{effectiveWithdrawalDays} days withdrawal</div>
@@ -353,6 +340,15 @@ function AMURecords() {
                                   {daysUntilSafe > 0 ? ` (${daysUntilSafe} days left)` : daysUntilSafe === 0 ? ' (Ready today)' : ' (Safe)'}
                                 </span>
                               )}
+                            </div>
+                            <div className="limits">
+                              Safe limit: {record.safe_max !== null ? record.safe_max : '–'}
+                            </div>
+                            <div className="limits">
+                              Borderline limit: {record.borderline_max !== null ? record.borderline_max : '–'}
+                            </div>
+                            <div className="limits">
+                              Unsafe above: {record.unsafe_above !== null ? record.unsafe_above : '–'}
                             </div>
                           </div>
                         ) : (
@@ -366,9 +362,11 @@ function AMURecords() {
                       </div>
                     </div>
                     <div className="col-status">
-                      <span className={`risk-badge ${getStatusClass(record.status)}`}>
-                        {getRiskIcon(record.status)} {record.status}
-                      </span>
+                      {record.status !== 'Unknown' && (
+                        <span className={`risk-badge ${getStatusClass(record.status)}`}>
+                          {getRiskIcon(record.status)} {record.status}
+                        </span>
+                      )}
                       {viewMode === 'detailed' && record.overdosage && (
                         <div className="risk-percentage">
                           ⚠️ OVERDOSAGE DETECTED
