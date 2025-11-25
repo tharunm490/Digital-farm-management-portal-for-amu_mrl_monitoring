@@ -198,6 +198,9 @@ const Chatbot = () => {
               KrushiAI - Farm Assistant
             </div>
             <div className="chatbot-controls">
+              <button onClick={() => setIsOpen(false)} className="close-button" title="Close chat">
+                ✕
+              </button>
               <button onClick={clearChat} className="clear-button" title="Clear chat">
                 🗑️
               </button>
