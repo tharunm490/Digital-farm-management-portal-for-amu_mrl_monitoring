@@ -5,6 +5,7 @@ const AMU = require('../models/AMU');
 const Entity = require('../models/Entity');
 const MRL = require('../models/MRL');
 const { authMiddleware, farmerOnly } = require('../middleware/auth');
+const { predictTissueMrl, checkOverdosage, calculateSafeDate } = require('../utils/amuTissueService');
 
 // Helper function to convert integer date (YYYYMMDD) to string date (YYYY-MM-DD)
 function intToDate(intDate) {
@@ -231,9 +232,52 @@ router.post('/:treatmentId/amu', async (req, res) => {
 
     const newAMU = await AMU.getById(amuId);
 
+    // Tissue-wise MRL prediction for MEAT matrix
+    let tissueResults = null;
+    if (entity.matrix === 'meat' && newAMU.medicine) {
+      tissueResults = predictTissueMrl(
+        entity.species,
+        newAMU.category_type, // Use category_type instead of medicine
+        newAMU.medicine,
+        newAMU.dose_amount,
+        newAMU.dose_unit,
+        newAMU.duration_days,
+        entity.matrix,
+        newAMU.end_date, // End date of treatment
+        new Date().toISOString().split('T')[0] // Current date
+      );
+
+      if (tissueResults) {
+        // Insert tissue results into database
+        const TissueResult = require('../models/TissueResult'); // Assuming model exists
+        for (const [tissue, data] of Object.entries(tissueResults.tissues)) {
+          await TissueResult.create({
+            amu_id: amuId,
+            tissue,
+            predicted_mrl: data.predicted_mrl,
+            base_mrl: data.base_mrl,
+            risk_percent: data.risk_percent,
+            risk_category: data.risk_category
+          });
+        }
+
+        // Update AMU record with worst tissue info
+        await AMU.update(amuId, {
+          worst_tissue: tissueResults.worst_tissue,
+          risk_category: tissueResults.overall_risk_category,
+          predicted_mrl: tissueResults.predicted_mrl,
+          predicted_withdrawal_days: tissueResults.predicted_withdrawal_days,
+          safe_date: calculateSafeDate(newAMU.start_date, tissueResults.predicted_withdrawal_days),
+          overdosage: checkOverdosage(entity.species, newAMU.medicine, newAMU.dose_amount, newAMU.dose_unit, newAMU.frequency_per_day),
+          risk_percent: tissueResults.tissues[tissueResults.worst_tissue].risk_percent
+        });
+      }
+    }
+
     res.status(201).json({
       message: 'AMU record added successfully',
       amu_record: newAMU,
+      tissue_results: tissueResults,
       mrl_info: mrlCheck
     });
   } catch (error) {

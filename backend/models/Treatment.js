@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const VaccinationHistory = require('./VaccinationHistory');
 const Notification = require('./Notification');
+const AMU = require('./AMU');
+const { predictTissueMrl, checkOverdosage, calculateSafeDate } = require('../utils/amuTissueService');
 
 class Treatment {
   // Load dosage reference JSON
@@ -78,6 +80,9 @@ class Treatment {
     // Calculate withdrawal days
     const withdrawalDays = Math.ceil(baseWD + (totalDose * factor));
 
+    // Ensure withdrawal days is not negative
+    const safeWithdrawalDays = Math.max(0, withdrawalDays);
+
     // Determine status based on thresholds
     let status = 'safe';
     if (thresholds && safePredictedMRL > thresholds.safe && safePredictedMRL <= thresholds.borderline) {
@@ -95,15 +100,22 @@ class Treatment {
       }
     }
 
+    // Calculate risk percent
+    let riskPercent = null;
+    if (baseMRL > 0) {
+      riskPercent = (safePredictedMRL / baseMRL) * 100;
+    }
+
     // If category is vaccine or vitamin, set withdrawal to 0
-    const finalWithdrawalDays = (category === 'vaccine' || category === 'vitamin') ? 0 : withdrawalDays;
+    const finalWithdrawalDays = (category === 'vaccine' || category === 'vitamin') ? 0 : safeWithdrawalDays;
 
     return {
       predicted_mrl: safePredictedMRL.toFixed(2),
       predicted_withdrawal_days: finalWithdrawalDays,
       status,
       overdosage,
-      safe_date: null
+      safe_date: null,
+      risk_percent: riskPercent ? riskPercent.toFixed(2) : null
     };
   }
   // Create new treatment record
@@ -279,6 +291,45 @@ class Treatment {
 
       const amuId = await this.createAMURecord(treatmentId, finalPredictions, end_date);
 
+      // Create tissue predictions if matrix is meat
+      if (entity.matrix === 'meat') {
+        const tissueResults = predictTissueMrl(
+          entity.species,
+          medication_type,
+          medicine,
+          dose_amount ? parseFloat(dose_amount) : null,
+          dose_unit,
+          duration_days ? parseInt(duration_days) : null,
+          entity.matrix,
+          end_date,
+          end_date // current date as end_date for initial prediction
+        );
+
+        if (tissueResults) {
+          const TissueResult = require('./TissueResult');
+          for (const [tissue, data] of Object.entries(tissueResults.tissues)) {
+            await TissueResult.create({
+              amu_id: amuId,
+              tissue,
+              predicted_mrl: data.predicted_mrl,
+              base_mrl: data.base_mrl,
+              risk_percent: data.risk_percent,
+              risk_category: data.risk_category
+            });
+          }
+
+          // Update AMU with worst tissue info
+          await AMU.update(amuId, {
+            worst_tissue: tissueResults.worst_tissue,
+            risk_category: tissueResults.overall_risk_category,
+            predicted_mrl: tissueResults.predicted_mrl,
+            predicted_withdrawal_days: tissueResults.predicted_withdrawal_days,
+            safe_date: tissueResults.safe_date,
+            risk_percent: tissueResults.tissues[tissueResults.worst_tissue].risk_percent
+          });
+        }
+      }
+
       // Create notification if unsafe or overdosage
       if (finalPredictions.status === 'unsafe' || finalPredictions.overdosage) {
         let notificationSubtype = subtype;
@@ -310,7 +361,7 @@ class Treatment {
 
   // Auto-create AMU record
   static async createAMURecord(treatmentId, predictions, end_date) {
-    const { predicted_mrl, predicted_withdrawal_days, status, overdosage } = predictions;
+    const { predicted_mrl, predicted_withdrawal_days, status, overdosage, risk_percent } = predictions;
 
     // Calculate safe_date: end_date + predicted_withdrawal_days
     let safe_date = null;
@@ -330,7 +381,7 @@ class Treatment {
         frequency_per_day, duration_days,
         start_date, end_date,
         predicted_mrl, predicted_withdrawal_days, overdosage, risk_category,
-        safe_date
+        safe_date, risk_percent
       )
       SELECT
         tr.treatment_id,
@@ -353,7 +404,7 @@ class Treatment {
         tr.start_date,
         tr.end_date,
         ?, ?, ?, ?,
-        ?
+        ?, ?
       FROM treatment_records tr
       JOIN animals_or_batches ao ON tr.entity_id = ao.entity_id
       WHERE tr.treatment_id = ?
@@ -365,6 +416,7 @@ class Treatment {
       overdosage ? 1 : 0,
       status || 'safe',
       safe_date,
+      risk_percent || null,
       treatmentId
     ]);
 

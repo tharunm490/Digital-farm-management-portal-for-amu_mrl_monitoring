@@ -93,6 +93,48 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     const daysFromWithdrawal = Math.floor((today - withdrawalFinishDate) / (1000 * 60 * 60 * 24));
     
     const cumulativeDose = req.body.dose_mg_per_kg * req.body.frequency_per_day * req.body.duration_days;
+
+    // Calculate tissue predictions if matrix is meat
+    let tissuePrediction = null;
+    let overdosage = false;
+    let riskCategory = req.body.risk_category || 'Low';
+    let predictedMrl = req.body.predicted_mrl || 0;
+    let predictedWithdrawalDays = effectiveWithdrawalDays;
+    let worstTissue = null;
+    let riskPercent = 0;
+
+    if (req.body.matrix === 'meat') {
+      const { predictTissueMrl, checkOverdosage } = require('../utils/amuTissueService');
+      tissuePrediction = predictTissueMrl(
+        req.body.species,
+        req.body.category_type, // medication_type as category
+        req.body.medicine,
+        req.body.dose_amount,
+        req.body.dose_unit,
+        req.body.duration_days,
+        req.body.matrix,
+        req.body.end_date,
+        today.toISOString().split('T')[0]
+      );
+
+      if (tissuePrediction) {
+        riskCategory = tissuePrediction.overall_risk_category;
+        predictedMrl = tissuePrediction.predicted_mrl;
+        predictedWithdrawalDays = tissuePrediction.predicted_withdrawal_days;
+        worstTissue = tissuePrediction.worst_tissue;
+        // Find the risk_percent of the worst tissue
+        riskPercent = tissuePrediction.tissues[worstTissue].risk_percent;
+      }
+
+      overdosage = checkOverdosage(
+        req.body.species,
+        req.body.category_type,
+        req.body.medicine,
+        req.body.dose_amount,
+        req.body.dose_unit,
+        req.body.frequency_per_day
+      );
+    }
     
     const amuData = {
       ...req.body,
@@ -101,11 +143,31 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
       days_from_withdrawal: daysFromWithdrawal,
       cumulative_dose: cumulativeDose,
       mrl_risk_prob: req.body.mrl_risk_prob || 0,
-      mrl_risk_category: req.body.mrl_risk_category || 'Low',
-      withdrawal_period_days: effectiveWithdrawalDays  // Use the overridden value
+      mrl_risk_category: riskCategory,
+      predicted_mrl: predictedMrl,
+      predicted_withdrawal_days: predictedWithdrawalDays,
+      overdosage: overdosage,
+      worst_tissue: worstTissue,
+      risk_percent: riskPercent
     };
     
     const amuId = await AMU.create(amuData);
+
+    // Insert tissue results if available
+    if (tissuePrediction && tissuePrediction.tissues) {
+      const TissueResult = require('../models/TissueResult');
+      for (const [tissue, data] of Object.entries(tissuePrediction.tissues)) {
+        await TissueResult.create({
+          amu_id: amuId,
+          tissue,
+          predicted_mrl: data.predicted_mrl,
+          base_mrl: data.base_mrl,
+          risk_percent: data.risk_percent,
+          risk_category: data.risk_category
+        });
+      }
+    }
+
     res.status(201).json({ id: amuId, message: 'AMU record created successfully' });
   } catch (error) {
     console.error('Error creating AMU record:', error);

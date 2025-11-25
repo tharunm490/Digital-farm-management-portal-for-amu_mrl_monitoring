@@ -176,7 +176,7 @@ router.get('/:entity_id', async (req, res) => {
                 ${record.safe_date ? `<div><strong>Safe Date:</strong> ${record.safe_date}</div>` : ''}
                 ${record.predicted_mrl ? `<div><strong>Predicted Residual Limit:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.predicted_mrl} mcg/kg</span></div>` : ''}
                 ${record.predicted_mrl && medicineData?.mrl_by_matrix?.[record.matrix]?.mrl_ug_per_kg?.safe ? `<div><strong>Safe Residual Limit:</strong> ${medicineData.mrl_by_matrix[record.matrix].mrl_ug_per_kg.safe} mcg/kg</div>` : ''}
-                ${record.predicted_withdrawal_days ? `<div><strong>Predicted Withdrawal Days:</strong> ${record.predicted_withdrawal_days}</div>` : ''}
+                ${record.predicted_withdrawal_days ? `<div><strong>Predicted Withdrawal Days:</strong> ${Math.max(0, record.predicted_withdrawal_days)}</div>` : ''}
                 ${record.mrl_status ? `<div><strong>Risk Category:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.mrl_status}</span></div>` : ''}
                 ${record.medication_type ? `<div><strong>Category:</strong> ${record.medication_type}</div>` : ''}
                 ${record.reason ? `<div><strong>Reason:</strong> ${record.reason}</div>` : ''}

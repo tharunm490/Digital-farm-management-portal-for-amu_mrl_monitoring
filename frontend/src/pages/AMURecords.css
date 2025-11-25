@@ -1,7 +1,8 @@
 .amu-records-page {
   padding: 20px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .page-header {
@@ -13,6 +14,7 @@
   color: #2e5c1a;
   font-size: 2.5rem;
   margin-bottom: 10px;
+  font-weight: 600;
 }
 
 .page-header p {
@@ -118,412 +120,289 @@
   border-color: #2e5c1a;
 }
 
-/* View Toggle */
-.view-toggle {
-  display: flex;
-  gap: 5px;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 2px solid #e0e0e0;
-}
-
-.view-btn {
-  padding: 8px 12px;
-  border: none;
-  background: white;
-  color: #666;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.view-btn:hover {
-  background: #f0f0f0;
-}
-
-.view-btn.active {
-  background: #2e5c1a;
-  color: white;
-}
-
-/* AMU Records */
-.amu-records-container {
+/* Records Container */
+.records-container {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  padding: 20px;
+}
+
+.no-records {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.no-records-icon {
+  font-size: 3rem;
   margin-bottom: 20px;
+  opacity: 0.5;
 }
 
-.amu-records-table {
-  width: 100%;
-}
-
-.table-header {
-  display: grid;
-  grid-template-columns: 1.4fr 1.3fr 1.6fr 1.1fr 1.4fr 0.9fr;
-  gap: 15px;
-  background: #f8f9fa;
-  padding: 15px 20px;
-  border-bottom: 2px solid #e9ecef;
-  font-weight: 600;
+.no-records h3 {
+  margin-bottom: 10px;
   color: #2e5c1a;
-  font-size: 0.9rem;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.record-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  position: relative;
+}
+
+.record-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.record-card:hover {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.card-header {
+  background: #f8f9fa;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.medicine-info h3 {
+  margin: 0 0 5px 0;
+  color: #2e5c1a;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.header-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.category {
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.matrix-indicator {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.table-row {
-  display: grid;
-  grid-template-columns: 1.4fr 1.3fr 1.6fr 1.1fr 1.4fr 0.9fr;
-  gap: 15px;
-  padding: 15px 20px;
-  border-bottom: 1px solid #e9ecef;
-  transition: background-color 0.2s;
-}
-
-.table-row:hover {
-  background-color: #f8f9fa;
-}
-
-.table-row:last-child {
-  border-bottom: none;
-}
-
-/* Column Styles */
-.col-medicine {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.medicine-name {
-  font-weight: 600;
-  color: #2e5c1a;
-  font-size: 0.95rem;
-}
-
-.medicine-type {
-  font-size: 0.8rem;
-  color: #666;
-  text-transform: capitalize;
-}
-
-.matrix-info {
-  font-size: 0.8rem;
-  color: #2e5c1a;
-  font-weight: 500;
-}
-
-.col-entity {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.entity-name {
-  font-weight: 500;
-  color: #333;
-  font-size: 0.9rem;
-}
-
-.farm-name {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-.species-info {
-  font-size: 0.8rem;
-  color: #2e5c1a;
-  font-weight: 500;
-}
-
-.col-treatment {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.treatment-detail {
-  display: flex;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.treatment-detail span {
-  padding: 2px 6px;
-  background: #f1f3f4;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-.reason {
-  font-size: 0.8rem;
-  color: #666;
-  font-style: italic;
-}
-
-.col-dates {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.date-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-}
-
-.date-label {
-  font-weight: 500;
-  color: #2e5c1a;
-  min-width: 35px;
-}
-
-.date-value {
-  color: #333;
-}
-
-.col-safety {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.safety-item {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.mrl-value {
-  font-weight: 600;
-  color: #2e5c1a;
-  font-size: 0.9rem;
-}
-
-.limits {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-.withdrawal-info {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-.withdrawal-days {
-  margin-bottom: 2px;
-}
-
-.safe-date {
-  font-weight: 500;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 0.8rem;
-}
-
-.safe-date.safe {
-  background: #e8f5e8;
-  color: #2e7d32;
-}
-
-.safe-date.pending {
-  background: #fff3e0;
-  color: #ef6c00;
-}
-
-.days-remaining {
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-.col-status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.risk-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.compact-info {
-  font-size: 0.75rem;
-  color: #666;
-  margin-top: 2px;
-}
-
-.compact-treatment {
-  font-size: 0.8rem;
-  color: #555;
-  line-height: 1.4;
-}
-
-.compact-dates {
-  font-size: 0.85rem;
-  color: #333;
-  text-align: center;
-}
-
-.compact-safety {
-  font-size: 0.8rem;
-  color: #666;
-  line-height: 1.4;
-}
-
-/* Compact View Adjustments */
-.amu-records-table.compact .table-row {
-  padding: 12px 15px;
-}
-
-.amu-records-table.compact .col-medicine,
-.amu-records-table.compact .col-entity,
-.amu-records-table.compact .col-treatment,
-.amu-records-table.compact .col-dates,
-.amu-records-table.compact .col-safety,
-.amu-records-table.compact .col-status {
-  gap: 2px;
-}
-
-.amu-records-table.compact .medicine-name {
-  font-size: 0.9rem;
-}
-
-.amu-records-table.compact .entity-name {
-  font-size: 0.85rem;
-}
-
-.amu-records-table.compact .mrl-value {
-  font-size: 0.85rem;
-}
-
-.risk-safe {
-  background: #e8f5e8;
-  color: #2e7d32;
-}
-
-.risk-borderline {
-  background: #fff3e0;
-  color: #ef6c00;
-}
-
-.risk-unsafe {
+.matrix-meat {
   background: #ffebee;
   color: #c62828;
 }
 
-.risk-unknown {
+.matrix-milk {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.matrix-egg {
+  background: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-safe {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-borderline {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-unsafe {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.status-unknown {
   background: #f5f5f5;
   color: #666;
 }
 
-/* Pagination */
-.pagination {
+.card-body {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.info-section {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-}
-
-.page-btn {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  color: #2e5c1a;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.9rem;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #2e5c1a;
-  color: white;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-btn.active {
-  background: #2e5c1a;
-  color: white;
-  font-weight: 600;
-}
-
-.page-numbers {
-  display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 5px;
 }
 
-.page-dots {
-  padding: 0 5px;
+.info-section h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2e5c1a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-section p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.farm {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.species {
+  color: #2e5c1a;
+  font-weight: 500;
+}
+
+.reason {
+  font-style: italic;
   color: #666;
 }
 
-/* Results Summary */
-.results-summary {
-  text-align: center;
-  padding: 10px 20px;
-  background: #f8f9fa;
+.safe-date {
+  font-weight: 500;
+  color: #2e5c1a;
+}
+
+.safe-date span {
+  font-size: 0.8rem;
   color: #666;
-  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+.card-footer {
+  padding: 12px 15px;
   border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+}
+
+.expand-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.expand-btn:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.expand-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.residual-details {
+  border-top: 1px solid #e9ecef;
+  background: #fafafa;
+  padding: 15px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #ffcdd2;
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .amu-records-page {
-    padding: 25px;
-  }
-
-  .page-header h1 {
-    font-size: 2.2rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-  }
-
-  .table-header,
-  .table-row {
-    grid-template-columns: 1.3fr 1.2fr 1.5fr 1fr 1.3fr 0.8fr;
-    gap: 12px;
-    padding: 12px 18px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 1.3fr 1.2fr 1.4fr 1fr 1.3fr 0.8fr;
-    gap: 10px;
-    padding: 12px 15px;
-  }
-
-  .table-header {
-    font-size: 0.8rem;
-  }
-}
-
 @media (max-width: 768px) {
   .amu-records-page {
     padding: 15px;
@@ -550,68 +429,22 @@
   }
 
   .filter-group select,
-  .filter-group input,
-  .view-toggle {
+  .filter-group input {
     width: 100%;
     min-width: unset;
   }
 
-  .table-header {
-    display: none; /* Hide header on mobile */
+  .records-grid {
+    grid-template-columns: 1fr;
   }
 
-  .table-row {
-    display: block;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-  }
-
-  .col-medicine,
-  .col-entity,
-  .col-treatment,
-  .col-dates,
-  .col-safety,
-  .col-status {
-    display: block;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .col-medicine::before { content: "Medicine & Product: "; font-weight: 600; color: #2e5c1a; }
-  .col-entity::before { content: "Entity & Farm: "; font-weight: 600; color: #2e5c1a; }
-  .col-treatment::before { content: "Treatment Details: "; font-weight: 600; color: #2e5c1a; }
-  .col-dates::before { content: "Treatment Period: "; font-weight: 600; color: #2e5c1a; }
-  .col-safety::before { content: "Safety Info: "; font-weight: 600; color: #2e5c1a; }
-  .col-status::before { content: "Risk Status: "; font-weight: 600; color: #2e5c1a; }
-
-  .treatment-detail {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .date-info {
-    justify-content: flex-start;
-    gap: 10px;
-  }
-
-  .pagination {
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-
-  .page-numbers {
-    order: 2;
-    flex-basis: 100%;
-    justify-content: center;
-    margin: 10px 0;
+  .card-body {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .amu-records-page {
     padding: 10px;
   }
@@ -620,10 +453,6 @@
     font-size: 1.75rem;
   }
 
-  .page-header p {
-    font-size: 1rem;
-  }
-
   .stat-card {
     padding: 15px;
     gap: 10px;
@@ -633,103 +462,14 @@
     font-size: 1.75rem;
   }
 
-  .stat-label {
-    font-size: 0.85rem;
-  }
-
-  .filters-section {
-    padding: 15px;
-  }
-
-  .amu-records-container {
-    margin-bottom: 15px;
-  }
-
-  .table-row {
+  .card-header {
     padding: 12px;
-    margin-bottom: 12px;
-  }
-
-  .col-medicine,
-  .col-entity,
-  .col-treatment,
-  .col-dates,
-  .col-safety,
-  .col-status {
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-  }
-
-  .medicine-name {
-    font-size: 0.9rem;
-  }
-
-  .entity-name {
-    font-size: 0.85rem;
-  }
-
-  .treatment-detail span {
-    font-size: 0.8rem;
-  }
-
-  .mrl-value {
-    font-size: 0.85rem;
-  }
-
-  .risk-badge {
-    font-size: 0.7rem;
-  }
-
-  .pagination {
-    padding: 15px 10px;
-  }
-
-  .page-btn {
-    padding: 6px 10px;
-    font-size: 0.85rem;
-  }
-
-  .results-summary {
-    padding: 8px 15px;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .amu-records-page {
-    padding-top: 60px;
-    padding-bottom: 100px;
-  }
-
-  .stat-card {
-    padding: 15px;
-  }
-
-  .stat-number {
-    font-size: 1.5rem;
-  }
-
-  .table-row {
-    padding: 12px;
-  }
-
-  .detail-compact {
     flex-direction: column;
+    gap: 10px;
     align-items: flex-start;
-    gap: 4px;
   }
 
-  .detail-compact span {
-    width: 100%;
-    text-align: left;
-  }
-
-  .pagination {
-    padding: 15px 10px;
-  }
-
-  .page-btn {
-    padding: 6px 10px;
-    font-size: 0.8rem;
+  .card-body {
+    padding: 12px;
   }
 }

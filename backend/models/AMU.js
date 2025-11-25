@@ -61,11 +61,13 @@ class AMU {
       predicted_mrl,
       predicted_withdrawal_days,
       overdosage,
-      risk_category
+      risk_category,
+      worst_tissue,
+      risk_percent
     } = amuData;
 
     // Override predicted_withdrawal_days for vaccine and vitamin categories
-    let effectiveWithdrawalDays = predicted_withdrawal_days;
+    let effectiveWithdrawalDays = Math.max(0, predicted_withdrawal_days || 0);
     if (category_type === 'vaccine' || category_type === 'vitamin') {
       effectiveWithdrawalDays = 0;
     }
@@ -92,8 +94,8 @@ class AMU {
         route, dose_amount, dose_unit,
         frequency_per_day, duration_days,
         start_date, end_date,
-        predicted_mrl, predicted_withdrawal_days, safe_date, overdosage, risk_category
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        predicted_mrl, predicted_withdrawal_days, safe_date, overdosage, risk_category, worst_tissue, risk_percent
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await db.execute(query, [
@@ -120,13 +122,15 @@ class AMU {
       effectiveWithdrawalDays,  // Use the overridden value
       safe_date,
       overdosage,
-      risk_category
+      risk_category,
+      worst_tissue,
+      risk_percent
     ]);
 
     const amuId = result.insertId;
 
     // Create notification if unsafe
-    if (risk_category === 'unsafe') {
+    if (risk_category === 'UNSAFE') {
       await Notification.create({
         user_id,
         type: 'alert',
@@ -222,7 +226,8 @@ class AMU {
     `;
     const [rows] = await db.execute(query, [farmerId]);
     // Add status and MRL limits to each record
-    return rows.map(row => {
+    const TissueResult = require('./TissueResult');
+    return await Promise.all(rows.map(async row => {
       // Use risk_category for status, capitalize it
       const status = (row.risk_category && row.risk_category !== '0' && row.risk_category !== 0) ? row.risk_category.charAt(0).toUpperCase() + row.risk_category.slice(1) : 'Unknown';
 
@@ -238,8 +243,30 @@ class AMU {
         }
       }
 
-      return { ...row, status, safe_max, borderline_max, unsafe_above };
-    });
+      // Get tissue results if matrix is meat
+      let tissue_results = null;
+      if (row.matrix === 'meat') {
+        const tissues = await TissueResult.getByAmuId(row.amu_id);
+        if (tissues.length > 0) {
+          tissue_results = {
+            tissues: {},
+            worst_tissue: row.worst_tissue,
+            overall_risk_category: row.risk_category,
+            predicted_mrl: row.predicted_mrl
+          };
+          tissues.forEach(t => {
+            tissue_results.tissues[t.tissue] = {
+              predicted_mrl: t.predicted_mrl,
+              base_mrl: t.base_mrl,
+              risk_percent: t.risk_percent,
+              risk_category: t.risk_category
+            };
+          });
+        }
+      }
+
+      return { ...row, status, safe_max, borderline_max, unsafe_above, tissue_results };
+    }));
   }
 
   // Get AMU records with active withdrawal periods
@@ -260,22 +287,14 @@ class AMU {
     return rows;
   }
 
-  // Get AMU statistics for a farmer
-  static async getStats(farmerId) {
-    const query = `
-      SELECT
-        COUNT(*) as total_records,
-        AVG(predicted_mrl) as avg_mrl,
-        AVG(predicted_withdrawal_days) as avg_withdrawal,
-        SUM(CASE WHEN risk_category = 'safe' THEN 1 ELSE 0 END) as safe_count,
-        SUM(CASE WHEN risk_category = 'borderline' THEN 1 ELSE 0 END) as borderline_count,
-        SUM(CASE WHEN risk_category = 'unsafe' THEN 1 ELSE 0 END) as unsafe_count
-      FROM amu_records a
-      JOIN farms f ON a.farm_id = f.farm_id
-      WHERE f.farmer_id = ?
-    `;
-    const [rows] = await db.execute(query, [farmerId]);
-    return rows[0];
+  // Update AMU record
+  static async update(amuId, updateData) {
+    const fields = Object.keys(updateData);
+    const values = Object.values(updateData);
+    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const query = `UPDATE amu_records SET ${setClause} WHERE amu_id = ?`;
+    values.push(amuId);
+    await db.execute(query, values);
   }
 }
 

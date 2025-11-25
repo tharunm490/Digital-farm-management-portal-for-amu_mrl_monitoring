@@ -1,0 +1,235 @@
+/* TissuePredictionTable.css */
+.tissue-prediction-container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5e9;
+}
+
+.tissue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tissue-header h4 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.matrix-info {
+  display: flex;
+  align-items: center;
+}
+
+.matrix-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.overall-risk-summary {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.worst-tissue {
+  font-size: 0.9em;
+  color: #34495e;
+}
+
+.overall-risk-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.overall-risk-badge.risk-safe {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.overall-risk-badge.risk-borderline {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.overall-risk-badge.risk-unsafe {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.tissue-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tissue-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 0.9em;
+}
+
+.tissue-table th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8em;
+}
+
+.tissue-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.tissue-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.tissue-table tbody tr.worst-tissue-row {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.tissue-name {
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.predicted-mrl, .predicted-residual-limit {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+.risk-percent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.risk-bar {
+  width: 80px;
+  height: 8px;
+  background: #ecf0f1;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.risk-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
+  transition: width 0.3s ease;
+}
+
+.risk-category {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8em;
+}
+
+.risk-category.risk-safe {
+  color: #27ae60;
+}
+
+.risk-category.risk-borderline {
+  color: #f39c12;
+}
+
+.risk-category.risk-unsafe {
+  color: #e74c3c;
+}
+
+.tissue-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85em;
+  color: #34495e;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.legend-color.safe {
+  background: #27ae60;
+}
+
+.legend-color.borderline {
+  background: #f39c12;
+}
+
+.legend-color.unsafe {
+  background: #e74c3c;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tissue-prediction-container {
+    padding: 15px;
+  }
+  
+  .tissue-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tissue-table {
+    font-size: 0.8em;
+  }
+  
+  .tissue-table th,
+  .tissue-table td {
+    padding: 8px 10px;
+  }
+  
+  .tissue-legend {
+    gap: 15px;
+  }
+}

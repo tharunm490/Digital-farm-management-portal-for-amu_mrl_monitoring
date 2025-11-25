@@ -1778,7 +1778,7 @@ const TreatmentManagement = () => {
                             </div>
                             <div className="detail-row">
                               <span className="label">Predicted Withdrawal Days:</span>
-                              <span className="value">{amu.predicted_withdrawal_days} days</span>
+                              <span className="value">{Math.max(0, amu.predicted_withdrawal_days || 0)} days</span>
                             </div>
                             <div className="detail-row">
                               <span className="label">Risk Category:</span>

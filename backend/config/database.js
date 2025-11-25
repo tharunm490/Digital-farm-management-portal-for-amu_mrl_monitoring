@@ -38,7 +38,7 @@ function testConnection() {
         console.error('Max connection attempts reached. Please check your database configuration.');
       }
     } else {
-      console.log('✅ Database connected successfully to Railway');
+      console.log('✅ Database connected successfully to Railway/mysql_d');
       connection.release();
     }
   });
