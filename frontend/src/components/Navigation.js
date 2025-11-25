@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navigation.css';
+import './Navigation.overrides.css';
 
 const Navigation = () => {
   const { user, logout } = useAuth();
@@ -44,6 +45,12 @@ const Navigation = () => {
         </button>
 
         <ul className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
+          <li className="nav-item close-menu">
+            <button onClick={toggleMobileMenu} className="nav-link close-btn">
+              <span className="nav-icon">✕</span>
+              Close
+            </button>
+          </li>
           <li className="nav-item">
             <Link to="/dashboard" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
               <span className="nav-icon">📊</span>

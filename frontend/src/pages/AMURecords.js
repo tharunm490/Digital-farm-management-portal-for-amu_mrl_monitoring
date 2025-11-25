@@ -20,6 +20,12 @@ function AMURecords() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setViewMode('compact');
+    }
+  }, []);
+
   const fetchAMURecords = async () => {
     try {
       setLoading(true);

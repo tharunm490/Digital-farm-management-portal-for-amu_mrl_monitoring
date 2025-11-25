@@ -19,6 +19,7 @@ const Chatbot = () => {
   const [isVoiceSupported, setIsVoiceSupported] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
+  const voicesRef = useRef([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,10 +50,8 @@ const Chatbot = () => {
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = language === 'english' ? 'en-US' : 
                                    language === 'hindi' ? 'hi-IN' :
-                                   language === 'kannada' ? 'kn-IN' :
                                    language === 'telugu' ? 'te-IN' :
-                                   language === 'tamil' ? 'ta-IN' :
-                                   language === 'malayalam' ? 'ml-IN' : 'en-US';
+                                   language === 'tamil' ? 'ta-IN' : 'en-US';
 
       recognitionRef.current.onstart = () => {
         setIsListening(true);
@@ -73,6 +72,16 @@ const Chatbot = () => {
         setIsListening(false);
       };
     }
+
+    // Load voices for speech synthesis
+    const loadVoices = () => {
+      voicesRef.current = speechSynthesis.getVoices();
+    };
+
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
   }, [language]);
 
   const sendMessage = async () => {
@@ -90,7 +99,7 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chatbot/chat', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/chatbot/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -158,10 +167,22 @@ const Chatbot = () => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = language === 'english' ? 'en-US' :
                       language === 'hindi' ? 'hi-IN' :
-                      language === 'kannada' ? 'kn-IN' :
                       language === 'telugu' ? 'te-IN' :
-                      language === 'tamil' ? 'ta-IN' :
-                      language === 'malayalam' ? 'ml-IN' : 'en-US';
+                      language === 'tamil' ? 'ta-IN' : 'en-US';
+
+      // Try to find a voice that matches the language
+      const voices = voicesRef.current;
+      const langMap = {
+        english: 'en',
+        hindi: 'hi',
+        telugu: 'te',
+        tamil: 'ta'
+      };
+      const langPrefix = langMap[language] || 'en';
+      const matchingVoice = voices.find(voice => voice.lang.startsWith(langPrefix));
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
 
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => setIsSpeaking(false);
@@ -173,11 +194,9 @@ const Chatbot = () => {
 
   const languages = [
     { value: 'english', label: 'English' },
-    { value: 'kannada', label: 'ಕನ್ನಡ' },
+    { value: 'hindi', label: 'हिंदी' },
     { value: 'telugu', label: 'తెలుగు' },
-    { value: 'tamil', label: 'தமிழ்' },
-    { value: 'malayalam', label: 'മലയാളം' },
-    { value: 'hindi', label: 'हिंदी' }
+    { value: 'tamil', label: 'தமிழ்' }
   ];
 
   return (

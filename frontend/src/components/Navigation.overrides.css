@@ -1,0 +1,44 @@
+/* Mobile overrides: make mobile nav inline and dropdowns expand in flow to avoid overlapping page content */
+@media (max-width:768px) {
+  .nav-menu {
+    position: static !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.28s ease !important;
+    box-shadow: none !important;
+    width: 100% !important;
+  }
+
+  .nav-menu.active {
+    max-height: 1000px !important;
+  }
+
+  .dropdown-menu {
+    position: static !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+
+  .dropdown-menu.show {
+    max-height: 600px;
+  }
+
+  .dropdown-item {
+    color: rgba(255,255,255,0.95) !important;
+    padding: 0.4rem 1rem !important;
+    background: transparent !important;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(255,255,255,0.03) !important;
+    color: white !important;
+  }
+}

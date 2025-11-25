@@ -696,6 +696,11 @@
 }
 
 @media (max-width: 480px) {
+  .amu-records-page {
+    padding-top: 60px;
+    padding-bottom: 100px;
+  }
+
   .stat-card {
     padding: 15px;
   }
