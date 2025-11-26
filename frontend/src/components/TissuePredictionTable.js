@@ -44,6 +44,12 @@ const TissuePredictionTable = ({ tissueResults, matrix }) => {
         </div>
       </div>
       
+      {tissueResults.message && (
+        <div className="tissue-message warning">
+          {tissueResults.message}
+        </div>
+      )}
+      
       <div className="tissue-table-wrapper">
         <table className="tissue-table">
           <thead>

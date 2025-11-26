@@ -81,7 +81,7 @@ class Treatment {
     const withdrawalDays = Math.ceil(baseWD + (totalDose * factor));
 
     // Ensure withdrawal days is not negative
-    const safeWithdrawalDays = Math.max(0, withdrawalDays);
+    let safeWithdrawalDays = Math.max(0, withdrawalDays);
 
     // Determine status based on thresholds
     let status = 'safe';
@@ -98,6 +98,12 @@ class Treatment {
         overdosage = true;
         status = 'unsafe'; // Force unsafe if overdosage
       }
+    }
+
+    // Scale withdrawal days for overdosage
+    if (overdosage) {
+      const overdoseMultiplier = Math.ceil(safeDose / item.recommended_doses.overdose.min);
+      safeWithdrawalDays = Math.max(baseWD * overdoseMultiplier, baseWD * 2);
     }
 
     // Calculate risk percent
@@ -145,6 +151,30 @@ class Treatment {
       vaccination_date
     } = treatmentData;
 
+    // Map route names to database enum values
+    const routeMapping = {
+      'Intramuscular (IM)': 'IM',
+      'Intravenous (IV)': 'IV',
+      'Subcutaneous (SC)': 'SC',
+      'Oral': 'oral',
+      'Water': 'water',
+      'Feed': 'feed'
+    };
+    const mappedRoute = routeMapping[route] || route;
+
+    const final_is_vaccine = medication_type === 'vaccine';
+
+    // Map medication categories to JSON keys
+    const categoryMap = {
+      'Anti Inflammatory': 'anti-inflammatory',
+      'Antibiotic': 'antibiotic',
+      'Anticoccidial': 'anticoccidial',
+      'Antiparasitic': 'antiparasitic',
+      'Hormonal': 'hormonal',
+      'NSAID': 'nsaid'
+    };
+    const normalizedCategory = categoryMap[medication_type] || medication_type.toLowerCase().replace(/\s+/g, '-');
+
     // Get entity details to populate additional fields
     const [entityRows] = await db.execute('SELECT * FROM animals_or_batches WHERE entity_id = ?', [entity_id]);
     const entity = entityRows[0];
@@ -168,18 +198,44 @@ class Treatment {
       if (vet_id || vet_name) {
         throw new Error('Veterinarian details should not be provided for poultry treatments');
       }
-      if (!['water', 'feed', 'oral'].includes(route)) {
+      if (!['water', 'feed', 'oral'].includes(mappedRoute)) {
         throw new Error('Invalid route for poultry. Must be water, feed, or oral');
       }
     }
     // Pigs, cattle, goat, sheep can use all routes: IM, IV, SC, oral, water, feed
 
-    // Handle vaccine validation
-    const final_is_vaccine = medication_type === 'vaccine';
-    if (final_is_vaccine) {
-      if (!vaccine_interval_days || !vaccine_total_months || !vaccination_date) {
-        throw new Error('Vaccine interval days, total months, and vaccination date are required for vaccines');
-      }
+    // Validate numeric fields
+    if (dose_amount !== null && dose_amount !== undefined && (isNaN(parseFloat(dose_amount)) || parseFloat(dose_amount) <= 0)) {
+      throw new Error('dose_amount must be a positive number');
+    }
+    if (frequency_per_day !== null && frequency_per_day !== undefined && (isNaN(parseInt(frequency_per_day)) || parseInt(frequency_per_day) <= 0)) {
+      throw new Error('frequency_per_day must be a positive integer');
+    }
+    if (duration_days !== null && duration_days !== undefined && (isNaN(parseInt(duration_days)) || parseInt(duration_days) <= 0)) {
+      throw new Error('duration_days must be a positive integer');
+    }
+    if (vaccine_interval_days !== null && vaccine_interval_days !== undefined && (isNaN(parseInt(vaccine_interval_days)) || parseInt(vaccine_interval_days) <= 0)) {
+      throw new Error('vaccine_interval_days must be a positive integer');
+    }
+    if (vaccine_total_months !== null && vaccine_total_months !== undefined && (isNaN(parseInt(vaccine_total_months)) || parseInt(vaccine_total_months) <= 0)) {
+      throw new Error('vaccine_total_months must be a positive integer');
+    }
+
+    // Validate dates
+    if (start_date && end_date && start_date > end_date) {
+      throw new Error('start_date cannot be after end_date');
+    }
+
+    // Format dates from DD-MM-YYYY to YYYY-MM-DD
+    let formattedStartDate = start_date;
+    if (start_date && typeof start_date === 'string' && start_date.match(/^\d{2}-\d{2}-\d{4}$/)) {
+      const [dd, mm, yyyy] = start_date.split('-');
+      formattedStartDate = `${yyyy}-${mm}-${dd}`;
+    }
+    let formattedEndDate = end_date;
+    if (end_date && typeof end_date === 'string' && end_date.match(/^\d{2}-\d{2}-\d{4}$/)) {
+      const [dd, mm, yyyy] = end_date.split('-');
+      formattedEndDate = `${yyyy}-${mm}-${dd}`;
     }
 
     // Calculate vaccine dates
@@ -222,9 +278,9 @@ class Treatment {
       reason || null,
       cause || null,
       medicine,
-      start_date,
-      end_date,
-      route,
+      formattedStartDate,
+      formattedEndDate,
+      mappedRoute,
       dose_amount ? (isNaN(parseFloat(dose_amount)) ? null : parseFloat(dose_amount)) : null,
       dose_unit,
       frequency_per_day ? (isNaN(parseInt(frequency_per_day)) ? null : parseInt(frequency_per_day)) : null,
@@ -252,7 +308,7 @@ class Treatment {
     if (!final_is_vaccine) {
       const predictions = this.calculateMRLAndWithdrawal(
         entity.species,
-        medication_type,
+        normalizedCategory,
         medicine,
         dose_amount ? parseFloat(dose_amount) : null,
         duration_days ? parseInt(duration_days) : null,
@@ -289,20 +345,21 @@ class Treatment {
         subtype = 'high_dosage';
       }
 
-      const amuId = await this.createAMURecord(treatmentId, finalPredictions, end_date);
+      const amuId = await this.createAMURecord(treatmentId, finalPredictions, formattedEndDate);
 
       // Create tissue predictions if matrix is meat
       if (entity.matrix === 'meat') {
         const tissueResults = predictTissueMrl(
           entity.species,
-          medication_type,
+          normalizedCategory,
           medicine,
           dose_amount ? parseFloat(dose_amount) : null,
           dose_unit,
           duration_days ? parseInt(duration_days) : null,
           entity.matrix,
-          end_date,
-          end_date // current date as end_date for initial prediction
+          formattedEndDate,
+          formattedEndDate, // current date as end_date for initial prediction
+          frequency_per_day ? parseInt(frequency_per_day) : null
         );
 
         if (tissueResults) {
@@ -325,6 +382,7 @@ class Treatment {
             predicted_mrl: tissueResults.predicted_mrl,
             predicted_withdrawal_days: tissueResults.predicted_withdrawal_days,
             safe_date: tissueResults.safe_date,
+            overdosage: tissueResults.overdosage,
             risk_percent: tissueResults.tissues[tissueResults.worst_tissue].risk_percent
           });
         }

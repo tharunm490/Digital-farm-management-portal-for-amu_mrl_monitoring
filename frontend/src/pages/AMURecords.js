@@ -238,6 +238,9 @@ function AMURecords() {
                       <h4>Safety</h4>
                       <p>Predicted Residual: {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}</p>
                       <p>Risk: {record.risk_percent ? `${parseFloat(record.risk_percent).toFixed(2)}%` : 'N/A'}</p>
+                      {record.tissue_results && record.tissue_results.message && (
+                        <p className="warning-message">{record.tissue_results.message}</p>
+                      )}
                       <p>Withdrawal: {displayWithdrawalDays} days</p>
                       <p className="safe-date">
                         Safe Date: {safeDate}

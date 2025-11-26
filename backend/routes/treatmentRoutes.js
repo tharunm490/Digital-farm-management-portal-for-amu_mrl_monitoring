@@ -184,7 +184,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Create treatment error:', error);
-    res.status(500).json({ error: 'Failed to create treatment' });
+    res.status(500).json({ error: error.message || 'Failed to create treatment' });
   }
 });
 
@@ -244,7 +244,8 @@ router.post('/:treatmentId/amu', async (req, res) => {
         newAMU.duration_days,
         entity.matrix,
         newAMU.end_date, // End date of treatment
-        new Date().toISOString().split('T')[0] // Current date
+        new Date().toISOString().split('T')[0], // Current date
+        newAMU.frequency_per_day
       );
 
       if (tissueResults) {
@@ -268,7 +269,8 @@ router.post('/:treatmentId/amu', async (req, res) => {
           predicted_mrl: tissueResults.predicted_mrl,
           predicted_withdrawal_days: tissueResults.predicted_withdrawal_days,
           safe_date: calculateSafeDate(newAMU.start_date, tissueResults.predicted_withdrawal_days),
-          overdosage: checkOverdosage(entity.species, newAMU.medicine, newAMU.dose_amount, newAMU.dose_unit, newAMU.frequency_per_day),
+          overdosage: tissueResults.overdosage,
+          message: tissueResults.message,
           risk_percent: tissueResults.tissues[tissueResults.worst_tissue].risk_percent
         });
       }

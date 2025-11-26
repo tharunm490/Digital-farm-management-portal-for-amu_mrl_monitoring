@@ -102,6 +102,7 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     let predictedWithdrawalDays = effectiveWithdrawalDays;
     let worstTissue = null;
     let riskPercent = 0;
+    let message = '';
 
     if (req.body.matrix === 'meat') {
       const { predictTissueMrl, checkOverdosage } = require('../utils/amuTissueService');
@@ -114,7 +115,8 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
         req.body.duration_days,
         req.body.matrix,
         req.body.end_date,
-        today.toISOString().split('T')[0]
+        today.toISOString().split('T')[0],
+        req.body.frequency_per_day
       );
 
       if (tissuePrediction) {
@@ -124,16 +126,9 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
         worstTissue = tissuePrediction.worst_tissue;
         // Find the risk_percent of the worst tissue
         riskPercent = tissuePrediction.tissues[worstTissue].risk_percent;
+        overdosage = tissuePrediction.overdosage;
+        message = tissuePrediction.message;
       }
-
-      overdosage = checkOverdosage(
-        req.body.species,
-        req.body.category_type,
-        req.body.medicine,
-        req.body.dose_amount,
-        req.body.dose_unit,
-        req.body.frequency_per_day
-      );
     }
     
     const amuData = {
@@ -147,6 +142,7 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
       predicted_mrl: predictedMrl,
       predicted_withdrawal_days: predictedWithdrawalDays,
       overdosage: overdosage,
+      message: message,
       worst_tissue: worstTissue,
       risk_percent: riskPercent
     };
