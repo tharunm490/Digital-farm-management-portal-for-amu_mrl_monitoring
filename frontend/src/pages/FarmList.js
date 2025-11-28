@@ -18,17 +18,19 @@ const FarmList = () => {
   const fetchFarms = async () => {
     try {
       const token = localStorage.getItem('token');
-      const endpoint = user?.role === 'farmer' 
+      const endpoint = user?.role === 'farmer'
         ? `${process.env.REACT_APP_API_URL || '/api'}/farms/my-farms`
         : `${process.env.REACT_APP_API_URL || '/api'}/farms`;
-      
+
       const response = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      setFarms(response.data);
+
+      const farmsData = response.data?.data || response.data || [];
+      setFarms(Array.isArray(farmsData) ? farmsData : []);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch farms');
+      setFarms([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,7 @@ const FarmList = () => {
                 <h3>{farm.farm_name}</h3>
                 <span className="farm-id">ID: {farm.farm_id}</span>
               </div>
-              
+
               <div className="farm-details">
                 <div className="detail-row">
                   <span className="label">Farmer:</span>
@@ -78,7 +80,7 @@ const FarmList = () => {
                 <div className="detail-row">
                   <span className="label">Location:</span>
                   <span className="value">
-                    {farm.latitude && farm.longitude 
+                    {farm.latitude && farm.longitude
                       ? `${farm.latitude}, ${farm.longitude}`
                       : 'Not specified'}
                   </span>
@@ -90,8 +92,8 @@ const FarmList = () => {
               </div>
 
               <div className="farm-actions">
-                <button 
-                  onClick={() => navigate(`/batches/farm/${farm.farm_id}`)} 
+                <button
+                  onClick={() => navigate(`/batches/farm/${farm.farm_id}`)}
                   className="btn-view"
                 >
                   View Batches

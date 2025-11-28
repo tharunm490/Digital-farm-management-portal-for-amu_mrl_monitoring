@@ -7,6 +7,8 @@ const { authMiddleware, farmerOnly } = require('../middleware/auth');
 // Get all farms (filtered by role)
 router.get('/', authMiddleware, async (req, res) => {
   try {
+    const db = require('../config/database');
+    
     if (req.user.role === 'farmer') {
       // Farmers only see their own farms
       const farmer = await Farmer.getByUserId(req.user.user_id);
@@ -16,15 +18,30 @@ router.get('/', authMiddleware, async (req, res) => {
       }
       
       const farms = await Farm.getByFarmerId(farmer.farmer_id);
-      res.json(farms);
+      res.json({ success: true, data: farms });
     } else {
-      // Authorities see all farms
-      const farms = await Farm.getAll();
-      res.json(farms);
+      // Authorities see all farms with detailed info
+      const query = `
+        SELECT f.farm_id, f.farm_name, f.latitude, f.longitude,
+               fr.district, fr.state, fr.phone,
+               u.display_name as farmer_name,
+               COUNT(DISTINCT e.entity_id) as total_animals,
+               COUNT(DISTINCT tr.treatment_id) as total_treatments
+        FROM farms f
+        JOIN farmers fr ON f.farmer_id = fr.farmer_id
+        JOIN users u ON fr.user_id = u.user_id
+        LEFT JOIN animals_or_batches e ON f.farm_id = e.farm_id
+        LEFT JOIN treatment_records tr ON e.entity_id = tr.entity_id
+        GROUP BY f.farm_id
+        ORDER BY f.farm_name
+      `;
+      
+      const [farms] = await db.execute(query);
+      res.json({ success: true, data: farms });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to fetch farms' });
+    res.status(500).json({ success: false, message: 'Failed to fetch farms' });
   }
 });
 

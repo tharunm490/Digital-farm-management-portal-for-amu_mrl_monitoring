@@ -6,13 +6,13 @@ const User = {
   create: async (userData) => {
     const { email, password, display_name, role } = userData;
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     const [result] = await db.query(
       `INSERT INTO users (auth_provider, email, password_hash, display_name, role) 
        VALUES ('local', ?, ?, ?, ?)`,
       [email, hashedPassword, display_name, role || 'farmer']
     );
-    
+
     return result.insertId;
   },
 
@@ -34,6 +34,17 @@ const User = {
       SELECT u.*, f.farmer_id, f.phone, f.address, f.state, f.district
       FROM users u
       LEFT JOIN farmers f ON u.user_id = f.user_id
+      WHERE u.user_id = ?
+    `, [user_id]);
+    return rows[0];
+  },
+
+  // Get user with veterinarian details
+  getUserWithVeterinarianDetails: async (user_id) => {
+    const [rows] = await db.query(`
+      SELECT u.*, v.license_number, v.phone, v.state, v.district
+      FROM users u
+      LEFT JOIN veterinarians v ON u.user_id = v.user_id
       WHERE u.user_id = ?
     `, [user_id]);
     return rows[0];

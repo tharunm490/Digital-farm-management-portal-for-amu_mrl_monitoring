@@ -58,7 +58,7 @@ const TreatmentManagement = () => {
   const [showVaccinationSection, setShowVaccinationSection] = useState(false);
   const [selectedMedicineData, setSelectedMedicineData] = useState(null);
   const [amuRecords, setAmuRecords] = useState([]);
-  
+
   const navigate = useNavigate();
   const { entity_id } = useParams();
 
@@ -90,10 +90,12 @@ const TreatmentManagement = () => {
   const fetchEntities = async () => {
     try {
       const response = await api.get('/entities');
-      setEntities(response.data);
+      const entitiesData = response.data?.data || response.data || [];
+      setEntities(Array.isArray(entitiesData) ? entitiesData : []);
     } catch (err) {
       console.error('Failed to fetch entities:', err);
       setError('Failed to load entities');
+      setEntities([]); // Set empty array on error
     }
   };
 
@@ -106,9 +108,9 @@ const TreatmentManagement = () => {
       ]);
       setTreatments(treatmentsResponse.data);
       setAmuRecords(amuResponse.data);
-      
+
       // Get entity details
-      const entity = entities.find(e => e.entity_id === parseInt(id));
+      const entity = Array.isArray(entities) ? entities.find(e => e.entity_id === parseInt(id)) : null;
       if (entity) {
         setSelectedEntity(entity);
         setFormData(prev => ({
@@ -394,7 +396,7 @@ const TreatmentManagement = () => {
         };
         const speciesKey = speciesMap[formData.species.toLowerCase()] || formData.species.toLowerCase();
         const speciesData = dosageReference[speciesKey];
-        
+
         if (speciesData && speciesData[formData.medication_type] && speciesData[formData.medication_type][value]) {
           medicineData = speciesData[formData.medication_type][value];
         }
@@ -447,7 +449,7 @@ const TreatmentManagement = () => {
   };
 
   const handleEntitySelect = (entityId) => {
-    const entity = entities.find(e => e.entity_id === parseInt(entityId));
+    const entity = Array.isArray(entities) ? entities.find(e => e.entity_id === parseInt(entityId)) : null;
     if (entity) {
       setSelectedEntity(entity);
       setFormData(prev => ({
@@ -498,7 +500,7 @@ const TreatmentManagement = () => {
   };
   const getAllRouteOptions = () => {
     if (!selectedEntity?.species || !formData.medication_type) return [];
-    
+
     const speciesMap = {
       'cow': 'cattle',
       'goat': 'goat',
@@ -509,12 +511,12 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
-    
+
     if (!speciesData || !speciesData[formData.medication_type]) return [];
-    
+
     // Get allowed routes for this species
     const allowedRoutes = getAllowedRoutesForSpecies(selectedEntity.species);
-    
+
     const routes = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
       if (medicine.ui?.route_dropdown) {
@@ -526,9 +528,9 @@ const TreatmentManagement = () => {
         });
       }
     });
-    
+
     const routeArray = Array.from(routes);
-    
+
     // Sort routes so recommended route comes first
     if (selectedMedicineData?.ui?.route_default) {
       const recommendedRoute = selectedMedicineData.ui.route_default;
@@ -538,13 +540,13 @@ const TreatmentManagement = () => {
         return 0;
       });
     }
-    
+
     return routeArray;
   };
 
   const getAllFrequencyOptions = () => {
     if (!selectedEntity?.species || !formData.medication_type) return [];
-    
+
     const speciesMap = {
       'cow': 'cattle',
       'goat': 'goat',
@@ -555,22 +557,22 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
-    
+
     if (!speciesData || !speciesData[formData.medication_type]) return [];
-    
+
     const frequencies = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
       if (medicine.frequency_per_day) {
         medicine.frequency_per_day.forEach(freq => frequencies.add(freq));
       }
     });
-    
+
     return Array.from(frequencies).sort((a, b) => a - b);
   };
 
   const getAllDurationOptions = () => {
     if (!selectedEntity?.species || !formData.medication_type) return [];
-    
+
     const speciesMap = {
       'cow': 'cattle',
       'goat': 'goat',
@@ -581,22 +583,22 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
-    
+
     if (!speciesData || !speciesData[formData.medication_type]) return [];
-    
+
     const durations = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
       if (medicine.duration_days) {
         medicine.duration_days.forEach(duration => durations.add(duration));
       }
     });
-    
+
     return Array.from(durations).sort((a, b) => a - b);
   };
 
   const getAllReasonOptions = () => {
     if (!selectedEntity?.species || !formData.medication_type) return [];
-    
+
     const speciesMap = {
       'cow': 'cattle',
       'goat': 'goat',
@@ -607,22 +609,22 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
-    
+
     if (!speciesData || !speciesData[formData.medication_type]) return [];
-    
+
     const reasons = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
       if (medicine.common_reasons) {
         medicine.common_reasons.forEach(reason => reasons.add(reason));
       }
     });
-    
+
     return Array.from(reasons);
   };
 
   const getAllCauseOptions = () => {
     if (!selectedEntity?.species || !formData.medication_type) return [];
-    
+
     const speciesMap = {
       'cow': 'cattle',
       'goat': 'goat',
@@ -633,38 +635,38 @@ const TreatmentManagement = () => {
     };
     const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
     const speciesData = dosageReference[speciesKey];
-    
+
     if (!speciesData || !speciesData[formData.medication_type]) return [];
-    
+
     const causes = new Set();
     Object.values(speciesData[formData.medication_type]).forEach(medicine => {
       if (medicine.common_causes) {
         medicine.common_causes.forEach(cause => causes.add(cause));
       }
     });
-    
+
     return Array.from(causes);
   };
 
   // Get dose level based on recommended doses
   const getDoseLevel = (dose, unit) => {
     if (!selectedMedicineData?.recommended_doses || !dose || !unit) return 'unknown';
-    
+
     const numDose = parseFloat(dose);
     if (isNaN(numDose)) return 'unknown';
-    
+
     const safe = selectedMedicineData.recommended_doses.safe;
     const moderate = selectedMedicineData.recommended_doses.moderate;
     const overdose = selectedMedicineData.recommended_doses.overdose;
-    
+
     // Check if units match
     if (safe?.unit !== unit || moderate?.unit !== unit || overdose?.unit !== unit) return 'unknown';
-    
+
     if (numDose < (safe?.min || 0)) return 'under-dose';
     if (numDose <= (safe?.max || 0)) return 'safe';
     if (moderate?.max && numDose <= moderate.max) return 'moderate';
     if (numDose > (moderate?.max || safe?.max || 0)) return 'overdose';
-    
+
     return 'unknown';
   };
 
@@ -922,767 +924,767 @@ const TreatmentManagement = () => {
               </div>
 
               {/* Medication Selection */}
-                  <div className="form-section">
-                    <h3>💊 Medication Selection</h3>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Medication Category for {selectedEntity?.species || 'Unknown Species'} *</label> {/* Hardcoded species for testing */}
-                        <select
-                          name="medication_type"
-                          value={formData.medication_type}
+              <div className="form-section">
+                <h3>💊 Medication Selection</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Medication Category for {selectedEntity?.species || 'Unknown Species'} *</label> {/* Hardcoded species for testing */}
+                    <select
+                      name="medication_type"
+                      value={formData.medication_type}
+                      onChange={handleInputChange}
+                      required
+                      className="form-control"
+                    >
+                      <option value="">Select Category</option>
+                      {(() => {
+                        if (!selectedEntity?.species) return null;
+
+                        const speciesMap = {
+                          'cow': 'cattle',
+                          'goat': 'goat',
+                          'sheep': 'sheep',
+                          'pig': 'pig',
+                          'chicken': 'poultry',
+                          'poultry': 'poultry'
+                        };
+                        const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
+                        const speciesData = dosageReference[speciesKey];
+                        const availableCategories = Object.keys(speciesData || {});
+
+                        return availableCategories.map(category => {
+                          const displayName = category.split('-').map(word =>
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                          ).join(' ');
+                          return (
+                            <option key={category} value={category}>
+                              {displayName}
+                            </option>
+                          );
+                        });
+                      })()}
+                      <option value="manual_entry">➕ Enter manually</option>
+                    </select>
+                    <small className="form-help">
+                      💡 Categories available for {selectedEntity?.species || 'Unknown Species'}
+                    </small>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Medicine for {selectedEntity?.species || 'Unknown Species'} - {formData.medication_type} *</label>
+                    <select
+                      value={medicine}
+                      onChange={handleMedicineChange}
+                      required
+                      className="form-control"
+                    >
+                      <option value="">Select Medicine</option>
+                      {(() => {
+                        if (!selectedEntity?.species || !formData.medication_type) return null;
+
+                        const speciesMap = {
+                          'cow': 'cattle',
+                          'goat': 'goat',
+                          'sheep': 'sheep',
+                          'pig': 'pig',
+                          'chicken': 'poultry',
+                          'poultry': 'poultry'
+                        };
+                        const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
+                        const speciesData = dosageReference[speciesKey];
+
+                        if (!speciesData?.[formData.medication_type]) {
+                          return <option value="" disabled>No data available for this selection</option>;
+                        }
+
+                        const availableMedicines = Object.keys(speciesData[formData.medication_type]);
+
+                        return availableMedicines.map(medName => (
+                          <option key={medName} value={medName}>
+                            {medName}
+                          </option>
+                        ));
+                      })()}
+                      <option value="manual_entry">➕ Enter manually</option>
+                    </select>
+                    <small className="form-help">
+                      💡 Medicines available for {selectedEntity?.species || 'Unknown Species'} in {formData.medication_type} category
+                    </small>
+                  </div>
+                </div>
+
+                {showManualCategoryInput && (
+                  <div className="manual-entry-section">
+                    <div className="form-group">
+                      <label>Enter Category Name Manually *</label>
+                      <input
+                        type="text"
+                        value={manualCategory}
+                        onChange={handleManualCategoryChange}
+                        required
+                        className="form-control"
+                        placeholder="Type the category name here..."
+                        autoFocus
+                      />
+                      <small className="form-help">
+                        💡 Enter the complete category name as it should appear in records
+                      </small>
+                    </div>
+                  </div>
+                )}
+
+                {showManualInput && (
+                  <div className="manual-entry-section">
+                    <div className="form-group">
+                      <label>Enter Medicine Name Manually *</label>
+                      <input
+                        type="text"
+                        value={manualMedicine}
+                        onChange={handleManualMedicineChange}
+                        required
+                        className="form-control"
+                        placeholder="Type the medicine name here..."
+                        autoFocus
+                      />
+                      <small className="form-help">
+                        💡 Enter the complete medicine name as it should appear in records
+                      </small>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Dosage & Route */}
+              {formData.medication_type && (
+                <div className="form-section">
+                  <h3>⚖️ Dosage & Administration</h3>
+                  <div className="form-row three-cols">
+                    <div className="form-group">
+                      <label>Dose Amount *</label>
+                      <div className="dose-input-group">
+                        <button
+                          type="button"
+                          className="adjust-btn"
+                          onClick={() => adjustDose(-1)}
+                          disabled={!formData.dose_amount}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="dose_amount"
+                          value={formData.dose_amount}
                           onChange={handleInputChange}
                           required
                           className="form-control"
+                          placeholder="e.g., 5.5"
+                        />
+                        <button
+                          type="button"
+                          className="adjust-btn"
+                          onClick={() => adjustDose(1)}
+                          disabled={!formData.dose_amount}
                         >
-                          <option value="">Select Category</option>
-                          {(() => {
-                            if (!selectedEntity?.species) return null;
-                            
-                            const speciesMap = {
-                              'cow': 'cattle',
-                              'goat': 'goat',
-                              'sheep': 'sheep',
-                              'pig': 'pig',
-                              'chicken': 'poultry',
-                              'poultry': 'poultry'
-                            };
-                            const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
-                            const speciesData = dosageReference[speciesKey];
-                            const availableCategories = Object.keys(speciesData || {});
-                            
-                            return availableCategories.map(category => {
-                              const displayName = category.split('-').map(word => 
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                              ).join(' ');
-                              return (
-                                <option key={category} value={category}>
-                                  {displayName}
-                                </option>
-                              );
-                            });
-                          })()}
-                          <option value="manual_entry">➕ Enter manually</option>
-                        </select>
-                        <small className="form-help">
-                          💡 Categories available for {selectedEntity?.species || 'Unknown Species'}
-                        </small>
+                          +
+                        </button>
+                        {formData.dose_amount && selectedMedicineData && (
+                          <span className={`dose-level-indicator ${getDoseLevel(formData.dose_amount, formData.dose_unit)}`}>
+                            {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'safe' && '✅ Safe'}
+                            {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'moderate' && '⚠️ Moderate'}
+                            {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'overdose' && '❌ Overdose'}
+                            {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'under-dose' && '⚠️ Under-dose'}
+                            {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'unknown' && '❓ Unknown'}
+                          </span>
+                        )}
                       </div>
-
-                      <div className="form-group">
-                        <label>Medicine for {selectedEntity?.species || 'Unknown Species'} - {formData.medication_type} *</label>
-                        <select
-                          value={medicine}
-                          onChange={handleMedicineChange}
-                          required
-                          className="form-control"
-                        >
-                          <option value="">Select Medicine</option>
-                          {(() => {
-                            if (!selectedEntity?.species || !formData.medication_type) return null;
-                            
-                            const speciesMap = {
-                              'cow': 'cattle',
-                              'goat': 'goat',
-                              'sheep': 'sheep',
-                              'pig': 'pig',
-                              'chicken': 'poultry',
-                              'poultry': 'poultry'
-                            };
-                            const speciesKey = speciesMap[selectedEntity.species.toLowerCase()] || selectedEntity.species.toLowerCase();
-                            const speciesData = dosageReference[speciesKey];
-                            
-                            if (!speciesData?.[formData.medication_type]) {
-                              return <option value="" disabled>No data available for this selection</option>;
-                            }
-                            
-                            const availableMedicines = Object.keys(speciesData[formData.medication_type]);
-                            
-                            return availableMedicines.map(medName => (
-                              <option key={medName} value={medName}>
-                                {medName}
-                              </option>
-                            ));
-                          })()}
-                          <option value="manual_entry">➕ Enter manually</option>
-                        </select>
-                        <small className="form-help">
-                          💡 Medicines available for {selectedEntity?.species || 'Unknown Species'} in {formData.medication_type} category
-                        </small>
-                      </div>
+                      {selectedMedicineData && (
+                        <div className="dose-recommendations">
+                          <small>💡 Quick reference - {selectedMedicineData.medicine}:</small>
+                          <div className="dose-ranges">
+                            {selectedMedicineData.recommended_doses?.safe && selectedMedicineData.recommended_doses.safe.max !== null && (
+                              <button
+                                type="button"
+                                className="dose-range-btn safe"
+                                onClick={() => setFormData(prev => ({
+                                  ...prev,
+                                  dose_amount: selectedMedicineData.recommended_doses.safe.max?.toString() || '',
+                                  dose_unit: selectedMedicineData.recommended_doses.safe.unit || prev.dose_unit
+                                }))}
+                                title={`Safe range: ${selectedMedicineData.recommended_doses.safe.min || 'N/A'}-${selectedMedicineData.recommended_doses.safe.max || 'N/A'} ${selectedMedicineData.recommended_doses.safe.unit}`}
+                              >
+                                Safe: {selectedMedicineData.recommended_doses.safe.max || 'N/A'} {selectedMedicineData.recommended_doses.safe.unit}
+                              </button>
+                            )}
+                            {selectedMedicineData.recommended_doses?.moderate && selectedMedicineData.recommended_doses.moderate.max !== null && (
+                              <button
+                                type="button"
+                                className="dose-range-btn moderate"
+                                onClick={() => setFormData(prev => ({
+                                  ...prev,
+                                  dose_amount: selectedMedicineData.recommended_doses.moderate.max?.toString() || '',
+                                  dose_unit: selectedMedicineData.recommended_doses.moderate.unit || prev.dose_unit
+                                }))}
+                                title={`Moderate range: ${selectedMedicineData.recommended_doses.moderate.min || 'N/A'}-${selectedMedicineData.recommended_doses.moderate.max || 'N/A'} ${selectedMedicineData.recommended_doses.moderate.unit}`}
+                              >
+                                Moderate: {selectedMedicineData.recommended_doses.moderate.max || 'N/A'} {selectedMedicineData.recommended_doses.moderate.unit}
+                              </button>
+                            )}
+                            {selectedMedicineData.recommended_doses?.overdose && selectedMedicineData.recommended_doses.overdose.min !== null && (
+                              <button
+                                type="button"
+                                className="dose-range-btn overdose"
+                                onClick={() => setFormData(prev => ({
+                                  ...prev,
+                                  dose_amount: (selectedMedicineData.recommended_doses.overdose.min + 0.1)?.toString() || '',
+                                  dose_unit: selectedMedicineData.recommended_doses.overdose.unit || prev.dose_unit
+                                }))}
+                                title={`Avoid doses above: ${selectedMedicineData.recommended_doses.overdose.min || 'N/A'} ${selectedMedicineData.recommended_doses.overdose.unit}`}
+                              >
+                                Avoid: &gt;{selectedMedicineData.recommended_doses.overdose.min || 'N/A'} {selectedMedicineData.recommended_doses.overdose.unit}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {getDoseSuggestions().length > 0 && (
+                        <div className="dose-suggestions">
+                          <small>💡 Quick select doses:</small>
+                          <div className="suggestion-buttons">
+                            {getDoseSuggestions().map((dose, index) => (
+                              <button
+                                key={dose.value}
+                                type="button"
+                                className={`suggestion-btn ${dose.level}`}
+                                onClick={() => setFormData(prev => ({
+                                  ...prev,
+                                  dose_amount: dose.value,
+                                  dose_unit: dose.unit || prev.dose_unit
+                                }))}
+                                title={`${dose.level.charAt(0).toUpperCase() + dose.level.slice(1)} dose: ${dose.label}`}
+                              >
+                                {dose.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {showManualCategoryInput && (
-                      <div className="manual-entry-section">
-                        <div className="form-group">
-                          <label>Enter Category Name Manually *</label>
-                          <input
-                            type="text"
-                            value={manualCategory}
-                            onChange={handleManualCategoryChange}
-                            required
-                            className="form-control"
-                            placeholder="Type the category name here..."
-                            autoFocus
-                          />
-                          <small className="form-help">
-                            💡 Enter the complete category name as it should appear in records
-                          </small>
+                    <div className="form-group">
+                      <label>Dose Unit *</label>
+                      <input
+                        type="text"
+                        value={formData.dose_unit}
+                        readOnly
+                        className="form-control"
+                        placeholder="Auto-filled from medicine"
+                      />
+                      <small className="form-help">
+                        💡 Dose unit is auto-filled from the selected medicine and cannot be changed
+                      </small>
+                      {getUnitSuggestions().length > 0 && (
+                        <div className="dose-suggestions">
+                          <small>💡 Quick select units:</small>
+                          <div className="suggestion-buttons">
+                            {getUnitSuggestions().map((unit, index) => (
+                              <button
+                                key={unit.value}
+                                type="button"
+                                className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
+                                onClick={() => setFormData(prev => ({ ...prev, dose_unit: unit.value }))}
+                                title={index === 0 ? 'Recommended unit' : 'Alternative unit'}
+                              >
+                                {unit.label}
+                                {index === 0 ? ' ⭐' : ''}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
 
-                    {showManualInput && (
-                      <div className="manual-entry-section">
-                        <div className="form-group">
-                          <label>Enter Medicine Name Manually *</label>
-                          <input
-                            type="text"
-                            value={manualMedicine}
-                            onChange={handleManualMedicineChange}
-                            required
-                            className="form-control"
-                            placeholder="Type the medicine name here..."
-                            autoFocus
-                          />
-                          <small className="form-help">
-                            💡 Enter the complete medicine name as it should appear in records
-                          </small>
+                    <div className="form-group">
+                      <label>Route of Administration *</label>
+                      <select
+                        name="route"
+                        value={formData.route}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                      >
+                        <option value="">Select Route</option>
+                        {getAllRouteOptions().map((route) => {
+                          const isRecommended = selectedMedicineData?.ui?.route_default === route;
+                          return (
+                            <option key={route} value={route}>
+                              {route === 'IM' ? 'Intramuscular (IM)' :
+                                route === 'IV' ? 'Intravenous (IV)' :
+                                  route === 'SC' ? 'Subcutaneous (SC)' :
+                                    route.charAt(0).toUpperCase() + route.slice(1)}
+                              {isRecommended ? ' ⭐ Recommended' : ''}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {getAllRouteOptions().length > 0 && (
+                        <div className="dose-suggestions">
+                          <small>💡 Quick select routes:</small>
+                          <div className="suggestion-buttons">
+                            {getAllRouteOptions().map((route) => {
+                              const isRecommended = selectedMedicineData?.ui?.route_default === route;
+                              return (
+                                <button
+                                  key={route}
+                                  type="button"
+                                  className={`suggestion-btn ${isRecommended ? 'recommended' : ''}`}
+                                  onClick={() => setFormData(prev => ({ ...prev, route }))}
+                                  title={isRecommended ? 'Recommended route' : 'Alternative route'}
+                                >
+                                  {route === 'IM' ? 'Intramuscular (IM)' :
+                                    route === 'IV' ? 'Intravenous (IV)' :
+                                      route === 'SC' ? 'Subcutaneous (SC)' :
+                                        route.charAt(0).toUpperCase() + route.slice(1)}
+                                  {isRecommended ? ' ⭐' : ''}
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
 
-                  {/* Dosage & Route */}
-                  {formData.medication_type && (
-                    <div className="form-section">
-                      <h3>⚖️ Dosage & Administration</h3>
-                    <div className="form-row three-cols">
-                      <div className="form-group">
-                        <label>Dose Amount *</label>
-                        <div className="dose-input-group">
-                          <button
-                            type="button"
-                            className="adjust-btn"
-                            onClick={() => adjustDose(-1)}
-                            disabled={!formData.dose_amount}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            step="0.01"
-                            name="dose_amount"
-                            value={formData.dose_amount}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                            placeholder="e.g., 5.5"
-                          />
-                          <button
-                            type="button"
-                            className="adjust-btn"
-                            onClick={() => adjustDose(1)}
-                            disabled={!formData.dose_amount}
-                          >
-                            +
-                          </button>
-                          {formData.dose_amount && selectedMedicineData && (
-                            <span className={`dose-level-indicator ${getDoseLevel(formData.dose_amount, formData.dose_unit)}`}>
-                              {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'safe' && '✅ Safe'}
-                              {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'moderate' && '⚠️ Moderate'}
-                              {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'overdose' && '❌ Overdose'}
-                              {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'under-dose' && '⚠️ Under-dose'}
-                              {getDoseLevel(formData.dose_amount, formData.dose_unit) === 'unknown' && '❓ Unknown'}
-                            </span>
+                  <div className="form-row two-cols">
+                    <div className="form-group">
+                      <label>Frequency (per day) *</label>
+                      <div className="frequency-input-group">
+                        <button
+                          type="button"
+                          className="adjust-btn"
+                          onClick={() => {
+                            const current = parseInt(formData.frequency_per_day) || 1;
+                            if (current > 1) {
+                              setFormData(prev => ({ ...prev, frequency_per_day: (current - 1).toString() }));
+                            }
+                          }}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          value={formData.frequency_per_day}
+                          onChange={(e) => setFormData(prev => ({ ...prev, frequency_per_day: e.target.value }))}
+                          min="1"
+                          max="5"
+                          required
+                          className="form-control"
+                        />
+                        <button
+                          type="button"
+                          className="adjust-btn"
+                          onClick={() => {
+                            const current = parseInt(formData.frequency_per_day) || 1;
+                            setFormData(prev => ({ ...prev, frequency_per_day: (current + 1).toString() }));
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <small className="form-help">
+                        💡 Use +/- buttons to adjust
+                      </small>
+                      {getFrequencySuggestions().length > 0 && (
+                        <div className="frequency-suggestions">
+                          <small>💡 Quick select frequencies:</small>
+                          <div className="suggestion-buttons">
+                            {getFrequencySuggestions().map((freq, index) => (
+                              <button
+                                key={freq.value}
+                                type="button"
+                                className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
+                                onClick={() => setFormData(prev => ({ ...prev, frequency_per_day: freq.value }))}
+                                title={index === 0 ? 'Recommended frequency' : 'Alternative frequency'}
+                              >
+                                {freq.label}
+                                {index === 0 ? ' ⭐' : ''}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="form-group">
+                      <label>Duration (days) *</label>
+                      <div className="duration-input-group">
+                        <button
+                          type="button"
+                          className="adjust-btn"
+                          onClick={() => {
+                            const current = parseInt(formData.duration_days) || 1;
+                            if (current > 1) {
+                              setFormData(prev => ({ ...prev, duration_days: (current - 1).toString() }));
+                            }
+                          }}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          value={formData.duration_days}
+                          onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
+                          min="1"
+                          required
+                          className="form-control"
+                        />
+                        <button
+                          type="button"
+                          className="adjust-btn"
+                          onClick={() => {
+                            const current = parseInt(formData.duration_days) || 1;
+                            setFormData(prev => ({ ...prev, duration_days: (current + 1).toString() }));
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <small className="form-help">
+                        💡 Use +/- buttons to adjust
+                      </small>
+                      {getDurationSuggestions().length > 0 && (
+                        <div className="duration-suggestions">
+                          <small>💡 Quick select durations:</small>
+                          <div className="suggestion-buttons">
+                            {getDurationSuggestions().map((dur, index) => (
+                              <button
+                                key={dur.value}
+                                type="button"
+                                className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
+                                onClick={() => setFormData(prev => ({ ...prev, duration_days: dur.value }))}
+                                title={index === 0 ? 'Recommended duration' : 'Alternative duration'}
+                              >
+                                {dur.label}
+                                {index === 0 ? ' ⭐' : ''}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Treatment Schedule */}
+              {formData.medication_type && (
+                <div className="form-section">
+                  <h3>📅 Treatment Schedule</h3>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Start Date *</label>
+                      <input
+                        type="date"
+                        name="start_date"
+                        value={formData.start_date}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>End Date</label>
+                      <input
+                        type="date"
+                        name="end_date"
+                        value={formData.end_date}
+                        onChange={handleInputChange}
+                        readOnly
+                        className="form-control"
+                      />
+                      <small className="form-help">Auto-calculated from start date and duration</small>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Veterinary Information */}
+              {isVetRequired() && (
+                <div className="form-section">
+                  <h3>👨‍⚕️ Veterinary Information</h3>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Vet ID *</label>
+                      <input
+                        type="text"
+                        name="vet_id"
+                        value={formData.vet_id}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                        placeholder="Veterinarian ID"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Vet Name *</label>
+                      <input
+                        type="text"
+                        name="vet_name"
+                        value={formData.vet_name}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                        placeholder="Veterinarian Name"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Warning for Poultry */}
+              {formData.species && ['chicken', 'poultry'].includes(formData.species.toLowerCase()) && (formData.vet_id || formData.vet_name) && (
+                <div className="alert alert-warning">
+                  <span className="alert-icon">⚠️</span>
+                  Warning: Veterinary information should not be assigned to poultry treatments. Vet ID and Vet Name will be set to NULL.
+                </div>
+              )}
+
+              {/* Vaccine Information */}
+              {formData.is_vaccine && (
+                <div className="form-section">
+                  <h3>💉 Vaccination Schedule</h3>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Start Date *</label>
+                      <input
+                        type="date"
+                        name="start_date"
+                        value={formData.start_date}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Vaccine Interval (days) *</label>
+                      <input
+                        type="number"
+                        min="1"
+                        name="vaccine_interval_days"
+                        value={formData.vaccine_interval_days}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                        placeholder="e.g., 30"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Total Vaccination Period (months) *</label>
+                      <input
+                        type="number"
+                        min="1"
+                        name="vaccine_total_months"
+                        value={formData.vaccine_total_months}
+                        onChange={handleInputChange}
+                        required
+                        className="form-control"
+                        placeholder="e.g., 12"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Next Due Date</label>
+                      <input
+                        type="date"
+                        name="next_due_date"
+                        value={formData.next_due_date}
+                        readOnly
+                        className="form-control"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>End Date</label>
+                      <input
+                        type="date"
+                        name="end_date"
+                        value={formData.end_date}
+                        readOnly
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Clinical Information */}
+              {formData.medication_type && (
+                <div className="form-section">
+                  <h3>🏥 Clinical Information</h3>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Reason</label>
+                      <select
+                        value={formData.reason}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === 'manual_entry') {
+                            setShowManualReason(true);
+                            setFormData(prev => ({ ...prev, reason: '' }));
+                          } else {
+                            setShowManualReason(false);
+                            setManualReason('');
+                            setFormData(prev => ({ ...prev, reason: value }));
+                          }
+                        }}
+                        className="form-control"
+                      >
+                        <option value="">Select Reason</option>
+                        {getAllReasonOptions().map(reason => (
+                          <option key={reason} value={reason}>
+                            {reason}
+                          </option>
+                        ))}
+                        <option value="manual_entry">➕ Enter manually</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Cause</label>
+                      <select
+                        value={formData.cause}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === 'manual_entry') {
+                            setShowManualCause(true);
+                            setFormData(prev => ({ ...prev, cause: '' }));
+                          } else {
+                            setShowManualCause(false);
+                            setManualCause('');
+                            setFormData(prev => ({ ...prev, cause: value }));
+                          }
+                        }}
+                        className="form-control"
+                      >
+                        <option value="">Select Cause</option>
+                        {getAllCauseOptions().map(cause => (
+                          <option key={cause} value={cause}>
+                            {cause}
+                          </option>
+                        ))}
+                        <option value="manual_entry">➕ Enter manually</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Manual Reason Input */}
+              {showManualReason && (
+                <div className="manual-entry-section">
+                  <div className="form-group">
+                    <label>Enter Reason Manually</label>
+                    <input
+                      type="text"
+                      value={manualReason}
+                      onChange={(e) => {
+                        setManualReason(e.target.value);
+                        setFormData(prev => ({ ...prev, reason: e.target.value }));
+                      }}
+                      className="form-control"
+                      placeholder="Type the reason here..."
+                      autoFocus
+                    />
+                    <small className="form-help">
+                      💡 Enter the complete reason as it should appear in records
+                    </small>
+                  </div>
+                </div>
+              )}
+
+              {/* Manual Cause Input */}
+              {showManualCause && (
+                <div className="manual-entry-section">
+                  <div className="form-group">
+                    <label>Enter Cause Manually</label>
+                    <input
+                      type="text"
+                      value={manualCause}
+                      onChange={(e) => {
+                        setManualCause(e.target.value);
+                        setFormData(prev => ({ ...prev, cause: e.target.value }));
+                      }}
+                      className="form-control"
+                      placeholder="Type the cause here..."
+                      autoFocus
+                    />
+                    <small className="form-help">
+                      💡 Enter the complete cause as it should appear in records
+                    </small>
+                  </div>
+                </div>
+              )}
+
+
+
+              {/* MRL Information */}
+              {mrlData.length > 0 && (
+                <div className="mrl-section">
+                  <h3>📊 MRL Compliance Information</h3>
+                  <div className="mrl-grid">
+                    {mrlData.map((mrl, idx) => (
+                      <div key={idx} className="mrl-card">
+                        <div className="mrl-header">
+                          <span className="mrl-species">{mrl.species}</span>
+                          <span className="mrl-matrix">{mrl.matrix}</span>
+                        </div>
+                        <div className="mrl-details">
+                          <div className="mrl-item">
+                            <span className="label">MRL Limit:</span>
+                            <span className="value">{mrl.mrl_value_ppb} ppb</span>
+                          </div>
+                          <div className="mrl-item">
+                            <span className="label">Withdrawal:</span>
+                            <span className="value">{mrl.withdrawal_period_days} days</span>
+                          </div>
+                          {mrl.notes && (
+                            <div className="mrl-item full-width">
+                              <span className="label">Notes:</span>
+                              <span className="value">{mrl.notes}</span>
+                            </div>
                           )}
                         </div>
-                        {selectedMedicineData && (
-                          <div className="dose-recommendations">
-                            <small>💡 Quick reference - {selectedMedicineData.medicine}:</small>
-                            <div className="dose-ranges">
-                              {selectedMedicineData.recommended_doses?.safe && selectedMedicineData.recommended_doses.safe.max !== null && (
-                                <button
-                                  type="button"
-                                  className="dose-range-btn safe"
-                                  onClick={() => setFormData(prev => ({
-                                    ...prev,
-                                    dose_amount: selectedMedicineData.recommended_doses.safe.max?.toString() || '',
-                                    dose_unit: selectedMedicineData.recommended_doses.safe.unit || prev.dose_unit
-                                  }))}
-                                  title={`Safe range: ${selectedMedicineData.recommended_doses.safe.min || 'N/A'}-${selectedMedicineData.recommended_doses.safe.max || 'N/A'} ${selectedMedicineData.recommended_doses.safe.unit}`}
-                                >
-                                  Safe: {selectedMedicineData.recommended_doses.safe.max || 'N/A'} {selectedMedicineData.recommended_doses.safe.unit}
-                                </button>
-                              )}
-                              {selectedMedicineData.recommended_doses?.moderate && selectedMedicineData.recommended_doses.moderate.max !== null && (
-                                <button
-                                  type="button"
-                                  className="dose-range-btn moderate"
-                                  onClick={() => setFormData(prev => ({
-                                    ...prev,
-                                    dose_amount: selectedMedicineData.recommended_doses.moderate.max?.toString() || '',
-                                    dose_unit: selectedMedicineData.recommended_doses.moderate.unit || prev.dose_unit
-                                  }))}
-                                  title={`Moderate range: ${selectedMedicineData.recommended_doses.moderate.min || 'N/A'}-${selectedMedicineData.recommended_doses.moderate.max || 'N/A'} ${selectedMedicineData.recommended_doses.moderate.unit}`}
-                                >
-                                  Moderate: {selectedMedicineData.recommended_doses.moderate.max || 'N/A'} {selectedMedicineData.recommended_doses.moderate.unit}
-                                </button>
-                              )}
-                              {selectedMedicineData.recommended_doses?.overdose && selectedMedicineData.recommended_doses.overdose.min !== null && (
-                                <button
-                                  type="button"
-                                  className="dose-range-btn overdose"
-                                  onClick={() => setFormData(prev => ({
-                                    ...prev,
-                                    dose_amount: (selectedMedicineData.recommended_doses.overdose.min + 0.1)?.toString() || '',
-                                    dose_unit: selectedMedicineData.recommended_doses.overdose.unit || prev.dose_unit
-                                  }))}
-                                  title={`Avoid doses above: ${selectedMedicineData.recommended_doses.overdose.min || 'N/A'} ${selectedMedicineData.recommended_doses.overdose.unit}`}
-                                >
-                                  Avoid: &gt;{selectedMedicineData.recommended_doses.overdose.min || 'N/A'} {selectedMedicineData.recommended_doses.overdose.unit}
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        {getDoseSuggestions().length > 0 && (
-                          <div className="dose-suggestions">
-                            <small>💡 Quick select doses:</small>
-                            <div className="suggestion-buttons">
-                              {getDoseSuggestions().map((dose, index) => (
-                                <button
-                                  key={dose.value}
-                                  type="button"
-                                  className={`suggestion-btn ${dose.level}`}
-                                  onClick={() => setFormData(prev => ({ 
-                                    ...prev, 
-                                    dose_amount: dose.value,
-                                    dose_unit: dose.unit || prev.dose_unit
-                                  }))}
-                                  title={`${dose.level.charAt(0).toUpperCase() + dose.level.slice(1)} dose: ${dose.label}`}
-                                >
-                                  {dose.label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
                       </div>
-
-                      <div className="form-group">
-                        <label>Dose Unit *</label>
-                        <input
-                          type="text"
-                          value={formData.dose_unit}
-                          readOnly
-                          className="form-control"
-                          placeholder="Auto-filled from medicine"
-                        />
-                        <small className="form-help">
-                          💡 Dose unit is auto-filled from the selected medicine and cannot be changed
-                        </small>
-                        {getUnitSuggestions().length > 0 && (
-                          <div className="dose-suggestions">
-                            <small>💡 Quick select units:</small>
-                            <div className="suggestion-buttons">
-                              {getUnitSuggestions().map((unit, index) => (
-                                <button
-                                  key={unit.value}
-                                  type="button"
-                                  className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
-                                  onClick={() => setFormData(prev => ({ ...prev, dose_unit: unit.value }))}
-                                  title={index === 0 ? 'Recommended unit' : 'Alternative unit'}
-                                >
-                                  {unit.label}
-                                  {index === 0 ? ' ⭐' : ''}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Route of Administration *</label>
-                        <select
-                          name="route"
-                          value={formData.route}
-                          onChange={handleInputChange}
-                          required
-                          className="form-control"
-                        >
-                          <option value="">Select Route</option>
-                          {getAllRouteOptions().map((route) => {
-                            const isRecommended = selectedMedicineData?.ui?.route_default === route;
-                            return (
-                              <option key={route} value={route}>
-                                {route === 'IM' ? 'Intramuscular (IM)' :
-                                 route === 'IV' ? 'Intravenous (IV)' :
-                                 route === 'SC' ? 'Subcutaneous (SC)' :
-                                 route.charAt(0).toUpperCase() + route.slice(1)}
-                                {isRecommended ? ' ⭐ Recommended' : ''}
-                              </option>
-                            );
-                          })}
-                        </select>
-                        {getAllRouteOptions().length > 0 && (
-                          <div className="dose-suggestions">
-                            <small>💡 Quick select routes:</small>
-                            <div className="suggestion-buttons">
-                              {getAllRouteOptions().map((route) => {
-                                const isRecommended = selectedMedicineData?.ui?.route_default === route;
-                                return (
-                                  <button
-                                    key={route}
-                                    type="button"
-                                    className={`suggestion-btn ${isRecommended ? 'recommended' : ''}`}
-                                    onClick={() => setFormData(prev => ({ ...prev, route }))}
-                                    title={isRecommended ? 'Recommended route' : 'Alternative route'}
-                                  >
-                                    {route === 'IM' ? 'Intramuscular (IM)' :
-                                     route === 'IV' ? 'Intravenous (IV)' :
-                                     route === 'SC' ? 'Subcutaneous (SC)' :
-                                     route.charAt(0).toUpperCase() + route.slice(1)}
-                                    {isRecommended ? ' ⭐' : ''}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="form-row two-cols">
-                      <div className="form-group">
-                        <label>Frequency (per day) *</label>
-                        <div className="frequency-input-group">
-                          <button
-                            type="button"
-                            className="adjust-btn"
-                            onClick={() => {
-                              const current = parseInt(formData.frequency_per_day) || 1;
-                              if (current > 1) {
-                                setFormData(prev => ({ ...prev, frequency_per_day: (current - 1).toString() }));
-                              }
-                            }}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            value={formData.frequency_per_day}
-                            onChange={(e) => setFormData(prev => ({ ...prev, frequency_per_day: e.target.value }))}
-                            min="1"
-                            max="5"
-                            required
-                            className="form-control"
-                          />
-                          <button
-                            type="button"
-                            className="adjust-btn"
-                            onClick={() => {
-                              const current = parseInt(formData.frequency_per_day) || 1;
-                              setFormData(prev => ({ ...prev, frequency_per_day: (current + 1).toString() }));
-                            }}
-                          >
-                            +
-                          </button>
-                        </div>
-                        <small className="form-help">
-                          💡 Use +/- buttons to adjust
-                        </small>
-                        {getFrequencySuggestions().length > 0 && (
-                          <div className="frequency-suggestions">
-                            <small>💡 Quick select frequencies:</small>
-                            <div className="suggestion-buttons">
-                              {getFrequencySuggestions().map((freq, index) => (
-                                <button
-                                  key={freq.value}
-                                  type="button"
-                                  className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
-                                  onClick={() => setFormData(prev => ({ ...prev, frequency_per_day: freq.value }))}
-                                  title={index === 0 ? 'Recommended frequency' : 'Alternative frequency'}
-                                >
-                                  {freq.label}
-                                  {index === 0 ? ' ⭐' : ''}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Duration (days) *</label>
-                        <div className="duration-input-group">
-                          <button
-                            type="button"
-                            className="adjust-btn"
-                            onClick={() => {
-                              const current = parseInt(formData.duration_days) || 1;
-                              if (current > 1) {
-                                setFormData(prev => ({ ...prev, duration_days: (current - 1).toString() }));
-                              }
-                            }}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            value={formData.duration_days}
-                            onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
-                            min="1"
-                            required
-                            className="form-control"
-                          />
-                          <button
-                            type="button"
-                            className="adjust-btn"
-                            onClick={() => {
-                              const current = parseInt(formData.duration_days) || 1;
-                              setFormData(prev => ({ ...prev, duration_days: (current + 1).toString() }));
-                            }}
-                          >
-                            +
-                          </button>
-                        </div>
-                        <small className="form-help">
-                          💡 Use +/- buttons to adjust
-                        </small>
-                        {getDurationSuggestions().length > 0 && (
-                          <div className="duration-suggestions">
-                            <small>💡 Quick select durations:</small>
-                            <div className="suggestion-buttons">
-                              {getDurationSuggestions().map((dur, index) => (
-                                <button
-                                  key={dur.value}
-                                  type="button"
-                                  className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
-                                  onClick={() => setFormData(prev => ({ ...prev, duration_days: dur.value }))}
-                                  title={index === 0 ? 'Recommended duration' : 'Alternative duration'}
-                                >
-                                  {dur.label}
-                                  {index === 0 ? ' ⭐' : ''}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                  )}
+                </div>
+              )}
 
-                  {/* Treatment Schedule */}
-                  {formData.medication_type && (
-                    <div className="form-section">
-                      <h3>📅 Treatment Schedule</h3>
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Start Date *</label>
-                          <input
-                            type="date"
-                            name="start_date"
-                            value={formData.start_date}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>End Date</label>
-                          <input
-                            type="date"
-                            name="end_date"
-                            value={formData.end_date}
-                            onChange={handleInputChange}
-                            readOnly
-                            className="form-control"
-                          />
-                          <small className="form-help">Auto-calculated from start date and duration</small>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Veterinary Information */}
-                  {isVetRequired() && (
-                    <div className="form-section">
-                      <h3>👨‍⚕️ Veterinary Information</h3>
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Vet ID *</label>
-                          <input
-                            type="text"
-                            name="vet_id"
-                            value={formData.vet_id}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                            placeholder="Veterinarian ID"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Vet Name *</label>
-                          <input
-                            type="text"
-                            name="vet_name"
-                            value={formData.vet_name}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                            placeholder="Veterinarian Name"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Warning for Poultry */}
-                  {formData.species && ['chicken', 'poultry'].includes(formData.species.toLowerCase()) && (formData.vet_id || formData.vet_name) && (
-                    <div className="alert alert-warning">
-                      <span className="alert-icon">⚠️</span>
-                      Warning: Veterinary information should not be assigned to poultry treatments. Vet ID and Vet Name will be set to NULL.
-                    </div>
-                  )}
-
-                  {/* Vaccine Information */}
-                  {formData.is_vaccine && (
-                    <div className="form-section">
-                      <h3>💉 Vaccination Schedule</h3>
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Start Date *</label>
-                          <input
-                            type="date"
-                            name="start_date"
-                            value={formData.start_date}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Vaccine Interval (days) *</label>
-                          <input
-                            type="number"
-                            min="1"
-                            name="vaccine_interval_days"
-                            value={formData.vaccine_interval_days}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                            placeholder="e.g., 30"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Total Vaccination Period (months) *</label>
-                          <input
-                            type="number"
-                            min="1"
-                            name="vaccine_total_months"
-                            value={formData.vaccine_total_months}
-                            onChange={handleInputChange}
-                            required
-                            className="form-control"
-                            placeholder="e.g., 12"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Next Due Date</label>
-                          <input
-                            type="date"
-                            name="next_due_date"
-                            value={formData.next_due_date}
-                            readOnly
-                            className="form-control"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>End Date</label>
-                          <input
-                            type="date"
-                            name="end_date"
-                            value={formData.end_date}
-                            readOnly
-                            className="form-control"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Clinical Information */}
-                  {formData.medication_type && (
-                    <div className="form-section">
-                      <h3>🏥 Clinical Information</h3>
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Reason</label>
-                          <select
-                            value={formData.reason}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === 'manual_entry') {
-                                setShowManualReason(true);
-                                setFormData(prev => ({ ...prev, reason: '' }));
-                              } else {
-                                setShowManualReason(false);
-                                setManualReason('');
-                                setFormData(prev => ({ ...prev, reason: value }));
-                              }
-                            }}
-                            className="form-control"
-                          >
-                            <option value="">Select Reason</option>
-                            {getAllReasonOptions().map(reason => (
-                              <option key={reason} value={reason}>
-                                {reason}
-                              </option>
-                            ))}
-                            <option value="manual_entry">➕ Enter manually</option>
-                          </select>
-                        </div>
-
-                        <div className="form-group">
-                          <label>Cause</label>
-                          <select
-                            value={formData.cause}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === 'manual_entry') {
-                                setShowManualCause(true);
-                                setFormData(prev => ({ ...prev, cause: '' }));
-                              } else {
-                                setShowManualCause(false);
-                                setManualCause('');
-                                setFormData(prev => ({ ...prev, cause: value }));
-                              }
-                            }}
-                            className="form-control"
-                          >
-                            <option value="">Select Cause</option>
-                            {getAllCauseOptions().map(cause => (
-                              <option key={cause} value={cause}>
-                                {cause}
-                              </option>
-                            ))}
-                            <option value="manual_entry">➕ Enter manually</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Manual Reason Input */}
-                  {showManualReason && (
-                    <div className="manual-entry-section">
-                      <div className="form-group">
-                        <label>Enter Reason Manually</label>
-                        <input
-                          type="text"
-                          value={manualReason}
-                          onChange={(e) => {
-                            setManualReason(e.target.value);
-                            setFormData(prev => ({ ...prev, reason: e.target.value }));
-                          }}
-                          className="form-control"
-                          placeholder="Type the reason here..."
-                          autoFocus
-                        />
-                        <small className="form-help">
-                          💡 Enter the complete reason as it should appear in records
-                        </small>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Manual Cause Input */}
-                  {showManualCause && (
-                    <div className="manual-entry-section">
-                      <div className="form-group">
-                        <label>Enter Cause Manually</label>
-                        <input
-                          type="text"
-                          value={manualCause}
-                          onChange={(e) => {
-                            setManualCause(e.target.value);
-                            setFormData(prev => ({ ...prev, cause: e.target.value }));
-                          }}
-                          className="form-control"
-                          placeholder="Type the cause here..."
-                          autoFocus
-                        />
-                        <small className="form-help">
-                          💡 Enter the complete cause as it should appear in records
-                        </small>
-                      </div>
-                    </div>
-                  )}
-
-
-
-                  {/* MRL Information */}
-                  {mrlData.length > 0 && (
-                    <div className="mrl-section">
-                      <h3>📊 MRL Compliance Information</h3>
-                      <div className="mrl-grid">
-                        {mrlData.map((mrl, idx) => (
-                          <div key={idx} className="mrl-card">
-                            <div className="mrl-header">
-                              <span className="mrl-species">{mrl.species}</span>
-                              <span className="mrl-matrix">{mrl.matrix}</span>
-                            </div>
-                            <div className="mrl-details">
-                              <div className="mrl-item">
-                                <span className="label">MRL Limit:</span>
-                                <span className="value">{mrl.mrl_value_ppb} ppb</span>
-                              </div>
-                              <div className="mrl-item">
-                                <span className="label">Withdrawal:</span>
-                                <span className="value">{mrl.withdrawal_period_days} days</span>
-                              </div>
-                              {mrl.notes && (
-                                <div className="mrl-item full-width">
-                                  <span className="label">Notes:</span>
-                                  <span className="value">{mrl.notes}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Form Actions */}
-                  <div className="form-actions">
-                    <button 
-                      type="submit" 
-                      className="btn-primary"
-                      disabled={!formData.entity_id || !formData.medication_type || !formData.medicine || !formData.dose_amount || !formData.dose_unit || !formData.route || !formData.frequency_per_day || !formData.duration_days || !formData.start_date}
-                    >
-                      <span className="btn-icon">💾</span>
-                      Add Treatment Record
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowAddForm(false);
-                        resetForm();
-                      }}
-                      className="btn-secondary"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+              {/* Form Actions */}
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={!formData.entity_id || !formData.medication_type || !formData.medicine || !formData.dose_amount || !formData.dose_unit || !formData.route || !formData.frequency_per_day || !formData.duration_days || !formData.start_date}
+                >
+                  <span className="btn-icon">💾</span>
+                  Add Treatment Record
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    resetForm();
+                  }}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         )}
@@ -1712,192 +1714,192 @@ const TreatmentManagement = () => {
                 {treatments.map(treatment => {
                   const amu = amuRecords.find(a => a.treatment_id === treatment.treatment_id);
                   return (
-                  <div key={treatment.treatment_id} className="treatment-card">
-                    <div className="treatment-header">
-                      <div className="treatment-title">
-                        <h3>{treatment.species} - {treatment.entity_type === 'animal' ? (treatment.tag_id || 'No Tag') : (treatment.batch_name || 'No Batch')} - {treatment.medicine || treatment.active_ingredient} ({treatment.medication_type})</h3>
-                        <span className={`status-badge ${new Date() > new Date(treatment.end_date) ? 'completed' : 'active'}`}>
-                          {new Date() > new Date(treatment.end_date) ? 'Completed' : 'Active'}
-                        </span>
-                        {treatment.is_vaccine && (
-                          <span className="vaccine-badge">💉 Vaccine</span>
-                        )}
-                      </div>
-                      <div className="treatment-meta">
-                        <span className="treatment-date">
-                          {formatDate(treatment.start_date)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="treatment-content">
-                      <div className="treatment-details">
-                        <div className="detail-row">
-                          <span className="label">Category:</span>
-                          <span className="value">{treatment.medication_type}</span>
-                        </div>
-                        <div className="detail-row">
-                          <span className="label">Dose:</span>
-                          <span className="value">{treatment.dose_amount} {treatment.dose_unit}</span>
-                        </div>
-                        <div className="detail-row">
-                          <span className="label">Route:</span>
-                          <span className="value">{treatment.route}</span>
-                        </div>
-                        <div className="detail-row">
-                          <span className="label">Frequency:</span>
-                          <span className="value">{treatment.frequency_per_day}x per day</span>
-                        </div>
-                        <div className="detail-row">
-                          <span className="label">Duration:</span>
-                          <span className="value">{treatment.duration_days} days</span>
-                        </div>
-                        <div className="detail-row">
-                          <span className="label">End Date:</span>
-                          <span className="value">
-                            {formatDate(treatment.end_date)}
+                    <div key={treatment.treatment_id} className="treatment-card">
+                      <div className="treatment-header">
+                        <div className="treatment-title">
+                          <h3>{treatment.species} - {treatment.entity_type === 'animal' ? (treatment.tag_id || 'No Tag') : (treatment.batch_name || 'No Batch')} - {treatment.medicine || treatment.active_ingredient} ({treatment.medication_type})</h3>
+                          <span className={`status-badge ${new Date() > new Date(treatment.end_date) ? 'completed' : 'active'}`}>
+                            {new Date() > new Date(treatment.end_date) ? 'Completed' : 'Active'}
                           </span>
-                        </div>
-                        {treatment.vet_name && (
-                          <div className="detail-row">
-                            <span className="label">Veterinarian:</span>
-                            <span className="value">{treatment.vet_name}</span>
-                          </div>
-                        )}
-                        {treatment.reason && (
-                          <div className="detail-row">
-                            <span className="label">Reason:</span>
-                            <span className="value">{treatment.reason}</span>
-                          </div>
-                        )}
-                        {amu && (
-                          <>
-                            <div className="detail-row">
-                              <span className="label">Predicted Residual Limit:</span>
-                              <span className="value">{amu.predicted_mrl} µg/kg</span>
-                            </div>
-                            <div className="detail-row">
-                              <span className="label">Predicted Withdrawal Days:</span>
-                              <span className="value">{Math.max(0, amu.predicted_withdrawal_days || 0)} days</span>
-                            </div>
-                            <div className="detail-row">
-                              <span className="label">Risk Category:</span>
-                              <span className={`value risk-${amu.risk_category?.toLowerCase()}`}>
-                                {amu.risk_category}
-                              </span>
-                            </div>
-                            {amu.overdosage && (
-                              <div className="detail-row">
-                                <span className="label">Overdosage:</span>
-                                <span className="value overdosage-alert">⚠️ OVERDOSAGE DETECTED</span>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-
-                      {treatment.is_vaccine && (
-                        <div className="vaccination-section">
-                          <h4>💉 Vaccination Schedule</h4>
-                          <div className="vaccination-info">
-                            <div className="vaccination-details-grid">
-                              <div className="detail-item">
-                                <span className="label">Interval:</span>
-                                <span className="value">{treatment.vaccine_interval_days} days</span>
-                              </div>
-                              <div className="detail-item">
-                                <span className="label">Total Period:</span>
-                                <span className="value">{treatment.vaccine_total_months} months</span>
-                              </div>
-                              <div className="detail-item">
-                                <span className="label">End Date:</span>
-                                <span className="value">{treatment.vaccine_end_date ? formatDate(treatment.vaccine_end_date) : 'N/A'}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="vaccination-actions">
-                            <button
-                              onClick={() => markVaccinationGiven(treatment.treatment_id)}
-                              className="btn-vaccine"
-                              disabled={vaccinationHistory.length > 0 && new Date() < new Date(vaccinationHistory[0].next_due_date) || new Date() >= new Date(treatment.vaccine_end_date)}
-                            >
-                              {new Date() >= new Date(treatment.vaccine_end_date) ? 'Cycle Completed' : 
-                               vaccinationHistory.length > 0 && new Date() < new Date(vaccinationHistory[0].next_due_date) ? 'Not Due Yet' :
-                               'Mark Vaccination Given'}
-                            </button>
-                            <button
-                              onClick={() => {
-                                fetchVaccinationHistory(treatment.treatment_id);
-                                setShowVaccinationSection(!showVaccinationSection);
-                              }}
-                              className="btn-secondary"
-                            >
-                              {showVaccinationSection ? 'Hide History' : 'View History'}
-                            </button>
-                          </div>
-
-                          {showVaccinationSection && (
-                            <div className="vaccination-history">
-                              <h5>Vaccination History</h5>
-                              {vaccinationHistory.length > 0 ? (
-                                <div className="history-list">
-                                  {vaccinationHistory.map((vacc, index) => {
-                                    const today = new Date();
-                                    const nextDue = new Date(vacc.next_due_date);
-                                    const isOverdue = nextDue < today && new Date(vacc.vaccine_end_date) > today;
-                                    const isDueToday = nextDue.toDateString() === today.toDateString();
-                                    const isCompleted = new Date(vacc.vaccine_end_date) <= today;
-                                    
-                                    let status = 'active';
-                                    if (isCompleted) status = 'completed';
-                                    else if (isOverdue) status = 'overdue';
-                                    else if (isDueToday) status = 'due-today';
-                                    
-                                    return (
-                                      <div key={vacc.vacc_id} className={`history-item ${status}`}>
-                                        <div className="history-header">
-                                          <span className="dose-number">Dose {index + 1}</span>
-                                          <span className={`status-indicator ${status}`}>
-                                            {status === 'completed' && '✅ Completed'}
-                                            {status === 'overdue' && '❌ Overdue'}
-                                            {status === 'due-today' && '⚠️ Due Today'}
-                                            {status === 'active' && '⏳ Active'}
-                                          </span>
-                                        </div>
-                                        <div className="history-details">
-                                          <div className="detail-row">
-                                            <span className="label">Given Date:</span>
-                                            <span className="value">{formatDate(vacc.given_date)}</span>
-                                          </div>
-                                          <div className="detail-row">
-                                            <span className="label">Next Due:</span>
-                                            <span className="value">{formatDate(vacc.next_due_date)}</span>
-                                          </div>
-                                          {!isCompleted && (
-                                            <div className="detail-row">
-                                              <span className="label">Days Remaining:</span>
-                                              <span className="value">
-                                                {Math.max(0, Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24)))} days
-                                              </span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              ) : (
-                                <div className="no-history">
-                                  <p>No vaccination history available. The initial vaccination may still be in progress.</p>
-                                </div>
-                              )}
-                            </div>
+                          {treatment.is_vaccine && (
+                            <span className="vaccine-badge">💉 Vaccine</span>
                           )}
                         </div>
-                      )}
+                        <div className="treatment-meta">
+                          <span className="treatment-date">
+                            {formatDate(treatment.start_date)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="treatment-content">
+                        <div className="treatment-details">
+                          <div className="detail-row">
+                            <span className="label">Category:</span>
+                            <span className="value">{treatment.medication_type}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="label">Dose:</span>
+                            <span className="value">{treatment.dose_amount} {treatment.dose_unit}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="label">Route:</span>
+                            <span className="value">{treatment.route}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="label">Frequency:</span>
+                            <span className="value">{treatment.frequency_per_day}x per day</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="label">Duration:</span>
+                            <span className="value">{treatment.duration_days} days</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="label">End Date:</span>
+                            <span className="value">
+                              {formatDate(treatment.end_date)}
+                            </span>
+                          </div>
+                          {treatment.vet_name && (
+                            <div className="detail-row">
+                              <span className="label">Veterinarian:</span>
+                              <span className="value">{treatment.vet_name}</span>
+                            </div>
+                          )}
+                          {treatment.reason && (
+                            <div className="detail-row">
+                              <span className="label">Reason:</span>
+                              <span className="value">{treatment.reason}</span>
+                            </div>
+                          )}
+                          {amu && (
+                            <>
+                              <div className="detail-row">
+                                <span className="label">Predicted Residual Limit:</span>
+                                <span className="value">{amu.predicted_mrl} µg/kg</span>
+                              </div>
+                              <div className="detail-row">
+                                <span className="label">Predicted Withdrawal Days:</span>
+                                <span className="value">{Math.max(0, amu.predicted_withdrawal_days || 0)} days</span>
+                              </div>
+                              <div className="detail-row">
+                                <span className="label">Risk Category:</span>
+                                <span className={`value risk-${amu.risk_category?.toLowerCase()}`}>
+                                  {amu.risk_category}
+                                </span>
+                              </div>
+                              {amu.overdosage && (
+                                <div className="detail-row">
+                                  <span className="label">Overdosage:</span>
+                                  <span className="value overdosage-alert">⚠️ OVERDOSAGE DETECTED</span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+
+                        {treatment.is_vaccine && (
+                          <div className="vaccination-section">
+                            <h4>💉 Vaccination Schedule</h4>
+                            <div className="vaccination-info">
+                              <div className="vaccination-details-grid">
+                                <div className="detail-item">
+                                  <span className="label">Interval:</span>
+                                  <span className="value">{treatment.vaccine_interval_days} days</span>
+                                </div>
+                                <div className="detail-item">
+                                  <span className="label">Total Period:</span>
+                                  <span className="value">{treatment.vaccine_total_months} months</span>
+                                </div>
+                                <div className="detail-item">
+                                  <span className="label">End Date:</span>
+                                  <span className="value">{treatment.vaccine_end_date ? formatDate(treatment.vaccine_end_date) : 'N/A'}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="vaccination-actions">
+                              <button
+                                onClick={() => markVaccinationGiven(treatment.treatment_id)}
+                                className="btn-vaccine"
+                                disabled={vaccinationHistory.length > 0 && new Date() < new Date(vaccinationHistory[0].next_due_date) || new Date() >= new Date(treatment.vaccine_end_date)}
+                              >
+                                {new Date() >= new Date(treatment.vaccine_end_date) ? 'Cycle Completed' :
+                                  vaccinationHistory.length > 0 && new Date() < new Date(vaccinationHistory[0].next_due_date) ? 'Not Due Yet' :
+                                    'Mark Vaccination Given'}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  fetchVaccinationHistory(treatment.treatment_id);
+                                  setShowVaccinationSection(!showVaccinationSection);
+                                }}
+                                className="btn-secondary"
+                              >
+                                {showVaccinationSection ? 'Hide History' : 'View History'}
+                              </button>
+                            </div>
+
+                            {showVaccinationSection && (
+                              <div className="vaccination-history">
+                                <h5>Vaccination History</h5>
+                                {vaccinationHistory.length > 0 ? (
+                                  <div className="history-list">
+                                    {vaccinationHistory.map((vacc, index) => {
+                                      const today = new Date();
+                                      const nextDue = new Date(vacc.next_due_date);
+                                      const isOverdue = nextDue < today && new Date(vacc.vaccine_end_date) > today;
+                                      const isDueToday = nextDue.toDateString() === today.toDateString();
+                                      const isCompleted = new Date(vacc.vaccine_end_date) <= today;
+
+                                      let status = 'active';
+                                      if (isCompleted) status = 'completed';
+                                      else if (isOverdue) status = 'overdue';
+                                      else if (isDueToday) status = 'due-today';
+
+                                      return (
+                                        <div key={vacc.vacc_id} className={`history-item ${status}`}>
+                                          <div className="history-header">
+                                            <span className="dose-number">Dose {index + 1}</span>
+                                            <span className={`status-indicator ${status}`}>
+                                              {status === 'completed' && '✅ Completed'}
+                                              {status === 'overdue' && '❌ Overdue'}
+                                              {status === 'due-today' && '⚠️ Due Today'}
+                                              {status === 'active' && '⏳ Active'}
+                                            </span>
+                                          </div>
+                                          <div className="history-details">
+                                            <div className="detail-row">
+                                              <span className="label">Given Date:</span>
+                                              <span className="value">{formatDate(vacc.given_date)}</span>
+                                            </div>
+                                            <div className="detail-row">
+                                              <span className="label">Next Due:</span>
+                                              <span className="value">{formatDate(vacc.next_due_date)}</span>
+                                            </div>
+                                            {!isCompleted && (
+                                              <div className="detail-row">
+                                                <span className="label">Days Remaining:</span>
+                                                <span className="value">
+                                                  {Math.max(0, Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24)))} days
+                                                </span>
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                ) : (
+                                  <div className="no-history">
+                                    <p>No vaccination history available. The initial vaccination may still be in progress.</p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
                   );
                 })}
               </div>

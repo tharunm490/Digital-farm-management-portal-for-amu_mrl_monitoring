@@ -110,6 +110,8 @@ class Treatment {
     let riskPercent = null;
     if (baseMRL > 0) {
       riskPercent = (safePredictedMRL / baseMRL) * 100;
+      // Cap risk_percent at 999.99 to fit DECIMAL(5,2) column
+      riskPercent = Math.min(riskPercent, 999.99);
     }
 
     // If category is vaccine or vitamin, set withdrawal to 0

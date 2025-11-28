@@ -16,6 +16,13 @@ import AuthCallback from './pages/AuthCallback';
 import RoleSelection from './pages/RoleSelection';
 import AMURecords from './pages/AMURecords';
 import FarmerNotifications from './pages/FarmerNotifications';
+import VetDashboard from './pages/VetDashboard';
+import CreatePrescription from './pages/CreatePrescription';
+import VetTreatmentRecording from './pages/VetTreatmentRecording';
+import VetWithdrawalAlerts from './pages/VetWithdrawalAlerts';
+import ProcessorPortal from './pages/ProcessorPortal';
+import AuthorityAnalytics from './pages/AuthorityAnalytics';
+import AuthorityDashboard from './pages/AuthorityDashboard';
 import './App.css';
 
 // Protected Route Component
@@ -53,6 +60,20 @@ function AppRoutes() {
       <Route path="/vaccinations/entity/:entity_id" element={<ProtectedRoute><VaccinationManagement /></ProtectedRoute>} />
       <Route path="/qr-generator" element={<ProtectedRoute><QRGenerator /></ProtectedRoute>} />
       <Route path="/amu-records" element={<ProtectedRoute><AMURecords /></ProtectedRoute>} />
+
+      {/* Veterinarian Routes */}
+      <Route path="/vet/dashboard" element={<ProtectedRoute><VetDashboard /></ProtectedRoute>} />
+      <Route path="/vet/create-prescription" element={<ProtectedRoute><CreatePrescription /></ProtectedRoute>} />
+      <Route path="/vet/record-treatment" element={<ProtectedRoute><VetTreatmentRecording /></ProtectedRoute>} />
+      <Route path="/vet/record-treatment/:farmId" element={<ProtectedRoute><VetTreatmentRecording /></ProtectedRoute>} />
+      <Route path="/vet/withdrawals" element={<ProtectedRoute><VetWithdrawalAlerts /></ProtectedRoute>} />
+
+      {/* Processor Routes */}
+      <Route path="/processor/portal" element={<ProtectedRoute><ProcessorPortal /></ProtectedRoute>} />
+
+      {/* Authority Routes */}
+      <Route path="/authority/dashboard" element={<ProtectedRoute><AuthorityDashboard /></ProtectedRoute>} />
+      <Route path="/authority/analytics" element={<ProtectedRoute><AuthorityAnalytics /></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -23,10 +23,12 @@ function AMURecords() {
     try {
       setLoading(true);
       const response = await amuAPI.getByFarmer(user.user_id);
-      setAmuRecords(response.data);
+      const amuData = response.data?.data || response.data || [];
+      setAmuRecords(Array.isArray(amuData) ? amuData : []);
     } catch (err) {
       setError('Failed to fetch AMU records');
       console.error(err);
+      setAmuRecords([]);
     } finally {
       setLoading(false);
     }
@@ -254,8 +256,8 @@ function AMURecords() {
                   {/* Residual Details Button for Meat */}
                   {record.matrix === 'meat' && (
                     <div className="card-footer">
-                      <button 
-                        onClick={() => toggleExpand(record.amu_id)} 
+                      <button
+                        onClick={() => toggleExpand(record.amu_id)}
                         className="expand-btn"
                       >
                         {expandedRecords.has(record.amu_id) ? '🔽 Hide' : '🔍 Show'} Residual Details

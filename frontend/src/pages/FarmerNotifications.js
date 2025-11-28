@@ -27,7 +27,7 @@ const FarmerNotifications = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch notifications by type
       const [vaccRes, mrlRes, dosageRes, overdosageRes] = await Promise.all([
         notificationAPI.getByType('vaccination'),
@@ -35,12 +35,17 @@ const FarmerNotifications = () => {
         notificationAPI.getByType('high_dosage'),
         notificationAPI.getByType('overdosage')
       ]);
-      
+
+      const processResponse = (res) => {
+        const data = res.data?.data || res.data || [];
+        return Array.isArray(data) ? data : [];
+      };
+
       setNotifications({
-        vaccinations: vaccRes.data,
-        mrlAlerts: mrlRes.data,
-        dosageAlerts: dosageRes.data,
-        overdosageAlerts: overdosageRes.data
+        vaccinations: processResponse(vaccRes),
+        mrlAlerts: processResponse(mrlRes),
+        dosageAlerts: processResponse(dosageRes),
+        overdosageAlerts: processResponse(overdosageRes)
       });
     } catch (err) {
       setError('Failed to fetch notifications');

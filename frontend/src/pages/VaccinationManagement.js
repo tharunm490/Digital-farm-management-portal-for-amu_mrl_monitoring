@@ -39,7 +39,7 @@ const VaccinationManagement = () => {
       fetchVaccinationHistory(entity_id);
       fetchVaccineTreatments(entity_id);
       // Get entity details
-      const entity = entities.find(e => e.entity_id === parseInt(entity_id));
+      const entity = Array.isArray(entities) ? entities.find(e => e.entity_id === parseInt(entity_id)) : null;
       if (entity) {
         setSelectedEntity(entity);
       }
@@ -49,17 +49,20 @@ const VaccinationManagement = () => {
   const fetchEntities = async () => {
     try {
       const response = await api.get('/entities');
-      setEntities(response.data);
+      const entitiesData = response.data?.data || response.data || [];
+      setEntities(Array.isArray(entitiesData) ? entitiesData : []);
     } catch (err) {
       console.error('Failed to fetch entities:', err);
       setError('Failed to load entities');
+      setEntities([]);
     }
   };
 
   const fetchVaccinationHistory = async (id) => {
     try {
       const response = await api.get(`/vaccinations/history/entity/${id}`);
-      setVaccinationHistory(response.data);
+      const historyData = response.data?.data || response.data || [];
+      setVaccinationHistory(Array.isArray(historyData) ? historyData : []);
     } catch (err) {
       console.error('Failed to fetch vaccination history:', err);
       setVaccinationHistory([]);
@@ -69,7 +72,8 @@ const VaccinationManagement = () => {
   const fetchVaccineTreatments = async (id) => {
     try {
       const response = await api.get(`/treatments/entity/${id}`);
-      const vaccines = response.data.filter(treatment => treatment.medication_type === 'vaccine');
+      const treatmentsData = response.data?.data || response.data || [];
+      const vaccines = Array.isArray(treatmentsData) ? treatmentsData.filter(treatment => treatment.medication_type === 'vaccine') : [];
       setVaccineTreatments(vaccines);
     } catch (err) {
       console.error('Failed to fetch vaccine treatments:', err);
@@ -258,9 +262,9 @@ const VaccinationManagement = () => {
                                   disabled={index !== 0 || isCompleted || today < nextDue}
                                 >
                                   {isCompleted ? 'Cycle Completed' :
-                                   index !== 0 ? 'Not Next Dose' :
-                                   today < nextDue ? 'Not Due Yet' :
-                                   'Mark as Done'}
+                                    index !== 0 ? 'Not Next Dose' :
+                                      today < nextDue ? 'Not Due Yet' :
+                                        'Mark as Done'}
                                 </button>
                               </div>
                             </div>

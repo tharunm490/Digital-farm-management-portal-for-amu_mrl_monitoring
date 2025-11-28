@@ -25,7 +25,7 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Reset district if state changes
     if (name === 'state') {
       setFormData({ ...formData, state: value, district: '' });
@@ -46,7 +46,7 @@ const Register = () => {
     try {
       const userData = { ...formData };
       delete userData.confirmPassword;
-      
+
       await register(userData);
       navigate('/dashboard');
     } catch (err) {
@@ -63,9 +63,9 @@ const Register = () => {
       <div className="register-box">
         <h1>Farm Management Portal</h1>
         <h2>Create Account</h2>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name *</label>
@@ -78,7 +78,7 @@ const Register = () => {
               placeholder="Enter your full name"
             />
           </div>
-          
+
           <div className="form-group">
             <label>Email *</label>
             <input
@@ -90,7 +90,7 @@ const Register = () => {
               placeholder="Enter your email"
             />
           </div>
-          
+
           <div className="form-group">
             <label>Password *</label>
             <input
@@ -103,7 +103,7 @@ const Register = () => {
               minLength="6"
             />
           </div>
-          
+
           <div className="form-group">
             <label>Confirm Password *</label>
             <input
@@ -115,17 +115,32 @@ const Register = () => {
               placeholder="Confirm your password"
             />
           </div>
-          
+
           <div className="form-group">
             <label>Role *</label>
             <select name="role" value={formData.role} onChange={handleChange} required>
               <option value="farmer">Farmer</option>
+              <option value="veterinarian">Veterinarian</option>
               <option value="authority">Authority</option>
             </select>
           </div>
-          
-          {formData.role === 'farmer' && (
+
+          {(formData.role === 'farmer' || formData.role === 'veterinarian') && (
             <>
+              {formData.role === 'veterinarian' && (
+                <div className="form-group">
+                  <label>License Number *</label>
+                  <input
+                    type="text"
+                    name="license_number"
+                    value={formData.license_number || ''}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your license number"
+                  />
+                </div>
+              )}
+
               <div className="form-group">
                 <label>Phone</label>
                 <input
@@ -136,18 +151,20 @@ const Register = () => {
                   placeholder="Enter your phone number"
                 />
               </div>
-              
-              <div className="form-group">
-                <label>Address</label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  placeholder="Enter your address"
-                  rows="2"
-                />
-              </div>
-              
+
+              {formData.role === 'farmer' && (
+                <div className="form-group">
+                  <label>Address</label>
+                  <textarea
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Enter your address"
+                    rows="2"
+                  />
+                </div>
+              )}
+
               <div className="form-row">
                 <div className="form-group">
                   <label>State</label>
@@ -162,7 +179,7 @@ const Register = () => {
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="form-group">
                   <label>District</label>
                   <select
@@ -180,16 +197,16 @@ const Register = () => {
               </div>
             </>
           )}
-          
+
           <button type="submit" className="btn-primary">Register</button>
         </form>
-        
+
         <div className="divider">OR</div>
-        
+
         <button onClick={handleGoogleSignup} className="btn-google">
           <span>🔐</span> Sign up with Google
         </button>
-        
+
         <p className="login-link">
           Already have an account? <Link to="/login">Login here</Link>
         </p>

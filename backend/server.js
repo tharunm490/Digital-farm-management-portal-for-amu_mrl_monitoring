@@ -97,6 +97,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/farms', require('./routes/farmRoutes'));
 app.use('/api/entities', require('./routes/entityRoutes'));
 app.use('/api/treatments', require('./routes/treatmentRoutes'));
+app.use('/api/vet-treatments', require('./routes/vetTreatmentRoutes'));
 app.use('/api/vaccinations', require('./routes/vaccinationRoutes'));
 app.use('/api/batches', require('./routes/batchRoutes'));
 app.use('/api/amu', require('./routes/amuRoutes'));
@@ -105,6 +106,8 @@ app.use('/api/verify', require('./routes/verifyRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/predict', require('./routes/predictRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/authority', require('./routes/authorityRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

@@ -1,0 +1,2001 @@
+species,matrix,active_ingredient,category_type,cause,dose_amount,dose_unit,frequency_per_day,duration_days,reason,mrl_limit,mrl_unit,withdrawal_period_days
+sheep,meat,Amoxicillin,antibiotic,Mycoplasma infection,31.92,g,2,3,Lameness,49.72,ug/kg,6
+pig,meat,Doxycycline,antibiotic,Parasitic infestation,33.65,g,2,14,Respiratory distress,48.66,ug/kg,10
+goat,meat,Sulfonamides,antibiotic,Nutritional deficiency,6.07,g,1,10,Fever,105.8,ug/kg,14
+sheep,meat,Doxycycline,antibiotic,Nutritional deficiency,1.0,tablet,2,5,Cough,45.51,ug/kg,9
+cattle,meat,Gentamicin,antibiotic,Contaminated feed/water,5.37,ml,1,7,Poor weight gain,192.33,ug/kg,10
+goat,meat,Enrofloxacin,antibiotic,Bacterial infection,33.87,ml,1,5,Wounds,108.07,ug/kg,17
+pig,meat,Florfenicol,antibiotic,Contaminated feed/water,749.12,mg,3,2,Lameness,1092.15,ug/kg,3
+sheep,meat,Oxytetracycline,antibiotic,Parasitic infestation,671.63,mg,1,1,Lameness,290.26,ug/kg,15
+cattle,meat,Enrofloxacin,antibiotic,Fungal infection,5.0,tablet,3,5,Lameness,97.43,ug/kg,20
+sheep,meat,Sulfonamides,antibiotic,Mycoplasma infection,2.0,tablet,3,14,Respiratory distress,91.3,ug/kg,16
+goat,meat,Enrofloxacin,antibiotic,Protozoal infection,2.0,tablet,1,7,Cough,93.54,ug/kg,17
+goat,meat,Amoxicillin,antibiotic,Fungal infection,10.0,tablet,1,1,Fever,48.09,ug/kg,18
+sheep,meat,Doxycycline,antibiotic,Secondary bacterial infection,23.12,ml,1,1,Skin lesions,46.12,ug/kg,4
+goat,meat,Enrofloxacin,antibiotic,Parasitic infestation,312.69,mg,3,3,Diarrhea,98.98,ug/kg,15
+cattle,milk,Tylosin,antibiotic,Bacterial infection,2.0,tablet,2,4,Respiratory distress,109.11,ug/kg,3
+sheep,meat,Oxytetracycline,antibiotic,Nutritional deficiency,28.73,ml,3,5,Respiratory distress,320.96,ug/kg,7
+cattle,meat,Gentamicin,antibiotic,Bacterial infection,658.54,mg,1,10,Diarrhea,215.1,ug/kg,17
+pig,meat,Amoxicillin,antibiotic,Nutritional deficiency,4.9,kg,3,14,Fever,47.98,ug/kg,8
+poultry,meat,Doxycycline,antibiotic,Nutritional deficiency,5.0,sachet,2,3,Poor weight gain,50.02,ug/kg,6
+cattle,meat,Ceftiofur,antibiotic,Parasitic infestation,13.86,ml,1,7,Reduced production,215.1,ug/kg,9
+pig,meat,Enrofloxacin,antibiotic,Nutritional deficiency,9.23,g,1,5,Drop in egg production,107.71,ug/kg,19
+sheep,meat,Amoxicillin,antibiotic,Mycoplasma infection,26.13,ml,1,4,Skin lesions,53.44,ug/kg,15
+goat,meat,Sulfonamides,antibiotic,Mycoplasma infection,133.75,mg,2,5,Drop in egg production,95.67,ug/kg,14
+goat,meat,Enrofloxacin,antibiotic,Secondary bacterial infection,41.49,g,1,4,Drop in egg production,104.18,ug/kg,6
+poultry,meat,Oxytetracycline,antibiotic,Poor hygiene,8.93,litre,2,5,Respiratory distress,272.36,ug/kg,10
+sheep,meat,Doxycycline,antibiotic,Mycoplasma infection,33.38,g,1,7,Skin lesions,54.25,ug/kg,17
+cattle,milk,Tetracycline,antibiotic,Nutritional deficiency,17.64,g,3,7,Cough,98.8,ug/kg,3
+sheep,meat,Doxycycline,antibiotic,Poor hygiene,349.58,mg,1,14,Reduced production,51.23,ug/kg,18
+sheep,meat,Tylosin,antibiotic,Viral infection,891.96,mg,2,7,Cough,106.64,ug/kg,9
+goat,meat,Amoxicillin,antibiotic,Poor hygiene,46.24,ml,3,2,Fever,46.0,ug/kg,20
+sheep,meat,Sulfonamides,antibiotic,Mycoplasma infection,43.64,ml,1,2,Diarrhea,106.52,ug/kg,9
+pig,meat,Florfenicol,antibiotic,Fungal infection,5.0,tablet,1,5,Poor weight gain,979.52,ug/kg,6
+pig,meat,Amoxicillin,antibiotic,Viral infection,21.24,ml,2,1,Fever,49.23,ug/kg,20
+pig,meat,Florfenicol,antibiotic,Contaminated feed/water,34.16,g,2,14,Fever,964.38,ug/kg,3
+cattle,meat,Ceftriaxone,antibiotic,Viral infection,986.28,mg,2,2,Drop in egg production,208.91,ug/kg,3
+sheep,meat,Tylosin,antibiotic,Protozoal infection,906.83,mg,2,3,Cough,102.81,ug/kg,15
+poultry,meat,Oxytetracycline,antibiotic,Contaminated feed/water,2.91,kg,2,1,Cough,326.33,ug/kg,6
+cattle,meat,Gentamicin,antibiotic,Bacterial infection,0.5,tablet,1,5,Skin lesions,219.16,ug/kg,12
+cattle,milk,Amoxicillin,antibiotic,Secondary bacterial infection,46.7,g,1,14,Lameness,3.89,ug/kg,7
+pig,meat,Enrofloxacin,antibiotic,Protozoal infection,556.16,mg,1,10,Lameness,92.0,ug/kg,7
+cattle,meat,Enrofloxacin,antibiotic,Viral infection,316.41,mg,1,2,Wounds,96.45,ug/kg,19
+pig,meat,Florfenicol,antibiotic,Fungal infection,9.01,ml,3,4,Fever,1040.79,ug/kg,13
+pig,meat,Enrofloxacin,antibiotic,Bacterial infection,29.48,ml,1,5,Skin lesions,100.15,ug/kg,20
+poultry,meat,Oxytetracycline,antibiotic,Poor hygiene,45.89,g,2,7,Wounds,272.64,ug/kg,6
+sheep,meat,Tylosin,antibiotic,Protozoal infection,428.39,mg,3,2,Respiratory distress,93.95,ug/kg,19
+poultry,meat,Oxytetracycline,antibiotic,Secondary bacterial infection,38.74,g,1,1,Cough,310.46,ug/kg,14
+cattle,milk,Penicillin-G,antibiotic,Bacterial infection,33.65,ml,3,14,Lameness,3.92,ug/kg,4
+pig,meat,Enrofloxacin,antibiotic,Viral infection,811.06,mg,1,5,Reduced production,100.99,ug/kg,9
+sheep,meat,Amoxicillin,antibiotic,Poor hygiene,1.69,ml,2,4,Skin lesions,46.42,ug/kg,3
+poultry,meat,Oxytetracycline,antibiotic,Poor hygiene,7.66,g,1,10,Poor weight gain,275.41,ug/kg,14
+pig,meat,Enrofloxacin,antibiotic,Secondary bacterial infection,31.08,g,2,1,Cough,92.9,ug/kg,4
+poultry,meat,Oxytetracycline,antibiotic,Viral infection,0.89,kg,2,5,Skin lesions,290.92,ug/kg,8
+cattle,meat,Ceftriaxone,antibiotic,Nutritional deficiency,10.0,tablet,2,3,Reduced production,219.01,ug/kg,7
+pig,meat,Oxytetracycline,antibiotic,Mycoplasma infection,2.82,kg,1,14,Respiratory distress,294.13,ug/kg,13
+goat,meat,Sulfonamides,antibiotic,Nutritional deficiency,40.17,ml,2,2,Diarrhea,104.73,ug/kg,5
+pig,meat,Doxycycline,antibiotic,Fungal infection,12.16,g,2,14,Lameness,53.03,ug/kg,7
+goat,meat,Enrofloxacin,antibiotic,Parasitic infestation,6.03,g,2,4,Skin lesions,98.1,ug/kg,11
+pig,meat,Amoxicillin,antibiotic,Secondary bacterial infection,809.66,mg,2,4,Lameness,46.64,ug/kg,7
+pig,meat,Tylosin,antibiotic,Fungal infection,417.18,mg,2,2,Diarrhea,95.11,ug/kg,6
+poultry,egg,Oxytetracycline,antibiotic,Nutritional deficiency,9.17,litre,1,4,Cough,289.02,ug/kg,14
+poultry,meat,Enrofloxacin,antibiotic,Fungal infection,6.76,litre,2,10,Wounds,94.44,ug/kg,14
+sheep,meat,Oxytetracycline,antibiotic,Nutritional deficiency,21.14,ml,2,4,Poor weight gain,302.71,ug/kg,16
+poultry,meat,Oxytetracycline,antibiotic,Protozoal infection,7.6,litre,3,14,Drop in egg production,309.23,ug/kg,10
+pig,meat,Florfenicol,antibiotic,Nutritional deficiency,0.87,kg,2,2,Respiratory distress,1033.2,ug/kg,7
+goat,meat,Tylosin,antibiotic,Nutritional deficiency,40.63,g,1,7,Poor weight gain,102.1,ug/kg,18
+poultry,egg,Tylosin,antibiotic,Bacterial infection,1.0,sachet,3,5,Respiratory distress,99.54,ug/kg,5
+pig,meat,Oxytetracycline,antibiotic,Protozoal infection,2.5,kg,2,3,Skin lesions,325.8,ug/kg,17
+cattle,meat,Ceftriaxone,antibiotic,Bacterial infection,22.4,ml,1,3,Skin lesions,185.77,ug/kg,4
+cattle,milk,Penicillin-G,antibiotic,Mycoplasma infection,25.18,ml,3,14,Wounds,4.07,ug/kg,4
+poultry,egg,Doxycycline,antibiotic,Mycoplasma infection,3.46,litre,2,2,Fever,50.41,ug/kg,7
+cattle,meat,Enrofloxacin,antibiotic,Nutritional deficiency,26.69,g,2,5,Respiratory distress,91.22,ug/kg,12
+goat,meat,Oxytetracycline,antibiotic,Poor hygiene,370.86,mg,3,2,Respiratory distress,314.03,ug/kg,17
+cattle,meat,Amoxicillin,antibiotic,Secondary bacterial infection,880.83,mg,3,2,Fever,48.39,ug/kg,18
+goat,meat,Tylosin,antibiotic,Nutritional deficiency,834.48,mg,1,7,Poor weight gain,103.54,ug/kg,19
+pig,meat,Tylosin,antibiotic,Parasitic infestation,22.83,ml,2,4,Fever,107.34,ug/kg,8
+pig,meat,Amoxicillin,antibiotic,Mycoplasma infection,962.58,mg,3,4,Fever,46.59,ug/kg,11
+sheep,meat,Enrofloxacin,antibiotic,Viral infection,5.0,tablet,1,10,Poor weight gain,109.86,ug/kg,20
+cattle,milk,Oxytetracycline,antibiotic,Fungal infection,215.44,mg,2,14,Drop in egg production,108.86,ug/kg,1
+poultry,meat,Oxytetracycline,antibiotic,Secondary bacterial infection,1.05,g,1,7,Respiratory distress,329.02,ug/kg,13
+sheep,meat,Enrofloxacin,antibiotic,Nutritional deficiency,24.78,g,1,1,Skin lesions,91.65,ug/kg,9
+pig,meat,Doxycycline,antibiotic,Viral infection,661.87,mg,1,1,Wounds,52.58,ug/kg,3
+sheep,meat,Tylosin,antibiotic,Mycoplasma infection,38.86,g,2,2,Poor weight gain,94.0,ug/kg,14
+goat,meat,Tylosin,antibiotic,Secondary bacterial infection,541.59,mg,2,2,Respiratory distress,96.79,ug/kg,5
+sheep,meat,Oxytetracycline,antibiotic,Parasitic infestation,10.0,tablet,1,7,Reduced production,301.81,ug/kg,9
+pig,meat,Florfenicol,antibiotic,Mycoplasma infection,8.5,g,2,2,Poor weight gain,909.4,ug/kg,14
+goat,meat,Enrofloxacin,antibiotic,Fungal infection,7.31,g,1,14,Cough,102.25,ug/kg,9
+goat,meat,Sulfonamides,antibiotic,Viral infection,1.0,tablet,2,7,Cough,94.97,ug/kg,5
+cattle,meat,Tetracycline,antibiotic,Bacterial infection,27.55,ml,1,14,Skin lesions,287.77,ug/kg,20
+sheep,meat,Sulfonamides,antibiotic,Parasitic infestation,10.0,tablet,1,5,Skin lesions,103.29,ug/kg,20
+goat,meat,Doxycycline,antibiotic,Contaminated feed/water,16.11,ml,1,1,Respiratory distress,49.57,ug/kg,10
+sheep,meat,Tylosin,antibiotic,Fungal infection,15.68,ml,2,5,Lameness,108.1,ug/kg,13
+poultry,meat,Tylosin,antibiotic,Mycoplasma infection,2.02,g,1,2,Reduced production,90.27,ug/kg,14
+sheep,meat,Sulfonamides,antibiotic,Bacterial infection,11.94,ml,1,3,Wounds,103.32,ug/kg,9
+goat,meat,Oxytetracycline,antibiotic,Protozoal infection,42.17,ml,2,14,Diarrhea,309.36,ug/kg,7
+cattle,meat,Tetracycline,antibiotic,Contaminated feed/water,10.0,tablet,3,10,Reduced production,325.01,ug/kg,9
+pig,meat,Oxytetracycline,antibiotic,Viral infection,8.44,g,2,4,Drop in egg production,322.02,ug/kg,3
+poultry,meat,Tylosin,antibiotic,Fungal infection,9.18,litre,3,4,Poor weight gain,104.05,ug/kg,4
+sheep,meat,Enrofloxacin,antibiotic,Fungal infection,8.8,ml,1,7,Skin lesions,94.33,ug/kg,11
+sheep,meat,Oxytetracycline,antibiotic,Poor hygiene,23.71,ml,1,2,Cough,294.5,ug/kg,7
+sheep,meat,Oxytetracycline,antibiotic,Nutritional deficiency,10.28,g,1,7,Wounds,322.97,ug/kg,4
+goat,meat,Enrofloxacin,antibiotic,Fungal infection,5.0,tablet,2,4,Reduced production,91.13,ug/kg,16
+goat,meat,Doxycycline,antibiotic,Secondary bacterial infection,45.51,ml,1,10,Reduced production,48.99,ug/kg,17
+sheep,meat,Oxytetracycline,antibiotic,Bacterial infection,46.74,ml,3,5,Fever,327.24,ug/kg,16
+poultry,egg,Tylosin,antibiotic,Contaminated feed/water,0.36,kg,3,2,Poor weight gain,98.21,ug/kg,4
+goat,meat,Amoxicillin,antibiotic,Viral infection,1.78,g,1,14,Reduced production,48.61,ug/kg,14
+cattle,milk,Penicillin-G,antibiotic,Mycoplasma infection,37.49,g,2,14,Wounds,4.19,ug/kg,1
+poultry,egg,Doxycycline,antibiotic,Bacterial infection,12.77,g,1,5,Reduced production,52.17,ug/kg,14
+goat,meat,Sulfonamides,antibiotic,Mycoplasma infection,5.0,tablet,2,14,Reduced production,104.18,ug/kg,20
+pig,meat,Oxytetracycline,antibiotic,Bacterial infection,11.04,ml,1,14,Lameness,273.91,ug/kg,16
+cattle,meat,Penicillin-G,antibiotic,Parasitic infestation,507.03,mg,1,1,Cough,54.01,ug/kg,8
+sheep,meat,Enrofloxacin,antibiotic,Viral infection,17.92,g,2,1,Fever,100.78,ug/kg,6
+cattle,milk,Enrofloxacin,antibiotic,Contaminated feed/water,22.76,ml,1,7,Drop in egg production,100.28,ug/kg,4
+cattle,meat,Enrofloxacin,antibiotic,Protozoal infection,280.86,mg,2,14,Respiratory distress,99.17,ug/kg,19
+pig,meat,Amoxicillin,antibiotic,Nutritional deficiency,964.42,mg,2,7,Cough,51.03,ug/kg,5
+pig,meat,Enrofloxacin,antibiotic,Fungal infection,719.88,mg,1,14,Respiratory distress,101.14,ug/kg,15
+pig,meat,Enrofloxacin,antibiotic,Mycoplasma infection,635.57,mg,1,5,Drop in egg production,96.54,ug/kg,19
+poultry,egg,Oxytetracycline,antibiotic,Mycoplasma infection,28.0,g,2,14,Fever,322.56,ug/kg,3
+sheep,meat,Sulfonamides,antibiotic,Fungal infection,23.59,ml,2,1,Skin lesions,93.59,ug/kg,18
+pig,meat,Oxytetracycline,antibiotic,Mycoplasma infection,10.0,tablet,1,7,Diarrhea,327.82,ug/kg,7
+sheep,meat,Sulfonamides,antibiotic,Contaminated feed/water,39.36,ml,2,10,Poor weight gain,105.46,ug/kg,15
+poultry,meat,Enrofloxacin,antibiotic,Fungal infection,5.0,sachet,2,2,Fever,99.79,ug/kg,14
+sheep,meat,Amoxicillin,antibiotic,Nutritional deficiency,2.0,tablet,1,10,Diarrhea,48.45,ug/kg,14
+sheep,meat,Amoxicillin,antibiotic,Contaminated feed/water,5.41,ml,1,7,Lameness,52.48,ug/kg,11
+cattle,meat,Tylosin,antibiotic,Secondary bacterial infection,38.65,g,2,10,Drop in egg production,97.73,ug/kg,20
+cattle,milk,Sulfonamides,antibiotic,Nutritional deficiency,444.49,mg,3,3,Lameness,95.61,ug/kg,5
+goat,meat,Tylosin,antibiotic,Protozoal infection,1.13,g,1,14,Skin lesions,99.93,ug/kg,18
+pig,meat,Oxytetracycline,antibiotic,Fungal infection,22.43,g,1,4,Diarrhea,299.82,ug/kg,19
+poultry,egg,Doxycycline,antibiotic,Bacterial infection,7.45,g,1,14,Skin lesions,48.13,ug/kg,12
+poultry,meat,Enrofloxacin,antibiotic,Poor hygiene,23.97,g,2,10,Wounds,105.55,ug/kg,14
+goat,meat,Sulfonamides,antibiotic,Nutritional deficiency,593.5,mg,2,14,Wounds,105.28,ug/kg,12
+goat,meat,Doxycycline,antibiotic,Bacterial infection,0.18,g,1,4,Poor weight gain,47.36,ug/kg,18
+pig,meat,Florfenicol,antibiotic,Poor hygiene,33.78,g,1,1,Fever,939.64,ug/kg,9
+poultry,egg,Tylosin,antibiotic,Parasitic infestation,8.81,litre,1,2,Cough,97.87,ug/kg,14
+goat,meat,Amoxicillin,antibiotic,Protozoal infection,34.03,g,1,2,Reduced production,50.93,ug/kg,9
+cattle,milk,Tylosin,antibiotic,Protozoal infection,47.07,g,2,2,Wounds,101.75,ug/kg,5
+poultry,egg,Enrofloxacin,antibiotic,Protozoal infection,2.03,litre,1,4,Respiratory distress,106.59,ug/kg,11
+pig,meat,Amoxicillin,antibiotic,Fungal infection,1.0,tablet,2,4,Drop in egg production,49.33,ug/kg,20
+goat,meat,Sulfonamides,antibiotic,Contaminated feed/water,1.0,tablet,2,4,Poor weight gain,99.09,ug/kg,5
+pig,meat,Amoxicillin,antibiotic,Mycoplasma infection,0.5,tablet,1,10,Lameness,46.99,ug/kg,17
+cattle,meat,Oxytetracycline,antibiotic,Protozoal infection,28.77,g,2,14,Skin lesions,324.17,ug/kg,18
+cattle,meat,Gentamicin,antibiotic,Parasitic infestation,905.35,mg,1,1,Wounds,183.95,ug/kg,17
+cattle,milk,Enrofloxacin,antibiotic,Protozoal infection,23.08,g,1,5,Cough,109.8,ug/kg,4
+poultry,egg,Doxycycline,antibiotic,Viral infection,3.07,kg,2,1,Drop in egg production,50.19,ug/kg,7
+pig,meat,Oxytetracycline,antibiotic,Secondary bacterial infection,1.0,tablet,2,4,Lameness,279.34,ug/kg,7
+pig,meat,Tylosin,antibiotic,Mycoplasma infection,15.32,g,2,3,Fever,103.82,ug/kg,12
+goat,meat,Oxytetracycline,antibiotic,Nutritional deficiency,5.0,tablet,3,7,Cough,286.74,ug/kg,15
+goat,meat,Oxytetracycline,antibiotic,Poor hygiene,26.74,ml,2,5,Skin lesions,298.47,ug/kg,6
+goat,meat,Doxycycline,antibiotic,Mycoplasma infection,4.17,g,2,3,Lameness,52.25,ug/kg,14
+poultry,meat,Tylosin,antibiotic,Contaminated feed/water,2.41,kg,3,3,Wounds,104.53,ug/kg,6
+cattle,meat,Enrofloxacin,antibiotic,Contaminated feed/water,21.31,ml,1,10,Skin lesions,98.8,ug/kg,7
+goat,meat,Amoxicillin,antibiotic,Contaminated feed/water,12.43,ml,1,14,Cough,52.81,ug/kg,8
+cattle,meat,Enrofloxacin,antibiotic,Nutritional deficiency,679.89,mg,1,10,Poor weight gain,107.76,ug/kg,12
+goat,meat,Tylosin,antibiotic,Contaminated feed/water,0.27,g,3,7,Reduced production,109.72,ug/kg,20
+pig,meat,Amoxicillin,antibiotic,Poor hygiene,5.0,tablet,1,2,Respiratory distress,48.53,ug/kg,6
+pig,meat,Amoxicillin,antibiotic,Bacterial infection,11.4,g,3,10,Wounds,53.68,ug/kg,5
+pig,meat,Tylosin,antibiotic,Secondary bacterial infection,16.34,ml,1,10,Drop in egg production,99.66,ug/kg,4
+goat,meat,Tylosin,antibiotic,Viral infection,9.9,ml,1,4,Reduced production,103.15,ug/kg,17
+poultry,meat,Oxytetracycline,antibiotic,Secondary bacterial infection,26.93,g,2,5,Cough,288.66,ug/kg,4
+pig,meat,Florfenicol,antibiotic,Nutritional deficiency,70.72,mg,1,2,Diarrhea,1003.74,ug/kg,3
+pig,meat,Amoxicillin,antibiotic,Nutritional deficiency,28.04,g,2,10,Lameness,50.48,ug/kg,17
+goat,meat,Tylosin,antibiotic,Contaminated feed/water,921.24,mg,3,14,Skin lesions,98.03,ug/kg,17
+sheep,meat,Sulfonamides,antibiotic,Nutritional deficiency,7.63,g,1,2,Diarrhea,95.46,ug/kg,10
+cattle,meat,Tetracycline,antibiotic,Protozoal infection,58.52,mg,2,1,Drop in egg production,304.53,ug/kg,14
+pig,meat,Oxytetracycline,antibiotic,Fungal infection,37.61,g,1,10,Wounds,273.35,ug/kg,10
+pig,meat,Doxycycline,antibiotic,Bacterial infection,1.0,tablet,3,14,Cough,48.36,ug/kg,3
+poultry,egg,Tylosin,antibiotic,Secondary bacterial infection,3.48,kg,1,14,Wounds,102.28,ug/kg,14
+sheep,meat,Enrofloxacin,antibiotic,Poor hygiene,9.56,g,1,2,Drop in egg production,109.13,ug/kg,19
+cattle,meat,Gentamicin,antibiotic,Bacterial infection,49.46,ml,1,5,Respiratory distress,197.9,ug/kg,18
+goat,meat,Oxytetracycline,antibiotic,Poor hygiene,41.45,g,3,2,Lameness,327.18,ug/kg,4
+poultry,meat,Tylosin,antibiotic,Nutritional deficiency,2.4,kg,2,3,Poor weight gain,90.01,ug/kg,11
+sheep,meat,Oxytetracycline,antibiotic,Parasitic infestation,1.0,tablet,3,1,Fever,313.14,ug/kg,9
+cattle,milk,Sulfonamides,antibiotic,Nutritional deficiency,32.1,g,2,4,Reduced production,101.16,ug/kg,6
+poultry,egg,Doxycycline,antibiotic,Secondary bacterial infection,6.8,litre,1,14,Lameness,52.8,ug/kg,10
+poultry,egg,Oxytetracycline,antibiotic,Fungal infection,7.1,litre,1,3,Drop in egg production,284.08,ug/kg,13
+poultry,egg,Oxytetracycline,antibiotic,Mycoplasma infection,1.0,sachet,2,10,Diarrhea,303.24,ug/kg,14
+goat,meat,Doxycycline,antibiotic,Secondary bacterial infection,10.0,tablet,1,14,Diarrhea,54.93,ug/kg,12
+goat,meat,Enrofloxacin,antibiotic,Secondary bacterial infection,31.51,ml,2,1,Reduced production,99.25,ug/kg,5
+sheep,meat,Enrofloxacin,antibiotic,Parasitic infestation,30.89,g,1,3,Fever,94.36,ug/kg,10
+sheep,meat,Tylosin,antibiotic,Nutritional deficiency,418.42,mg,3,7,Drop in egg production,101.35,ug/kg,4
+goat,meat,Enrofloxacin,antibiotic,Nutritional deficiency,28.82,ml,3,2,Diarrhea,103.35,ug/kg,20
+goat,meat,Doxycycline,antibiotic,Parasitic infestation,240.02,mg,2,10,Reduced production,53.44,ug/kg,4
+pig,meat,Amoxicillin,antibiotic,Viral infection,0.5,tablet,2,3,Poor weight gain,48.88,ug/kg,17
+goat,meat,Doxycycline,antibiotic,Nutritional deficiency,1.0,tablet,1,7,Reduced production,52.65,ug/kg,9
+goat,meat,Sulfonamides,antibiotic,Poor hygiene,710.11,mg,3,7,Cough,92.35,ug/kg,9
+sheep,meat,Oxytetracycline,antibiotic,Bacterial infection,5.0,tablet,1,10,Poor weight gain,308.89,ug/kg,17
+sheep,meat,Doxycycline,antibiotic,Bacterial infection,1.09,g,1,14,Drop in egg production,51.6,ug/kg,8
+poultry,egg,Oxytetracycline,antibiotic,Mycoplasma infection,3.24,kg,3,10,Wounds,313.04,ug/kg,11
+pig,meat,Tylosin,antibiotic,Mycoplasma infection,44.78,g,2,1,Diarrhea,107.02,ug/kg,12
+sheep,meat,Doxycycline,antibiotic,Fungal infection,8.76,g,3,2,Poor weight gain,46.2,ug/kg,15
+sheep,meat,Amoxicillin,antibiotic,Bacterial infection,35.21,g,2,3,Drop in egg production,48.74,ug/kg,5
+poultry,egg,Tylosin,antibiotic,Fungal infection,4.31,kg,1,7,Lameness,107.81,ug/kg,7
+goat,meat,Enrofloxacin,antibiotic,Nutritional deficiency,37.64,g,1,4,Drop in egg production,107.87,ug/kg,20
+cattle,milk,Oxytetracycline,antibiotic,Secondary bacterial infection,12.36,g,3,2,Drop in egg production,92.41,ug/kg,6
+sheep,meat,Doxycycline,antibiotic,Bacterial infection,5.0,tablet,2,4,Reduced production,50.37,ug/kg,19
+goat,meat,Sulfonamides,antibiotic,Nutritional deficiency,45.0,ml,2,1,Fever,98.43,ug/kg,6
+sheep,meat,Oxytetracycline,antibiotic,Nutritional deficiency,7.55,ml,1,1,Wounds,293.88,ug/kg,10
+goat,meat,Oxytetracycline,antibiotic,Poor hygiene,6.52,g,1,4,Cough,314.15,ug/kg,9
+sheep,meat,Doxycycline,antibiotic,Viral infection,44.61,ml,2,5,Wounds,45.91,ug/kg,5
+goat,meat,Amoxicillin,antibiotic,Nutritional deficiency,718.85,mg,2,3,Fever,51.51,ug/kg,11
+goat,meat,Amoxicillin,antibiotic,Bacterial infection,519.73,mg,1,1,Drop in egg production,52.1,ug/kg,16
+pig,meat,Oxytetracycline,antibiotic,Nutritional deficiency,281.09,mg,2,7,Diarrhea,294.64,ug/kg,14
+cattle,meat,Oxytetracycline,antibiotic,Bacterial infection,35.34,g,2,2,Fever,278.03,ug/kg,6
+poultry,egg,Tylosin,antibiotic,Nutritional deficiency,1.0,sachet,3,14,Reduced production,100.01,ug/kg,14
+poultry,meat,Doxycycline,antibiotic,Poor hygiene,2.26,litre,2,2,Lameness,46.59,ug/kg,14
+cattle,milk,Ceftriaxone,antibiotic,Parasitic infestation,2.0,tablet,2,14,Cough,108.66,ug/kg,6
+poultry,egg,Enrofloxacin,antibiotic,Contaminated feed/water,2.05,litre,2,2,Diarrhea,109.0,ug/kg,5
+pig,meat,Amoxicillin,antibiotic,Mycoplasma infection,4.07,ml,1,10,Wounds,50.04,ug/kg,19
+poultry,meat,Enrofloxacin,antibiotic,Secondary bacterial infection,6.64,g,1,3,Diarrhea,96.73,ug/kg,6
+pig,meat,Florfenicol,antibiotic,Protozoal infection,125.01,mg,1,7,Poor weight gain,1071.6,ug/kg,6
+poultry,egg,Enrofloxacin,antibiotic,Bacterial infection,24.11,g,2,10,Skin lesions,98.93,ug/kg,7
+cattle,milk,Ceftriaxone,antibiotic,Mycoplasma infection,33.49,ml,2,14,Reduced production,100.56,ug/kg,1
+pig,meat,Tylosin,antibiotic,Secondary bacterial infection,3.05,kg,3,7,Reduced production,103.66,ug/kg,13
+goat,meat,Tylosin,antibiotic,Poor hygiene,1.0,tablet,1,2,Reduced production,103.61,ug/kg,6
+sheep,meat,Oxytetracycline,antibiotic,Secondary bacterial infection,9.27,g,3,1,Lameness,318.7,ug/kg,3
+poultry,meat,Enrofloxacin,antibiotic,Nutritional deficiency,2.0,sachet,3,14,Poor weight gain,98.17,ug/kg,3
+poultry,meat,Enrofloxacin,antibiotic,Mycoplasma infection,4.03,litre,1,5,Fever,92.25,ug/kg,4
+sheep,meat,Sulfonamides,antibiotic,Poor hygiene,42.58,g,1,1,Wounds,107.92,ug/kg,17
+cattle,milk,Penicillin-G,antibiotic,Bacterial infection,46.47,ml,1,7,Wounds,3.93,ug/kg,5
+poultry,egg,Enrofloxacin,antibiotic,Viral infection,1.0,sachet,3,5,Wounds,92.42,ug/kg,14
+pig,meat,Amoxicillin,antibiotic,Fungal infection,27.86,ml,1,1,Respiratory distress,51.28,ug/kg,13
+goat,meat,Oxytetracycline,antibiotic,Fungal infection,10.0,tablet,1,4,Cough,299.25,ug/kg,7
+pig,meat,Tylosin,antibiotic,Contaminated feed/water,2.62,kg,1,7,Respiratory distress,101.74,ug/kg,15
+cattle,meat,Sulfonamides,antibiotic,Bacterial infection,5.34,g,2,1,Reduced production,109.14,ug/kg,18
+pig,meat,Amoxicillin,antibiotic,Parasitic infestation,32.88,ml,1,3,Fever,47.09,ug/kg,10
+sheep,meat,Amoxicillin,antibiotic,Fungal infection,6.44,ml,2,2,Reduced production,54.02,ug/kg,16
+pig,meat,Tylosin,antibiotic,Contaminated feed/water,1.62,ml,1,4,Cough,100.7,ug/kg,13
+cattle,meat,Doxycycline,antibiotic,Parasitic infestation,5.47,ml,3,14,Cough,50.86,ug/kg,20
+poultry,meat,Doxycycline,antibiotic,Nutritional deficiency,1.0,sachet,3,10,Diarrhea,49.75,ug/kg,10
+pig,meat,Enrofloxacin,antibiotic,Fungal infection,10.0,tablet,3,2,Wounds,103.51,ug/kg,14
+cattle,meat,Penicillin-G,antibiotic,Contaminated feed/water,1.0,tablet,2,3,Lameness,51.15,ug/kg,17
+goat,meat,Oxytetracycline,antibiotic,Contaminated feed/water,46.73,ml,1,7,Lameness,291.79,ug/kg,20
+pig,meat,Enrofloxacin,antibiotic,Parasitic infestation,1.0,tablet,2,10,Drop in egg production,98.83,ug/kg,19
+cattle,meat,Oxytetracycline,antibiotic,Mycoplasma infection,14.82,ml,2,4,Fever,280.71,ug/kg,13
+poultry,egg,Oxytetracycline,antibiotic,Bacterial infection,4.39,litre,2,10,Drop in egg production,283.05,ug/kg,8
+sheep,meat,Sulfonamides,antibiotic,Viral infection,9.56,ml,2,14,Diarrhea,90.65,ug/kg,12
+pig,meat,Amoxicillin,antibiotic,Secondary bacterial infection,3.96,kg,1,7,Lameness,50.92,ug/kg,20
+cattle,milk,Sulfonamides,antibiotic,Contaminated feed/water,5.0,tablet,2,1,Drop in egg production,100.57,ug/kg,4
+cattle,milk,Ceftiofur,antibiotic,Secondary bacterial infection,711.71,mg,1,7,Cough,106.56,ug/kg,7
+cattle,meat,Enrofloxacin,antibiotic,Protozoal infection,417.38,mg,1,5,Fever,102.03,ug/kg,4
+cattle,meat,Tylosin,antibiotic,Contaminated feed/water,773.17,mg,1,2,Respiratory distress,102.92,ug/kg,9
+sheep,meat,Amoxicillin,antibiotic,Fungal infection,17.08,ml,2,1,Wounds,47.26,ug/kg,4
+cattle,meat,Gentamicin,antibiotic,Fungal infection,2.0,tablet,1,14,Wounds,212.81,ug/kg,19
+goat,meat,Doxycycline,antibiotic,Fungal infection,5.0,tablet,1,4,Reduced production,48.99,ug/kg,3
+cattle,milk,Gentamicin,antibiotic,Mycoplasma infection,36.47,g,1,5,Fever,109.29,ug/kg,5
+cattle,meat,Ceftriaxone,antibiotic,Fungal infection,2.0,tablet,3,5,Respiratory distress,196.69,ug/kg,6
+poultry,meat,Oxytetracycline,antibiotic,Contaminated feed/water,10.0,sachet,1,7,Cough,276.31,ug/kg,5
+cattle,meat,Tylosin,antibiotic,Secondary bacterial infection,1.1,ml,2,5,Reduced production,103.67,ug/kg,15
+goat,meat,Doxycycline,antibiotic,Mycoplasma infection,10.0,tablet,1,14,Respiratory distress,47.08,ug/kg,12
+pig,meat,Florfenicol,antibiotic,Contaminated feed/water,674.48,mg,1,2,Cough,948.6,ug/kg,8
+cattle,meat,Oxytetracycline,antibiotic,Nutritional deficiency,1.0,tablet,2,5,Respiratory distress,297.3,ug/kg,13
+pig,meat,Ivermectin,antiparasitic,Contaminated feed/water,7.52,ml,1,1,Skin lesions,100.17,ug/kg,18
+sheep,meat,Closantel,antiparasitic,Viral infection,30.45,ml,2,1,Poor weight gain,504.47,ug/kg,35
+poultry,egg,Ivermectin,antiparasitic,Protozoal infection,7.19,litre,2,7,Reduced production,90.4,ug/kg,9
+poultry,egg,Ivermectin,antiparasitic,Fungal infection,19.03,g,2,5,Poor weight gain,103.83,ug/kg,12
+poultry,egg,Ivermectin,antiparasitic,Secondary bacterial infection,15.17,g,2,3,Cough,104.9,ug/kg,8
+goat,meat,Ivermectin,antiparasitic,Parasitic infestation,47.83,g,3,3,Reduced production,105.89,ug/kg,33
+cattle,meat,Albendazole,antiparasitic,Protozoal infection,17.35,ml,3,1,Drop in egg production,185.0,ug/kg,23
+goat,meat,Fenbendazole,antiparasitic,Fungal infection,41.39,g,2,2,Fever,198.11,ug/kg,54
+poultry,meat,Ivermectin,antiparasitic,Secondary bacterial infection,2.61,g,3,1,Respiratory distress,91.56,ug/kg,8
+pig,meat,Ivermectin,antiparasitic,Contaminated feed/water,100.69,mg,2,5,Poor weight gain,108.55,ug/kg,14
+pig,meat,Ivermectin,antiparasitic,Fungal infection,623.37,mg,2,1,Drop in egg production,103.15,ug/kg,15
+cattle,milk,Closantel,antiparasitic,Poor hygiene,420.85,mg,2,2,Poor weight gain,5.02,ug/kg,29
+goat,meat,Albendazole,antiparasitic,Poor hygiene,0.17,g,3,1,Reduced production,209.78,ug/kg,51
+poultry,meat,Ivermectin,antiparasitic,Protozoal infection,0.56,kg,3,2,Wounds,95.22,ug/kg,4
+cattle,milk,Albendazole,antiparasitic,Protozoal infection,257.31,mg,2,3,Lameness,50.22,ug/kg,49
+sheep,meat,Fenbendazole,antiparasitic,Poor hygiene,0.5,tablet,2,1,Drop in egg production,184.1,ug/kg,56
+poultry,meat,Ivermectin,antiparasitic,Parasitic infestation,3.06,kg,1,3,Lameness,103.51,ug/kg,14
+poultry,meat,Ivermectin,antiparasitic,Parasitic infestation,7.77,litre,2,7,Respiratory distress,99.57,ug/kg,4
+poultry,meat,Ivermectin,antiparasitic,Secondary bacterial infection,1.0,sachet,1,1,Respiratory distress,95.64,ug/kg,4
+cattle,meat,Ivermectin,antiparasitic,Fungal infection,16.9,ml,2,3,Poor weight gain,98.92,ug/kg,22
+goat,meat,Albendazole,antiparasitic,Nutritional deficiency,19.88,g,2,5,Respiratory distress,214.6,ug/kg,56
+pig,meat,Ivermectin,antiparasitic,Bacterial infection,1.0,tablet,1,3,Cough,93.42,ug/kg,19
+pig,meat,Albendazole,antiparasitic,Mycoplasma infection,1.03,kg,3,1,Fever,181.96,ug/kg,17
+goat,meat,Albendazole,antiparasitic,Secondary bacterial infection,2.03,g,2,1,Cough,188.27,ug/kg,52
+cattle,milk,Ivermectin,antiparasitic,Nutritional deficiency,0.5,tablet,2,1,Drop in egg production,10.9,ug/kg,22
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,5.07,ml,1,5,Poor weight gain,196.55,ug/kg,24
+poultry,meat,Ivermectin,antiparasitic,Poor hygiene,23.01,g,2,5,Skin lesions,104.62,ug/kg,12
+sheep,meat,Albendazole,antiparasitic,Contaminated feed/water,10.0,tablet,2,2,Skin lesions,210.31,ug/kg,43
+poultry,egg,Ivermectin,antiparasitic,Secondary bacterial infection,1.0,sachet,2,1,Wounds,106.47,ug/kg,3
+goat,meat,Fenbendazole,antiparasitic,Viral infection,45.4,g,3,7,Skin lesions,212.38,ug/kg,41
+goat,meat,Albendazole,antiparasitic,Fungal infection,0.5,tablet,3,5,Cough,180.17,ug/kg,43
+cattle,meat,Fenbendazole,antiparasitic,Mycoplasma infection,0.5,tablet,2,1,Fever,184.15,ug/kg,49
+poultry,egg,Ivermectin,antiparasitic,Nutritional deficiency,2.0,sachet,1,1,Respiratory distress,103.94,ug/kg,8
+goat,meat,Albendazole,antiparasitic,Secondary bacterial infection,11.71,g,2,7,Poor weight gain,200.57,ug/kg,24
+sheep,meat,Closantel,antiparasitic,Viral infection,1.0,tablet,2,1,Lameness,487.85,ug/kg,42
+cattle,meat,Albendazole,antiparasitic,Mycoplasma infection,123.29,mg,2,5,Fever,202.9,ug/kg,48
+sheep,meat,Closantel,antiparasitic,Nutritional deficiency,865.47,mg,3,1,Fever,514.85,ug/kg,43
+goat,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,9.87,g,1,1,Drop in egg production,197.53,ug/kg,56
+goat,meat,Albendazole,antiparasitic,Contaminated feed/water,0.5,tablet,3,1,Poor weight gain,211.98,ug/kg,27
+goat,meat,Fenbendazole,antiparasitic,Poor hygiene,1.07,g,1,5,Reduced production,192.58,ug/kg,26
+goat,meat,Fenbendazole,antiparasitic,Parasitic infestation,46.58,ml,3,7,Drop in egg production,183.19,ug/kg,32
+goat,meat,Albendazole,antiparasitic,Bacterial infection,145.13,mg,2,1,Skin lesions,213.01,ug/kg,30
+sheep,meat,Albendazole,antiparasitic,Secondary bacterial infection,41.61,g,1,1,Lameness,194.15,ug/kg,49
+sheep,meat,Ivermectin,antiparasitic,Viral infection,161.03,mg,3,2,Drop in egg production,102.31,ug/kg,54
+cattle,meat,Eprinomectin,antiparasitic,Parasitic infestation,10.0,tablet,2,1,Respiratory distress,98.83,ug/kg,39
+cattle,meat,Closantel,antiparasitic,Parasitic infestation,19.5,g,1,7,Poor weight gain,467.08,ug/kg,57
+cattle,meat,Ivermectin,antiparasitic,Bacterial infection,10.0,tablet,1,3,Lameness,106.99,ug/kg,34
+pig,meat,Ivermectin,antiparasitic,Poor hygiene,22.38,ml,2,2,Cough,102.97,ug/kg,21
+sheep,meat,Ivermectin,antiparasitic,Protozoal infection,438.59,mg,3,1,Reduced production,96.37,ug/kg,32
+pig,meat,Albendazole,antiparasitic,Secondary bacterial infection,4.83,g,2,5,Cough,195.85,ug/kg,14
+poultry,meat,Ivermectin,antiparasitic,Nutritional deficiency,29.57,g,2,1,Reduced production,97.06,ug/kg,13
+cattle,milk,Eprinomectin,antiparasitic,Mycoplasma infection,30.13,g,2,1,Diarrhea,10.58,ug/kg,30
+sheep,meat,Albendazole,antiparasitic,Secondary bacterial infection,5.0,tablet,2,5,Poor weight gain,199.74,ug/kg,53
+cattle,milk,Closantel,antiparasitic,Bacterial infection,535.98,mg,1,1,Fever,5.07,ug/kg,28
+poultry,meat,Ivermectin,antiparasitic,Viral infection,3.3,kg,1,7,Diarrhea,101.85,ug/kg,5
+goat,meat,Ivermectin,antiparasitic,Bacterial infection,10.0,tablet,1,3,Wounds,97.07,ug/kg,35
+cattle,meat,Ivermectin,antiparasitic,Parasitic infestation,22.2,g,3,1,Wounds,93.63,ug/kg,35
+sheep,meat,Albendazole,antiparasitic,Secondary bacterial infection,7.93,g,1,7,Poor weight gain,202.11,ug/kg,36
+cattle,meat,Albendazole,antiparasitic,Fungal infection,2.0,tablet,2,7,Fever,204.44,ug/kg,57
+goat,meat,Fenbendazole,antiparasitic,Mycoplasma infection,25.54,ml,2,3,Cough,202.59,ug/kg,53
+poultry,egg,Ivermectin,antiparasitic,Contaminated feed/water,10.0,sachet,2,1,Skin lesions,92.04,ug/kg,9
+sheep,meat,Albendazole,antiparasitic,Bacterial infection,1.56,g,2,1,Fever,210.76,ug/kg,32
+poultry,egg,Ivermectin,antiparasitic,Secondary bacterial infection,29.88,g,1,7,Respiratory distress,95.03,ug/kg,3
+poultry,meat,Ivermectin,antiparasitic,Secondary bacterial infection,8.71,litre,3,7,Poor weight gain,108.16,ug/kg,4
+goat,meat,Albendazole,antiparasitic,Mycoplasma infection,31.38,ml,2,1,Reduced production,194.47,ug/kg,45
+pig,meat,Albendazole,antiparasitic,Parasitic infestation,631.88,mg,2,3,Drop in egg production,205.02,ug/kg,16
+goat,meat,Fenbendazole,antiparasitic,Bacterial infection,7.46,g,1,5,Wounds,198.91,ug/kg,45
+sheep,meat,Albendazole,antiparasitic,Protozoal infection,2.0,tablet,2,5,Fever,217.44,ug/kg,47
+goat,meat,Ivermectin,antiparasitic,Parasitic infestation,10.0,tablet,3,5,Diarrhea,90.94,ug/kg,52
+sheep,meat,Albendazole,antiparasitic,Protozoal infection,488.54,mg,1,1,Respiratory distress,194.01,ug/kg,43
+pig,meat,Albendazole,antiparasitic,Fungal infection,1.06,kg,1,1,Poor weight gain,186.43,ug/kg,19
+sheep,meat,Albendazole,antiparasitic,Protozoal infection,535.16,mg,2,1,Reduced production,204.05,ug/kg,40
+sheep,meat,Fenbendazole,antiparasitic,Bacterial infection,27.18,ml,1,2,Poor weight gain,189.99,ug/kg,58
+goat,meat,Fenbendazole,antiparasitic,Viral infection,14.81,g,2,2,Diarrhea,217.4,ug/kg,54
+cattle,meat,Eprinomectin,antiparasitic,Nutritional deficiency,579.01,mg,1,1,Reduced production,109.43,ug/kg,37
+goat,meat,Albendazole,antiparasitic,Nutritional deficiency,29.16,g,2,7,Respiratory distress,189.12,ug/kg,26
+sheep,meat,Ivermectin,antiparasitic,Protozoal infection,3.17,g,1,1,Poor weight gain,90.25,ug/kg,41
+cattle,meat,Ivermectin,antiparasitic,Parasitic infestation,556.07,mg,3,1,Wounds,91.07,ug/kg,53
+goat,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,391.7,mg,2,7,Reduced production,200.65,ug/kg,56
+pig,meat,Ivermectin,antiparasitic,Protozoal infection,1.73,kg,2,1,Reduced production,100.25,ug/kg,20
+pig,meat,Albendazole,antiparasitic,Nutritional deficiency,16.68,ml,1,1,Lameness,180.75,ug/kg,14
+goat,meat,Ivermectin,antiparasitic,Poor hygiene,44.42,g,2,1,Skin lesions,95.25,ug/kg,56
+cattle,milk,Closantel,antiparasitic,Secondary bacterial infection,10.0,tablet,1,1,Diarrhea,5.5,ug/kg,51
+cattle,milk,Eprinomectin,antiparasitic,Nutritional deficiency,2.0,tablet,1,1,Wounds,9.47,ug/kg,38
+poultry,meat,Ivermectin,antiparasitic,Mycoplasma infection,8.43,litre,2,7,Reduced production,94.67,ug/kg,3
+sheep,meat,Closantel,antiparasitic,Bacterial infection,316.13,mg,2,5,Skin lesions,459.55,ug/kg,38
+pig,meat,Ivermectin,antiparasitic,Poor hygiene,0.72,ml,2,2,Fever,98.74,ug/kg,19
+poultry,egg,Ivermectin,antiparasitic,Poor hygiene,1.0,litre,2,5,Reduced production,95.64,ug/kg,14
+goat,meat,Ivermectin,antiparasitic,Parasitic infestation,10.0,tablet,2,2,Drop in egg production,108.27,ug/kg,56
+sheep,meat,Albendazole,antiparasitic,Nutritional deficiency,17.13,ml,1,2,Lameness,198.98,ug/kg,51
+pig,meat,Albendazole,antiparasitic,Secondary bacterial infection,35.12,g,3,7,Respiratory distress,205.84,ug/kg,16
+sheep,meat,Fenbendazole,antiparasitic,Viral infection,0.5,tablet,3,3,Fever,203.03,ug/kg,48
+pig,meat,Albendazole,antiparasitic,Protozoal infection,4.66,kg,2,1,Drop in egg production,180.21,ug/kg,20
+pig,meat,Albendazole,antiparasitic,Viral infection,2.8,kg,1,7,Wounds,190.02,ug/kg,21
+goat,meat,Fenbendazole,antiparasitic,Bacterial infection,40.35,g,2,5,Respiratory distress,181.45,ug/kg,57
+goat,meat,Ivermectin,antiparasitic,Poor hygiene,1.0,tablet,3,1,Drop in egg production,97.32,ug/kg,39
+sheep,meat,Ivermectin,antiparasitic,Bacterial infection,1.25,ml,2,5,Cough,98.53,ug/kg,53
+sheep,meat,Ivermectin,antiparasitic,Parasitic infestation,80.29,mg,2,1,Lameness,100.98,ug/kg,33
+sheep,meat,Fenbendazole,antiparasitic,Nutritional deficiency,37.21,g,2,1,Respiratory distress,201.72,ug/kg,23
+sheep,meat,Fenbendazole,antiparasitic,Nutritional deficiency,868.17,mg,1,3,Fever,201.3,ug/kg,26
+pig,meat,Albendazole,antiparasitic,Contaminated feed/water,0.99,ml,1,1,Wounds,194.53,ug/kg,19
+sheep,meat,Albendazole,antiparasitic,Viral infection,5.0,tablet,3,3,Diarrhea,200.0,ug/kg,48
+sheep,meat,Closantel,antiparasitic,Mycoplasma infection,44.24,g,2,2,Reduced production,486.36,ug/kg,24
+pig,meat,Albendazole,antiparasitic,Poor hygiene,4.66,kg,2,1,Respiratory distress,196.31,ug/kg,17
+pig,meat,Albendazole,antiparasitic,Contaminated feed/water,36.36,g,1,5,Lameness,195.96,ug/kg,15
+pig,meat,Albendazole,antiparasitic,Mycoplasma infection,86.62,mg,1,1,Reduced production,187.31,ug/kg,14
+goat,meat,Ivermectin,antiparasitic,Fungal infection,10.08,g,1,5,Drop in egg production,101.25,ug/kg,48
+cattle,meat,Eprinomectin,antiparasitic,Bacterial infection,26.69,g,2,2,Drop in egg production,100.84,ug/kg,22
+pig,meat,Ivermectin,antiparasitic,Fungal infection,164.26,mg,1,2,Reduced production,93.77,ug/kg,19
+sheep,meat,Fenbendazole,antiparasitic,Viral infection,303.93,mg,1,5,Fever,212.64,ug/kg,36
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,5.22,ml,3,1,Reduced production,182.2,ug/kg,57
+poultry,egg,Ivermectin,antiparasitic,Parasitic infestation,39.52,g,3,1,Lameness,107.03,ug/kg,12
+cattle,meat,Ivermectin,antiparasitic,Viral infection,559.27,mg,1,1,Poor weight gain,94.93,ug/kg,51
+sheep,meat,Albendazole,antiparasitic,Parasitic infestation,2.0,tablet,3,1,Poor weight gain,182.81,ug/kg,47
+sheep,meat,Ivermectin,antiparasitic,Fungal infection,37.66,ml,1,7,Drop in egg production,91.7,ug/kg,50
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,9.84,ml,1,7,Respiratory distress,205.96,ug/kg,45
+pig,meat,Ivermectin,antiparasitic,Parasitic infestation,5.0,tablet,2,1,Diarrhea,90.29,ug/kg,21
+pig,meat,Albendazole,antiparasitic,Fungal infection,17.38,g,1,2,Reduced production,182.88,ug/kg,19
+cattle,meat,Albendazole,antiparasitic,Bacterial infection,23.99,g,3,1,Wounds,203.62,ug/kg,44
+pig,meat,Ivermectin,antiparasitic,Viral infection,22.16,g,1,3,Fever,101.49,ug/kg,19
+pig,meat,Albendazole,antiparasitic,Mycoplasma infection,1.46,kg,2,5,Respiratory distress,187.2,ug/kg,20
+pig,meat,Ivermectin,antiparasitic,Protozoal infection,11.7,g,2,1,Respiratory distress,109.99,ug/kg,16
+pig,meat,Albendazole,antiparasitic,Contaminated feed/water,20.46,g,3,3,Lameness,206.08,ug/kg,15
+cattle,milk,Albendazole,antiparasitic,Viral infection,980.18,mg,2,1,Skin lesions,51.14,ug/kg,40
+cattle,meat,Albendazole,antiparasitic,Nutritional deficiency,264.31,mg,1,5,Respiratory distress,204.58,ug/kg,39
+pig,meat,Albendazole,antiparasitic,Fungal infection,13.24,g,1,2,Skin lesions,213.64,ug/kg,16
+cattle,meat,Closantel,antiparasitic,Protozoal infection,100.0,mg,1,5,Cough,503.36,ug/kg,25
+cattle,milk,Fenbendazole,antiparasitic,Nutritional deficiency,39.03,g,2,5,Skin lesions,45.45,ug/kg,46
+goat,meat,Ivermectin,antiparasitic,Mycoplasma infection,5.89,g,3,7,Wounds,109.61,ug/kg,21
+pig,meat,Ivermectin,antiparasitic,Mycoplasma infection,5.84,g,3,7,Poor weight gain,108.91,ug/kg,17
+cattle,meat,Ivermectin,antiparasitic,Mycoplasma infection,46.02,g,2,1,Reduced production,93.21,ug/kg,34
+goat,meat,Albendazole,antiparasitic,Viral infection,31.32,ml,2,7,Poor weight gain,206.5,ug/kg,25
+pig,meat,Albendazole,antiparasitic,Bacterial infection,14.99,ml,1,5,Drop in egg production,200.17,ug/kg,17
+poultry,egg,Ivermectin,antiparasitic,Nutritional deficiency,27.95,g,1,1,Drop in egg production,106.94,ug/kg,9
+goat,meat,Fenbendazole,antiparasitic,Poor hygiene,27.69,ml,1,2,Reduced production,219.38,ug/kg,58
+poultry,egg,Ivermectin,antiparasitic,Bacterial infection,1.51,kg,2,1,Diarrhea,102.51,ug/kg,8
+sheep,meat,Albendazole,antiparasitic,Poor hygiene,41.61,ml,1,3,Reduced production,197.14,ug/kg,45
+goat,meat,Fenbendazole,antiparasitic,Contaminated feed/water,7.42,g,1,2,Respiratory distress,188.84,ug/kg,48
+sheep,meat,Closantel,antiparasitic,Nutritional deficiency,3.53,g,1,1,Respiratory distress,493.56,ug/kg,51
+cattle,meat,Ivermectin,antiparasitic,Fungal infection,1.05,ml,2,1,Drop in egg production,93.2,ug/kg,27
+goat,meat,Ivermectin,antiparasitic,Secondary bacterial infection,10.0,tablet,1,1,Skin lesions,99.02,ug/kg,58
+goat,meat,Albendazole,antiparasitic,Secondary bacterial infection,39.09,ml,2,1,Respiratory distress,201.31,ug/kg,40
+goat,meat,Albendazole,antiparasitic,Nutritional deficiency,20.9,g,2,2,Wounds,200.87,ug/kg,52
+poultry,meat,Ivermectin,antiparasitic,Secondary bacterial infection,2.48,kg,2,2,Reduced production,102.52,ug/kg,14
+goat,meat,Albendazole,antiparasitic,Viral infection,311.86,mg,2,1,Diarrhea,208.81,ug/kg,24
+sheep,meat,Albendazole,antiparasitic,Viral infection,10.0,tablet,2,1,Respiratory distress,213.9,ug/kg,40
+cattle,milk,Ivermectin,antiparasitic,Viral infection,48.88,ml,2,7,Reduced production,9.96,ug/kg,29
+cattle,meat,Ivermectin,antiparasitic,Viral infection,32.77,mg,3,7,Lameness,97.96,ug/kg,45
+pig,meat,Albendazole,antiparasitic,Poor hygiene,708.98,mg,2,2,Reduced production,214.52,ug/kg,17
+goat,meat,Ivermectin,antiparasitic,Poor hygiene,447.05,mg,3,1,Lameness,98.31,ug/kg,22
+pig,meat,Ivermectin,antiparasitic,Protozoal infection,630.2,mg,1,3,Respiratory distress,90.7,ug/kg,15
+pig,meat,Ivermectin,antiparasitic,Contaminated feed/water,34.41,ml,2,2,Reduced production,98.96,ug/kg,14
+cattle,meat,Closantel,antiparasitic,Mycoplasma infection,980.45,mg,3,2,Wounds,477.1,ug/kg,34
+cattle,milk,Fenbendazole,antiparasitic,Fungal infection,33.55,ml,3,1,Fever,47.56,ug/kg,44
+sheep,meat,Ivermectin,antiparasitic,Parasitic infestation,33.02,ml,2,1,Reduced production,96.11,ug/kg,55
+sheep,meat,Ivermectin,antiparasitic,Protozoal infection,5.0,tablet,2,1,Poor weight gain,90.68,ug/kg,26
+pig,meat,Ivermectin,antiparasitic,Poor hygiene,4.54,kg,2,7,Cough,92.08,ug/kg,19
+poultry,meat,Ivermectin,antiparasitic,Secondary bacterial infection,1.0,sachet,3,1,Drop in egg production,104.29,ug/kg,12
+pig,meat,Albendazole,antiparasitic,Parasitic infestation,49.71,g,2,5,Skin lesions,195.08,ug/kg,19
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,21.93,ml,3,2,Reduced production,219.8,ug/kg,21
+sheep,meat,Closantel,antiparasitic,Mycoplasma infection,33.2,g,2,1,Respiratory distress,518.21,ug/kg,36
+sheep,meat,Ivermectin,antiparasitic,Nutritional deficiency,10.0,tablet,3,2,Respiratory distress,93.05,ug/kg,50
+sheep,meat,Closantel,antiparasitic,Mycoplasma infection,686.69,mg,2,2,Wounds,470.29,ug/kg,41
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,885.96,mg,3,1,Drop in egg production,205.17,ug/kg,48
+poultry,meat,Ivermectin,antiparasitic,Protozoal infection,14.15,g,1,7,Skin lesions,96.28,ug/kg,10
+goat,meat,Ivermectin,antiparasitic,Poor hygiene,48.41,g,2,1,Respiratory distress,103.12,ug/kg,25
+sheep,meat,Ivermectin,antiparasitic,Fungal infection,863.54,mg,2,1,Cough,107.03,ug/kg,22
+sheep,meat,Albendazole,antiparasitic,Contaminated feed/water,388.9,mg,2,1,Respiratory distress,208.73,ug/kg,54
+sheep,meat,Albendazole,antiparasitic,Parasitic infestation,992.75,mg,2,3,Wounds,203.95,ug/kg,48
+goat,meat,Albendazole,antiparasitic,Protozoal infection,667.82,mg,1,7,Fever,219.55,ug/kg,43
+sheep,meat,Fenbendazole,antiparasitic,Parasitic infestation,12.76,ml,2,1,Wounds,205.64,ug/kg,21
+goat,meat,Fenbendazole,antiparasitic,Parasitic infestation,36.35,ml,2,2,Cough,196.25,ug/kg,31
+goat,meat,Fenbendazole,antiparasitic,Protozoal infection,71.4,mg,3,2,Fever,203.58,ug/kg,45
+cattle,meat,Fenbendazole,antiparasitic,Bacterial infection,34.16,g,3,3,Wounds,203.25,ug/kg,25
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,5.0,tablet,1,3,Diarrhea,191.9,ug/kg,28
+cattle,milk,Closantel,antiparasitic,Fungal infection,6.13,g,1,5,Reduced production,4.56,ug/kg,47
+cattle,milk,Closantel,antiparasitic,Secondary bacterial infection,32.99,mg,2,2,Drop in egg production,4.55,ug/kg,25
+pig,meat,Ivermectin,antiparasitic,Protozoal infection,5.0,tablet,1,7,Drop in egg production,93.23,ug/kg,17
+goat,meat,Fenbendazole,antiparasitic,Protozoal infection,33.55,mg,1,1,Cough,181.71,ug/kg,29
+pig,meat,Ivermectin,antiparasitic,Secondary bacterial infection,2.0,tablet,1,5,Wounds,100.43,ug/kg,16
+pig,meat,Ivermectin,antiparasitic,Nutritional deficiency,31.16,g,1,1,Poor weight gain,106.13,ug/kg,15
+cattle,milk,Fenbendazole,antiparasitic,Nutritional deficiency,5.0,tablet,3,3,Drop in egg production,53.11,ug/kg,33
+cattle,milk,Albendazole,antiparasitic,Protozoal infection,5.0,tablet,2,3,Fever,47.79,ug/kg,40
+pig,meat,Albendazole,antiparasitic,Parasitic infestation,906.51,mg,1,1,Diarrhea,216.62,ug/kg,16
+sheep,meat,Fenbendazole,antiparasitic,Secondary bacterial infection,470.6,mg,1,1,Drop in egg production,209.55,ug/kg,29
+pig,meat,Ivermectin,antiparasitic,Mycoplasma infection,3.98,kg,2,1,Cough,109.12,ug/kg,19
+cattle,meat,Fenbendazole,antiparasitic,Parasitic infestation,1.0,tablet,1,1,Poor weight gain,184.4,ug/kg,46
+goat,meat,Fenbendazole,antiparasitic,Fungal infection,735.45,mg,1,2,Diarrhea,185.62,ug/kg,45
+poultry,egg,Ivermectin,antiparasitic,Mycoplasma infection,3.0,kg,2,2,Fever,107.77,ug/kg,8
+sheep,meat,Fenbendazole,antiparasitic,Fungal infection,22.04,g,3,7,Respiratory distress,188.74,ug/kg,39
+sheep,meat,Albendazole,antiparasitic,Mycoplasma infection,393.28,mg,2,2,Poor weight gain,211.02,ug/kg,36
+goat,meat,Fenbendazole,antiparasitic,Nutritional deficiency,2.0,tablet,1,7,Drop in egg production,196.16,ug/kg,46
+sheep,meat,Ivermectin,antiparasitic,Poor hygiene,26.28,g,2,1,Respiratory distress,91.6,ug/kg,39
+sheep,meat,Fenbendazole,antiparasitic,Nutritional deficiency,744.62,mg,1,3,Respiratory distress,180.3,ug/kg,27
+goat,meat,Ivermectin,antiparasitic,Viral infection,0.5,tablet,3,7,Reduced production,109.65,ug/kg,49
+sheep,meat,Ivermectin,antiparasitic,Fungal infection,37.25,ml,1,1,Drop in egg production,108.07,ug/kg,33
+pig,meat,Albendazole,antiparasitic,Fungal infection,885.67,mg,2,1,Reduced production,190.87,ug/kg,18
+pig,meat,Albendazole,antiparasitic,Viral infection,56.51,mg,1,1,Wounds,207.53,ug/kg,19
+goat,meat,Fenbendazole,antiparasitic,Contaminated feed/water,624.06,mg,2,1,Drop in egg production,190.65,ug/kg,38
+goat,meat,Albendazole,antiparasitic,Parasitic infestation,35.61,g,1,1,Reduced production,206.29,ug/kg,26
+goat,meat,Ivermectin,antiparasitic,Secondary bacterial infection,35.42,mg,3,7,Poor weight gain,106.44,ug/kg,21
+poultry,meat,Ivermectin,antiparasitic,Parasitic infestation,9.04,litre,1,1,Respiratory distress,91.94,ug/kg,3
+cattle,milk,Albendazole,antiparasitic,Nutritional deficiency,16.26,ml,1,7,Fever,45.76,ug/kg,33
+cattle,milk,Closantel,antiparasitic,Nutritional deficiency,24.61,g,3,3,Wounds,4.75,ug/kg,38
+sheep,meat,Ivermectin,antiparasitic,Nutritional deficiency,2.59,ml,1,1,Reduced production,101.59,ug/kg,39
+poultry,meat,Ivermectin,antiparasitic,Poor hygiene,39.9,g,1,5,Wounds,97.99,ug/kg,9
+pig,meat,Albendazole,antiparasitic,Fungal infection,4.46,kg,3,7,Diarrhea,187.77,ug/kg,16
+sheep,meat,Fenbendazole,antiparasitic,Mycoplasma infection,36.1,ml,2,1,Wounds,184.83,ug/kg,28
+poultry,egg,Ivermectin,antiparasitic,Fungal infection,1.0,sachet,2,5,Skin lesions,106.32,ug/kg,9
+cattle,milk,Ivermectin,antiparasitic,Poor hygiene,7.7,g,1,2,Respiratory distress,9.14,ug/kg,34
+cattle,meat,Closantel,antiparasitic,Viral infection,36.71,ml,3,7,Wounds,485.92,ug/kg,52
+goat,meat,Ivermectin,antiparasitic,Bacterial infection,4.75,g,3,7,Cough,102.72,ug/kg,58
+cattle,milk,Ivermectin,antiparasitic,Mycoplasma infection,171.28,mg,1,3,Drop in egg production,9.29,ug/kg,23
+goat,meat,Fenbendazole,antiparasitic,Protozoal infection,2.0,tablet,2,7,Reduced production,197.09,ug/kg,31
+goat,meat,Ivermectin,antiparasitic,Nutritional deficiency,48.69,mg,1,1,Diarrhea,90.87,ug/kg,46
+poultry,meat,Ivermectin,antiparasitic,Nutritional deficiency,10.0,sachet,1,3,Drop in egg production,106.24,ug/kg,13
+goat,meat,Fenbendazole,antiparasitic,Nutritional deficiency,8.79,ml,3,1,Skin lesions,188.67,ug/kg,47
+cattle,milk,Albendazole,antiparasitic,Protozoal infection,47.98,ml,2,1,Diarrhea,49.19,ug/kg,50
+pig,meat,Ivermectin,antiparasitic,Parasitic infestation,24.14,g,1,3,Respiratory distress,95.42,ug/kg,15
+goat,meat,Fenbendazole,antiparasitic,Protozoal infection,5.0,tablet,3,1,Wounds,212.46,ug/kg,41
+cattle,milk,Ivermectin,antiparasitic,Secondary bacterial infection,5.0,tablet,2,5,Wounds,9.65,ug/kg,59
+pig,meat,Ivermectin,antiparasitic,Poor hygiene,49.14,g,2,1,Wounds,101.28,ug/kg,20
+sheep,meat,Albendazole,antiparasitic,Poor hygiene,4.47,g,1,5,Wounds,195.88,ug/kg,42
+pig,meat,Ivermectin,antiparasitic,Bacterial infection,42.65,g,1,5,Reduced production,106.72,ug/kg,18
+pig,meat,Ivermectin,antiparasitic,Protozoal infection,4.23,kg,3,5,Poor weight gain,102.28,ug/kg,20
+goat,meat,Ivermectin,antiparasitic,Secondary bacterial infection,9.49,g,1,7,Respiratory distress,91.09,ug/kg,56
+cattle,milk,Closantel,antiparasitic,Fungal infection,41.62,g,1,5,Lameness,5.18,ug/kg,57
+cattle,milk,Fenbendazole,antiparasitic,Parasitic infestation,2.0,tablet,2,1,Drop in egg production,45.29,ug/kg,49
+pig,meat,Albendazole,antiparasitic,Poor hygiene,3.78,kg,3,1,Reduced production,182.65,ug/kg,15
+sheep,meat,Ivermectin,antiparasitic,Viral infection,32.79,g,2,2,Poor weight gain,96.73,ug/kg,41
+poultry,egg,Ivermectin,antiparasitic,Secondary bacterial infection,7.78,litre,2,2,Drop in egg production,105.37,ug/kg,7
+sheep,meat,Ivermectin,antiparasitic,Poor hygiene,3.56,g,1,7,Respiratory distress,104.13,ug/kg,24
+sheep,meat,Ivermectin,antiparasitic,Poor hygiene,17.55,g,1,1,Cough,107.24,ug/kg,58
+sheep,meat,Ivermectin,antiparasitic,Bacterial infection,16.35,ml,1,1,Wounds,97.08,ug/kg,54
+poultry,meat,Ivermectin,antiparasitic,Contaminated feed/water,4.97,kg,2,1,Cough,99.39,ug/kg,8
+cattle,milk,Albendazole,antiparasitic,Nutritional deficiency,2.0,tablet,3,1,Skin lesions,45.83,ug/kg,26
+goat,meat,Ivermectin,antiparasitic,Contaminated feed/water,39.05,ml,2,1,Diarrhea,106.84,ug/kg,31
+goat,meat,Albendazole,antiparasitic,Viral infection,97.17,mg,2,1,Reduced production,185.72,ug/kg,58
+cattle,milk,Fenbendazole,antiparasitic,Bacterial infection,367.19,mg,2,2,Drop in egg production,49.61,ug/kg,38
+goat,meat,Fenbendazole,antiparasitic,Fungal infection,187.66,mg,1,1,Wounds,196.55,ug/kg,28
+pig,meat,Albendazole,antiparasitic,Parasitic infestation,0.5,tablet,2,1,Cough,198.79,ug/kg,19
+sheep,meat,Closantel,antiparasitic,Mycoplasma infection,2.0,tablet,1,3,Poor weight gain,546.8,ug/kg,41
+cattle,meat,Albendazole,antiparasitic,Viral infection,49.04,g,1,3,Skin lesions,218.14,ug/kg,36
+goat,meat,Ivermectin,antiparasitic,Viral infection,1.0,tablet,1,1,Diarrhea,91.81,ug/kg,46
+pig,meat,Ivermectin,antiparasitic,Bacterial infection,47.38,ml,1,2,Skin lesions,106.18,ug/kg,20
+goat,meat,Ivermectin,antiparasitic,Bacterial infection,39.65,ml,3,1,Drop in egg production,97.26,ug/kg,39
+goat,meat,Ivermectin,antiparasitic,Bacterial infection,31.52,g,3,5,Fever,90.63,ug/kg,45
+goat,meat,Ivermectin,antiparasitic,Bacterial infection,49.26,mg,2,1,Fever,101.09,ug/kg,43
+sheep,meat,Closantel,antiparasitic,Secondary bacterial infection,2.0,tablet,2,7,Skin lesions,464.49,ug/kg,56
+cattle,meat,Ivermectin,antiparasitic,Viral infection,48.56,ml,1,7,Diarrhea,98.61,ug/kg,43
+goat,meat,Prednisolone,anti-inflammatory,Protozoal infection,5.0,tablet,1,14,Fever,46.31,ug/kg,9
+cattle,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,471.16,mg,3,1,Fever,45.88,ug/kg,6
+goat,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,6.72,ml,3,1,Drop in egg production,49.52,ug/kg,13
+poultry,egg,Dexamethasone,anti-inflammatory,Viral infection,4.19,kg,1,7,Fever,50.05,ug/kg,1
+cattle,milk,Dexamethasone,anti-inflammatory,Viral infection,28.15,g,2,2,Wounds,0.0,ug/kg,13
+pig,meat,Prednisolone,anti-inflammatory,Viral infection,342.22,mg,3,3,Reduced production,50.6,ug/kg,9
+cattle,milk,Prednisolone,anti-inflammatory,Protozoal infection,11.08,ml,2,14,Cough,0.0,ug/kg,4
+poultry,egg,Dexamethasone,anti-inflammatory,Bacterial infection,1.0,sachet,2,5,Poor weight gain,45.4,ug/kg,7
+sheep,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,43.06,g,3,7,Cough,53.89,ug/kg,7
+sheep,meat,Dexamethasone,anti-inflammatory,Poor hygiene,11.35,ml,1,1,Fever,49.41,ug/kg,5
+goat,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,2.04,g,1,3,Cough,52.18,ug/kg,1
+sheep,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,430.91,mg,1,2,Diarrhea,46.02,ug/kg,14
+goat,meat,Dexamethasone,anti-inflammatory,Bacterial infection,10.0,tablet,1,1,Drop in egg production,47.31,ug/kg,3
+sheep,meat,Prednisolone,anti-inflammatory,Contaminated feed/water,33.95,ml,2,4,Respiratory distress,53.16,ug/kg,7
+poultry,meat,Dexamethasone,anti-inflammatory,Protozoal infection,21.97,g,2,2,Skin lesions,47.07,ug/kg,11
+cattle,milk,Prednisolone,anti-inflammatory,Fungal infection,0.61,g,1,7,Lameness,0.0,ug/kg,5
+poultry,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,6.44,litre,3,2,Cough,50.83,ug/kg,11
+poultry,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,36.68,g,2,14,Wounds,45.09,ug/kg,8
+sheep,meat,Prednisolone,anti-inflammatory,Poor hygiene,840.96,mg,2,7,Reduced production,45.29,ug/kg,10
+pig,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,4.02,kg,2,14,Reduced production,52.97,ug/kg,3
+pig,meat,Prednisolone,anti-inflammatory,Fungal infection,24.36,g,3,7,Cough,50.56,ug/kg,4
+poultry,egg,Dexamethasone,anti-inflammatory,Mycoplasma infection,10.0,sachet,1,1,Respiratory distress,46.45,ug/kg,14
+poultry,egg,Dexamethasone,anti-inflammatory,Nutritional deficiency,3.99,litre,1,4,Lameness,52.88,ug/kg,10
+cattle,meat,Prednisolone,anti-inflammatory,Protozoal infection,411.59,mg,1,3,Drop in egg production,51.01,ug/kg,3
+poultry,egg,Dexamethasone,anti-inflammatory,Bacterial infection,11.5,g,2,1,Diarrhea,49.59,ug/kg,4
+sheep,meat,Dexamethasone,anti-inflammatory,Fungal infection,5.0,tablet,1,3,Skin lesions,51.13,ug/kg,13
+pig,meat,Prednisolone,anti-inflammatory,Contaminated feed/water,33.67,g,3,1,Wounds,48.71,ug/kg,6
+sheep,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,31.83,ml,3,2,Respiratory distress,52.97,ug/kg,12
+poultry,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,0.55,kg,1,4,Wounds,48.86,ug/kg,11
+cattle,milk,Dexamethasone,anti-inflammatory,Poor hygiene,28.39,ml,2,4,Poor weight gain,0.0,ug/kg,7
+cattle,milk,Dexamethasone,anti-inflammatory,Mycoplasma infection,0.5,tablet,1,1,Cough,0.0,ug/kg,7
+goat,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,41.91,g,2,1,Drop in egg production,48.73,ug/kg,3
+pig,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,0.5,tablet,3,4,Poor weight gain,49.49,ug/kg,5
+pig,meat,Dexamethasone,anti-inflammatory,Viral infection,390.73,mg,2,1,Cough,48.36,ug/kg,4
+sheep,meat,Dexamethasone,anti-inflammatory,Fungal infection,2.23,g,2,14,Fever,52.07,ug/kg,9
+goat,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,39.91,ml,2,2,Drop in egg production,46.66,ug/kg,14
+goat,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,779.0,mg,1,7,Poor weight gain,54.62,ug/kg,10
+cattle,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,1.0,tablet,2,1,Wounds,50.78,ug/kg,7
+goat,meat,Dexamethasone,anti-inflammatory,Protozoal infection,939.09,mg,2,10,Lameness,45.03,ug/kg,8
+sheep,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,12.49,g,2,2,Fever,45.08,ug/kg,11
+pig,meat,Dexamethasone,anti-inflammatory,Viral infection,1.0,tablet,1,2,Skin lesions,50.27,ug/kg,5
+poultry,meat,Dexamethasone,anti-inflammatory,Bacterial infection,5.0,sachet,2,2,Reduced production,47.08,ug/kg,1
+pig,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,955.99,mg,1,14,Reduced production,47.84,ug/kg,12
+pig,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,468.58,mg,1,10,Wounds,54.53,ug/kg,3
+goat,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,39.95,ml,2,1,Poor weight gain,52.52,ug/kg,5
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,1.0,tablet,1,3,Wounds,49.09,ug/kg,5
+pig,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,593.67,mg,3,4,Cough,50.13,ug/kg,4
+goat,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,330.87,mg,3,3,Skin lesions,52.39,ug/kg,10
+pig,meat,Dexamethasone,anti-inflammatory,Bacterial infection,716.84,mg,3,14,Skin lesions,49.22,ug/kg,14
+cattle,milk,Dexamethasone,anti-inflammatory,Secondary bacterial infection,37.77,g,1,14,Skin lesions,0.0,ug/kg,1
+cattle,milk,Dexamethasone,anti-inflammatory,Nutritional deficiency,43.89,ml,2,7,Respiratory distress,0.0,ug/kg,11
+cattle,milk,Prednisolone,anti-inflammatory,Parasitic infestation,18.69,g,1,14,Wounds,0.0,ug/kg,13
+poultry,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,5.29,litre,2,7,Cough,52.75,ug/kg,12
+cattle,milk,Dexamethasone,anti-inflammatory,Parasitic infestation,6.49,g,2,4,Wounds,0.0,ug/kg,7
+poultry,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,32.08,g,2,3,Wounds,53.16,ug/kg,8
+pig,meat,Prednisolone,anti-inflammatory,Contaminated feed/water,37.85,g,1,2,Fever,49.52,ug/kg,11
+pig,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,7.44,g,1,4,Diarrhea,48.71,ug/kg,9
+poultry,meat,Dexamethasone,anti-inflammatory,Fungal infection,41.38,g,3,4,Skin lesions,53.47,ug/kg,10
+cattle,milk,Dexamethasone,anti-inflammatory,Parasitic infestation,34.41,ml,2,2,Skin lesions,0.0,ug/kg,4
+goat,meat,Prednisolone,anti-inflammatory,Parasitic infestation,6.81,ml,3,7,Wounds,46.13,ug/kg,14
+goat,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,35.97,g,1,5,Cough,48.91,ug/kg,8
+cattle,meat,Dexamethasone,anti-inflammatory,Fungal infection,349.15,mg,2,1,Reduced production,54.97,ug/kg,6
+sheep,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,20.62,g,3,10,Respiratory distress,51.87,ug/kg,12
+sheep,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,10.38,g,1,1,Diarrhea,50.23,ug/kg,8
+goat,meat,Dexamethasone,anti-inflammatory,Protozoal infection,37.98,g,1,10,Fever,48.0,ug/kg,1
+goat,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,16.66,ml,1,1,Skin lesions,48.24,ug/kg,8
+pig,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,947.29,mg,2,2,Cough,52.86,ug/kg,5
+cattle,meat,Dexamethasone,anti-inflammatory,Fungal infection,10.33,g,1,14,Skin lesions,48.58,ug/kg,12
+cattle,meat,Prednisolone,anti-inflammatory,Viral infection,113.25,mg,2,14,Skin lesions,53.54,ug/kg,8
+pig,meat,Dexamethasone,anti-inflammatory,Bacterial infection,47.83,g,3,14,Respiratory distress,53.84,ug/kg,13
+goat,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,10.0,tablet,1,5,Wounds,51.67,ug/kg,8
+pig,meat,Dexamethasone,anti-inflammatory,Poor hygiene,137.84,mg,3,5,Respiratory distress,49.16,ug/kg,6
+sheep,meat,Prednisolone,anti-inflammatory,Parasitic infestation,13.14,ml,2,10,Fever,50.08,ug/kg,6
+cattle,milk,Dexamethasone,anti-inflammatory,Secondary bacterial infection,23.01,g,1,2,Reduced production,0.0,ug/kg,5
+poultry,egg,Dexamethasone,anti-inflammatory,Viral infection,23.53,g,3,3,Respiratory distress,53.57,ug/kg,13
+goat,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,19.05,g,2,2,Skin lesions,49.23,ug/kg,4
+cattle,milk,Dexamethasone,anti-inflammatory,Fungal infection,159.64,mg,3,7,Poor weight gain,0.0,ug/kg,6
+poultry,egg,Dexamethasone,anti-inflammatory,Fungal infection,4.68,kg,1,7,Wounds,48.86,ug/kg,14
+poultry,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,3.69,litre,2,2,Skin lesions,50.28,ug/kg,5
+pig,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,309.2,mg,1,3,Wounds,50.68,ug/kg,4
+poultry,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,34.05,g,2,10,Diarrhea,45.91,ug/kg,13
+poultry,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,4.67,kg,3,4,Drop in egg production,47.54,ug/kg,1
+pig,meat,Dexamethasone,anti-inflammatory,Protozoal infection,79.63,mg,2,2,Skin lesions,49.14,ug/kg,2
+cattle,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,844.68,mg,1,7,Respiratory distress,52.38,ug/kg,9
+pig,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,39.07,g,3,4,Reduced production,52.21,ug/kg,7
+cattle,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,32.09,ml,1,10,Wounds,52.17,ug/kg,10
+sheep,meat,Prednisolone,anti-inflammatory,Parasitic infestation,33.48,ml,2,7,Lameness,50.71,ug/kg,12
+pig,meat,Dexamethasone,anti-inflammatory,Fungal infection,47.34,g,1,1,Reduced production,53.51,ug/kg,10
+cattle,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,22.77,ml,3,10,Reduced production,48.47,ug/kg,7
+pig,meat,Prednisolone,anti-inflammatory,Viral infection,14.64,g,2,10,Fever,52.44,ug/kg,8
+pig,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,820.93,mg,3,1,Diarrhea,46.19,ug/kg,14
+cattle,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,18.57,ml,3,10,Skin lesions,46.44,ug/kg,14
+pig,meat,Prednisolone,anti-inflammatory,Viral infection,230.25,mg,1,3,Fever,51.6,ug/kg,3
+pig,meat,Dexamethasone,anti-inflammatory,Poor hygiene,4.21,g,1,2,Wounds,51.5,ug/kg,14
+pig,meat,Prednisolone,anti-inflammatory,Fungal infection,38.7,g,3,4,Skin lesions,49.72,ug/kg,7
+poultry,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,1.0,sachet,1,3,Respiratory distress,52.33,ug/kg,13
+pig,meat,Prednisolone,anti-inflammatory,Contaminated feed/water,36.17,g,2,14,Diarrhea,54.1,ug/kg,2
+poultry,egg,Dexamethasone,anti-inflammatory,Poor hygiene,1.0,sachet,2,7,Reduced production,47.6,ug/kg,1
+goat,meat,Dexamethasone,anti-inflammatory,Protozoal infection,1.0,tablet,3,3,Diarrhea,52.99,ug/kg,3
+poultry,meat,Dexamethasone,anti-inflammatory,Viral infection,8.47,litre,1,10,Lameness,49.46,ug/kg,4
+pig,meat,Prednisolone,anti-inflammatory,Contaminated feed/water,39.71,ml,1,14,Poor weight gain,47.11,ug/kg,12
+pig,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,7.71,g,2,14,Lameness,48.86,ug/kg,1
+cattle,meat,Prednisolone,anti-inflammatory,Bacterial infection,33.47,g,2,5,Diarrhea,49.91,ug/kg,12
+sheep,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,9.14,g,3,2,Wounds,45.92,ug/kg,9
+sheep,meat,Dexamethasone,anti-inflammatory,Protozoal infection,5.0,tablet,1,3,Poor weight gain,45.06,ug/kg,14
+pig,meat,Prednisolone,anti-inflammatory,Poor hygiene,37.0,g,2,2,Fever,53.68,ug/kg,8
+pig,meat,Prednisolone,anti-inflammatory,Protozoal infection,5.52,g,2,10,Diarrhea,46.93,ug/kg,6
+sheep,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,39.35,ml,1,3,Lameness,50.76,ug/kg,2
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,45.12,ml,1,10,Fever,45.22,ug/kg,2
+goat,meat,Dexamethasone,anti-inflammatory,Bacterial infection,30.52,g,2,1,Poor weight gain,50.56,ug/kg,12
+poultry,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,4.45,g,2,10,Poor weight gain,51.05,ug/kg,14
+goat,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,45.42,ml,1,5,Reduced production,47.0,ug/kg,5
+pig,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,40.63,g,1,5,Fever,54.18,ug/kg,13
+sheep,meat,Prednisolone,anti-inflammatory,Parasitic infestation,24.23,g,1,3,Drop in egg production,45.16,ug/kg,13
+cattle,milk,Prednisolone,anti-inflammatory,Mycoplasma infection,5.0,tablet,1,5,Lameness,0.0,ug/kg,8
+poultry,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,6.73,g,1,5,Skin lesions,46.16,ug/kg,5
+poultry,meat,Dexamethasone,anti-inflammatory,Fungal infection,3.29,kg,2,5,Cough,51.7,ug/kg,4
+pig,meat,Dexamethasone,anti-inflammatory,Fungal infection,41.73,ml,2,7,Cough,50.35,ug/kg,14
+cattle,milk,Prednisolone,anti-inflammatory,Poor hygiene,2.0,tablet,2,2,Cough,0.0,ug/kg,5
+poultry,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,7.76,g,1,14,Poor weight gain,51.7,ug/kg,1
+cattle,milk,Dexamethasone,anti-inflammatory,Parasitic infestation,9.91,ml,3,7,Lameness,0.0,ug/kg,2
+goat,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,704.92,mg,2,1,Cough,49.84,ug/kg,9
+goat,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,568.6,mg,2,10,Wounds,51.27,ug/kg,4
+pig,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,2.12,kg,2,1,Drop in egg production,49.65,ug/kg,12
+sheep,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,15.31,ml,1,5,Reduced production,51.01,ug/kg,3
+pig,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,10.0,tablet,2,14,Reduced production,45.38,ug/kg,13
+pig,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,11.94,g,2,2,Respiratory distress,47.96,ug/kg,4
+poultry,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,1.0,sachet,2,4,Diarrhea,52.66,ug/kg,1
+sheep,meat,Dexamethasone,anti-inflammatory,Viral infection,35.19,g,1,3,Fever,53.8,ug/kg,5
+poultry,egg,Dexamethasone,anti-inflammatory,Secondary bacterial infection,2.0,sachet,2,10,Fever,48.62,ug/kg,5
+pig,meat,Dexamethasone,anti-inflammatory,Fungal infection,2.71,g,2,5,Lameness,46.64,ug/kg,3
+sheep,meat,Dexamethasone,anti-inflammatory,Bacterial infection,27.78,ml,2,5,Diarrhea,47.36,ug/kg,8
+cattle,meat,Dexamethasone,anti-inflammatory,Fungal infection,44.28,g,2,14,Cough,51.83,ug/kg,13
+sheep,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,0.5,tablet,2,3,Respiratory distress,52.98,ug/kg,11
+goat,meat,Dexamethasone,anti-inflammatory,Viral infection,691.39,mg,3,4,Lameness,50.6,ug/kg,2
+pig,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,0.6,kg,1,7,Fever,53.78,ug/kg,6
+cattle,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,662.16,mg,2,14,Respiratory distress,52.29,ug/kg,9
+sheep,meat,Dexamethasone,anti-inflammatory,Viral infection,11.73,ml,1,10,Cough,48.32,ug/kg,3
+poultry,egg,Dexamethasone,anti-inflammatory,Secondary bacterial infection,10.0,sachet,2,4,Lameness,51.94,ug/kg,13
+goat,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,33.22,g,1,3,Poor weight gain,50.36,ug/kg,4
+cattle,milk,Dexamethasone,anti-inflammatory,Parasitic infestation,38.48,ml,1,3,Diarrhea,0.0,ug/kg,1
+sheep,meat,Prednisolone,anti-inflammatory,Viral infection,34.82,g,2,14,Wounds,46.76,ug/kg,9
+goat,meat,Dexamethasone,anti-inflammatory,Protozoal infection,1.0,tablet,1,14,Cough,47.43,ug/kg,5
+poultry,egg,Dexamethasone,anti-inflammatory,Bacterial infection,10.0,sachet,1,1,Poor weight gain,52.99,ug/kg,2
+sheep,meat,Dexamethasone,anti-inflammatory,Viral infection,40.88,ml,1,2,Skin lesions,45.67,ug/kg,10
+cattle,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,473.53,mg,2,7,Wounds,53.97,ug/kg,7
+pig,meat,Prednisolone,anti-inflammatory,Parasitic infestation,12.03,g,3,5,Fever,53.16,ug/kg,12
+cattle,milk,Dexamethasone,anti-inflammatory,Fungal infection,37.17,ml,2,10,Diarrhea,0.0,ug/kg,9
+poultry,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,12.38,g,3,3,Diarrhea,52.46,ug/kg,6
+cattle,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,18.63,ml,3,4,Fever,50.07,ug/kg,13
+poultry,egg,Dexamethasone,anti-inflammatory,Protozoal infection,3.28,litre,1,2,Respiratory distress,49.01,ug/kg,11
+pig,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,43.55,ml,3,1,Lameness,49.14,ug/kg,5
+poultry,egg,Dexamethasone,anti-inflammatory,Nutritional deficiency,0.31,litre,3,7,Lameness,53.09,ug/kg,5
+cattle,meat,Dexamethasone,anti-inflammatory,Viral infection,42.23,ml,3,1,Cough,50.44,ug/kg,14
+cattle,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,0.5,tablet,1,1,Diarrhea,52.41,ug/kg,5
+pig,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,2.16,ml,2,14,Drop in egg production,51.64,ug/kg,10
+poultry,meat,Dexamethasone,anti-inflammatory,Poor hygiene,47.6,g,2,1,Fever,48.78,ug/kg,2
+sheep,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,2.0,tablet,3,1,Reduced production,52.18,ug/kg,2
+pig,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,7.17,g,2,4,Respiratory distress,52.33,ug/kg,14
+poultry,egg,Dexamethasone,anti-inflammatory,Viral infection,15.63,g,1,14,Respiratory distress,46.77,ug/kg,8
+sheep,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,1.0,tablet,2,10,Skin lesions,47.78,ug/kg,4
+poultry,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,1.0,sachet,3,14,Skin lesions,45.56,ug/kg,14
+goat,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,547.99,mg,1,7,Cough,46.78,ug/kg,9
+sheep,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,30.84,g,1,14,Diarrhea,47.25,ug/kg,13
+poultry,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,5.0,sachet,1,10,Reduced production,52.66,ug/kg,1
+sheep,meat,Prednisolone,anti-inflammatory,Fungal infection,45.02,ml,1,10,Cough,45.41,ug/kg,10
+goat,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,10.0,tablet,1,3,Poor weight gain,52.9,ug/kg,2
+sheep,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,45.24,ml,1,1,Lameness,49.27,ug/kg,14
+goat,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,1.0,tablet,3,2,Wounds,52.21,ug/kg,5
+poultry,egg,Dexamethasone,anti-inflammatory,Protozoal infection,19.95,g,2,5,Poor weight gain,54.86,ug/kg,4
+cattle,meat,Prednisolone,anti-inflammatory,Contaminated feed/water,1.0,tablet,3,7,Skin lesions,53.85,ug/kg,11
+cattle,milk,Prednisolone,anti-inflammatory,Secondary bacterial infection,35.53,g,2,4,Poor weight gain,0.0,ug/kg,8
+pig,meat,Prednisolone,anti-inflammatory,Bacterial infection,40.3,ml,2,14,Poor weight gain,51.41,ug/kg,12
+sheep,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,694.47,mg,2,1,Lameness,52.16,ug/kg,13
+sheep,meat,Dexamethasone,anti-inflammatory,Protozoal infection,5.0,tablet,1,4,Reduced production,50.06,ug/kg,1
+sheep,meat,Prednisolone,anti-inflammatory,Parasitic infestation,5.0,tablet,2,5,Fever,54.02,ug/kg,7
+poultry,meat,Dexamethasone,anti-inflammatory,Protozoal infection,1.66,g,1,14,Skin lesions,53.45,ug/kg,4
+cattle,meat,Dexamethasone,anti-inflammatory,Bacterial infection,25.59,ml,3,1,Lameness,47.69,ug/kg,4
+sheep,meat,Prednisolone,anti-inflammatory,Poor hygiene,4.14,g,2,7,Wounds,45.58,ug/kg,12
+cattle,milk,Prednisolone,anti-inflammatory,Nutritional deficiency,394.0,mg,2,7,Fever,0.0,ug/kg,5
+cattle,milk,Prednisolone,anti-inflammatory,Fungal infection,1.0,tablet,2,2,Skin lesions,0.0,ug/kg,12
+goat,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,1.0,tablet,1,2,Diarrhea,51.97,ug/kg,6
+pig,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,2.91,kg,1,7,Skin lesions,47.32,ug/kg,3
+poultry,egg,Dexamethasone,anti-inflammatory,Bacterial infection,5.0,sachet,2,1,Wounds,53.74,ug/kg,10
+goat,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,5.0,tablet,2,14,Diarrhea,51.12,ug/kg,4
+goat,meat,Dexamethasone,anti-inflammatory,Protozoal infection,806.37,mg,1,10,Diarrhea,54.86,ug/kg,13
+sheep,meat,Dexamethasone,anti-inflammatory,Poor hygiene,28.6,g,3,1,Drop in egg production,54.67,ug/kg,10
+poultry,meat,Dexamethasone,anti-inflammatory,Fungal infection,2.28,litre,1,7,Skin lesions,46.86,ug/kg,9
+goat,meat,Dexamethasone,anti-inflammatory,Bacterial infection,10.0,tablet,1,14,Fever,47.99,ug/kg,12
+poultry,egg,Dexamethasone,anti-inflammatory,Mycoplasma infection,2.62,kg,3,3,Reduced production,51.62,ug/kg,13
+goat,meat,Dexamethasone,anti-inflammatory,Bacterial infection,387.6,mg,1,7,Drop in egg production,45.28,ug/kg,10
+goat,meat,Dexamethasone,anti-inflammatory,Viral infection,470.76,mg,3,7,Poor weight gain,46.18,ug/kg,11
+cattle,milk,Prednisolone,anti-inflammatory,Contaminated feed/water,10.0,tablet,1,1,Drop in egg production,0.0,ug/kg,3
+cattle,meat,Prednisolone,anti-inflammatory,Viral infection,586.73,mg,2,14,Reduced production,50.54,ug/kg,5
+cattle,meat,Prednisolone,anti-inflammatory,Bacterial infection,979.88,mg,1,1,Drop in egg production,51.21,ug/kg,9
+sheep,meat,Prednisolone,anti-inflammatory,Nutritional deficiency,2.0,tablet,3,2,Wounds,54.1,ug/kg,7
+poultry,egg,Dexamethasone,anti-inflammatory,Bacterial infection,1.39,kg,1,2,Drop in egg production,45.5,ug/kg,3
+goat,meat,Prednisolone,anti-inflammatory,Mycoplasma infection,441.8,mg,2,3,Cough,53.21,ug/kg,7
+poultry,meat,Dexamethasone,anti-inflammatory,Protozoal infection,5.0,sachet,2,2,Respiratory distress,50.61,ug/kg,4
+poultry,meat,Dexamethasone,anti-inflammatory,Fungal infection,19.69,g,2,5,Lameness,47.71,ug/kg,11
+pig,meat,Prednisolone,anti-inflammatory,Bacterial infection,30.83,g,1,1,Drop in egg production,52.77,ug/kg,7
+goat,meat,Prednisolone,anti-inflammatory,Parasitic infestation,2.0,tablet,2,1,Wounds,47.36,ug/kg,14
+cattle,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,8.06,ml,2,10,Skin lesions,51.92,ug/kg,11
+pig,meat,Dexamethasone,anti-inflammatory,Bacterial infection,35.52,ml,1,10,Fever,49.79,ug/kg,1
+poultry,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,5.0,sachet,1,4,Reduced production,48.27,ug/kg,3
+cattle,meat,Dexamethasone,anti-inflammatory,Parasitic infestation,122.0,mg,2,1,Poor weight gain,50.93,ug/kg,7
+cattle,meat,Prednisolone,anti-inflammatory,Bacterial infection,272.25,mg,1,10,Lameness,45.52,ug/kg,13
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,9.21,ml,3,1,Wounds,46.3,ug/kg,3
+pig,meat,Prednisolone,anti-inflammatory,Poor hygiene,614.42,mg,3,7,Diarrhea,50.08,ug/kg,5
+cattle,meat,Prednisolone,anti-inflammatory,Protozoal infection,6.69,ml,1,10,Fever,46.15,ug/kg,12
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,1.0,tablet,2,4,Reduced production,53.9,ug/kg,13
+poultry,meat,Dexamethasone,anti-inflammatory,Poor hygiene,8.88,litre,1,3,Wounds,47.06,ug/kg,1
+pig,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,10.0,tablet,3,14,Respiratory distress,49.95,ug/kg,14
+cattle,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,17.1,ml,1,3,Diarrhea,53.09,ug/kg,14
+pig,meat,Prednisolone,anti-inflammatory,Poor hygiene,382.84,mg,1,3,Drop in egg production,54.48,ug/kg,14
+cattle,meat,Prednisolone,anti-inflammatory,Fungal infection,46.11,g,3,7,Diarrhea,54.18,ug/kg,14
+cattle,milk,Prednisolone,anti-inflammatory,Protozoal infection,18.64,g,2,5,Fever,0.0,ug/kg,8
+sheep,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,340.15,mg,1,10,Reduced production,45.61,ug/kg,14
+poultry,egg,Dexamethasone,anti-inflammatory,Secondary bacterial infection,1.71,kg,1,2,Diarrhea,53.29,ug/kg,9
+cattle,meat,Prednisolone,anti-inflammatory,Bacterial infection,278.04,mg,3,3,Drop in egg production,47.09,ug/kg,2
+poultry,meat,Dexamethasone,anti-inflammatory,Viral infection,1.07,kg,1,1,Drop in egg production,50.12,ug/kg,9
+poultry,egg,Dexamethasone,anti-inflammatory,Nutritional deficiency,5.0,sachet,2,4,Poor weight gain,50.93,ug/kg,5
+pig,meat,Prednisolone,anti-inflammatory,Fungal infection,503.0,mg,2,10,Reduced production,54.16,ug/kg,8
+pig,meat,Prednisolone,anti-inflammatory,Protozoal infection,3.99,kg,3,10,Drop in egg production,48.82,ug/kg,3
+poultry,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,2.16,kg,2,2,Wounds,47.62,ug/kg,10
+cattle,milk,Prednisolone,anti-inflammatory,Contaminated feed/water,25.16,ml,3,4,Diarrhea,0.0,ug/kg,5
+pig,meat,Dexamethasone,anti-inflammatory,Poor hygiene,11.3,g,2,2,Lameness,49.48,ug/kg,7
+goat,meat,Prednisolone,anti-inflammatory,Parasitic infestation,24.57,g,2,7,Diarrhea,52.96,ug/kg,5
+poultry,egg,Dexamethasone,anti-inflammatory,Mycoplasma infection,1.0,sachet,1,4,Fever,51.89,ug/kg,4
+sheep,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,8.69,g,3,10,Cough,51.52,ug/kg,1
+pig,meat,Dexamethasone,anti-inflammatory,Secondary bacterial infection,37.61,g,1,3,Poor weight gain,53.94,ug/kg,8
+sheep,meat,Dexamethasone,anti-inflammatory,Poor hygiene,248.51,mg,3,14,Lameness,51.74,ug/kg,9
+sheep,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,1.0,tablet,2,7,Poor weight gain,49.0,ug/kg,2
+sheep,meat,Dexamethasone,anti-inflammatory,Fungal infection,2.0,tablet,2,4,Wounds,45.64,ug/kg,1
+pig,meat,Prednisolone,anti-inflammatory,Poor hygiene,25.98,ml,2,1,Cough,53.72,ug/kg,2
+goat,meat,Dexamethasone,anti-inflammatory,Viral infection,49.6,ml,3,14,Fever,50.71,ug/kg,5
+sheep,meat,Dexamethasone,anti-inflammatory,Contaminated feed/water,2.32,g,1,14,Wounds,54.0,ug/kg,11
+pig,meat,Prednisolone,anti-inflammatory,Fungal infection,28.22,g,1,4,Reduced production,54.14,ug/kg,13
+cattle,meat,Dexamethasone,anti-inflammatory,Nutritional deficiency,44.11,ml,2,2,Diarrhea,50.71,ug/kg,10
+goat,meat,Prednisolone,anti-inflammatory,Protozoal infection,2.0,tablet,1,14,Respiratory distress,52.25,ug/kg,2
+poultry,egg,Dexamethasone,anti-inflammatory,Viral infection,1.0,sachet,2,4,Cough,51.61,ug/kg,8
+sheep,meat,Dexamethasone,anti-inflammatory,Bacterial infection,30.84,ml,1,10,Fever,45.93,ug/kg,10
+poultry,egg,Dexamethasone,anti-inflammatory,Parasitic infestation,5.0,sachet,3,10,Cough,49.44,ug/kg,4
+cattle,milk,Prednisolone,anti-inflammatory,Poor hygiene,10.0,tablet,1,10,Wounds,0.0,ug/kg,1
+goat,meat,Prednisolone,anti-inflammatory,Secondary bacterial infection,17.29,g,2,5,Poor weight gain,45.45,ug/kg,1
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,6.44,ml,2,7,Wounds,45.44,ug/kg,3
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,10.0,tablet,1,2,Poor weight gain,51.98,ug/kg,5
+goat,meat,Dexamethasone,anti-inflammatory,Mycoplasma infection,596.79,mg,3,10,Fever,47.52,ug/kg,3
+goat,meat,Prednisolone,anti-inflammatory,Poor hygiene,0.5,tablet,2,2,Skin lesions,54.07,ug/kg,4
+goat,meat,Prednisolone,anti-inflammatory,Poor hygiene,2.0,tablet,1,2,Diarrhea,48.88,ug/kg,4
+sheep,meat,Meloxicam,NSAID,Secondary bacterial infection,5.05,ml,2,4,Reduced production,48.36,ug/kg,12
+cattle,milk,Ketoprofen,NSAID,Poor hygiene,12.33,g,2,10,Wounds,18.97,ug/kg,10
+goat,meat,Meloxicam,NSAID,Bacterial infection,288.28,mg,3,3,Lameness,52.07,ug/kg,2
+cattle,meat,Meloxicam,NSAID,Fungal infection,978.21,mg,1,7,Respiratory distress,51.47,ug/kg,12
+poultry,egg,Meloxicam,NSAID,Protozoal infection,4.29,kg,1,1,Fever,48.91,ug/kg,2
+cattle,meat,Flunixin Meglumine,NSAID,Protozoal infection,117.54,mg,1,14,Wounds,52.8,ug/kg,12
+poultry,egg,Meloxicam,NSAID,Protozoal infection,7.59,litre,1,2,Respiratory distress,48.11,ug/kg,7
+cattle,milk,Ketoprofen,NSAID,Parasitic infestation,603.22,mg,1,2,Skin lesions,21.1,ug/kg,3
+pig,meat,Meloxicam,NSAID,Nutritional deficiency,2.98,kg,3,14,Poor weight gain,54.6,ug/kg,4
+poultry,meat,Meloxicam,NSAID,Fungal infection,4.1,kg,2,1,Diarrhea,45.57,ug/kg,9
+pig,meat,Ketoprofen,NSAID,Bacterial infection,47.08,ml,2,10,Cough,45.29,ug/kg,14
+goat,meat,Meloxicam,NSAID,Contaminated feed/water,43.53,ml,3,10,Drop in egg production,54.51,ug/kg,10
+sheep,meat,Ketoprofen,NSAID,Viral infection,0.5,tablet,1,5,Lameness,50.83,ug/kg,9
+sheep,meat,Ketoprofen,NSAID,Nutritional deficiency,5.0,tablet,2,7,Poor weight gain,46.74,ug/kg,7
+pig,meat,Meloxicam,NSAID,Fungal infection,4.47,kg,1,4,Reduced production,46.12,ug/kg,3
+goat,meat,Meloxicam,NSAID,Viral infection,1.0,tablet,2,7,Lameness,45.99,ug/kg,13
+sheep,meat,Meloxicam,NSAID,Poor hygiene,21.96,ml,1,10,Drop in egg production,51.31,ug/kg,3
+poultry,meat,Meloxicam,NSAID,Viral infection,2.38,litre,2,14,Fever,51.69,ug/kg,13
+pig,meat,Ketoprofen,NSAID,Nutritional deficiency,24.13,g,1,1,Drop in egg production,49.28,ug/kg,14
+poultry,meat,Meloxicam,NSAID,Poor hygiene,1.68,kg,2,1,Reduced production,51.47,ug/kg,2
+pig,meat,Ketoprofen,NSAID,Nutritional deficiency,3.79,kg,3,1,Fever,52.68,ug/kg,6
+pig,meat,Ketoprofen,NSAID,Parasitic infestation,32.46,g,1,5,Lameness,49.81,ug/kg,1
+cattle,meat,Flunixin Meglumine,NSAID,Protozoal infection,339.55,mg,1,2,Respiratory distress,51.29,ug/kg,12
+goat,meat,Meloxicam,NSAID,Bacterial infection,33.14,ml,2,1,Diarrhea,51.75,ug/kg,1
+sheep,meat,Ketoprofen,NSAID,Fungal infection,5.0,tablet,3,4,Poor weight gain,51.74,ug/kg,4
+pig,meat,Ketoprofen,NSAID,Mycoplasma infection,4.61,kg,1,14,Diarrhea,52.92,ug/kg,7
+poultry,egg,Meloxicam,NSAID,Parasitic infestation,26.18,g,1,1,Skin lesions,49.85,ug/kg,7
+goat,meat,Meloxicam,NSAID,Secondary bacterial infection,23.9,g,3,10,Fever,47.03,ug/kg,5
+pig,meat,Meloxicam,NSAID,Nutritional deficiency,1.75,kg,2,3,Fever,47.37,ug/kg,1
+pig,meat,Meloxicam,NSAID,Bacterial infection,1.58,kg,1,10,Skin lesions,54.96,ug/kg,9
+pig,meat,Meloxicam,NSAID,Secondary bacterial infection,3.24,kg,1,1,Skin lesions,47.88,ug/kg,10
+poultry,meat,Meloxicam,NSAID,Mycoplasma infection,2.0,sachet,3,5,Wounds,47.94,ug/kg,5
+poultry,egg,Meloxicam,NSAID,Protozoal infection,4.62,kg,3,2,Lameness,46.69,ug/kg,10
+sheep,meat,Meloxicam,NSAID,Contaminated feed/water,704.05,mg,3,4,Lameness,51.84,ug/kg,7
+cattle,milk,Flunixin Meglumine,NSAID,Viral infection,2.0,tablet,2,4,Drop in egg production,19.1,ug/kg,3
+poultry,egg,Meloxicam,NSAID,Mycoplasma infection,0.15,litre,1,3,Respiratory distress,47.95,ug/kg,13
+pig,meat,Meloxicam,NSAID,Poor hygiene,6.39,ml,1,2,Skin lesions,51.74,ug/kg,14
+cattle,meat,Meloxicam,NSAID,Bacterial infection,7.1,ml,1,4,Diarrhea,52.54,ug/kg,11
+cattle,meat,Flunixin Meglumine,NSAID,Nutritional deficiency,33.24,ml,1,2,Wounds,48.46,ug/kg,3
+cattle,milk,Meloxicam,NSAID,Viral infection,16.99,g,2,7,Drop in egg production,14.96,ug/kg,2
+goat,meat,Meloxicam,NSAID,Mycoplasma infection,40.58,ml,2,14,Cough,49.19,ug/kg,3
+pig,meat,Meloxicam,NSAID,Secondary bacterial infection,15.67,g,3,14,Wounds,49.01,ug/kg,3
+poultry,egg,Meloxicam,NSAID,Poor hygiene,3.19,litre,2,14,Lameness,52.29,ug/kg,7
+goat,meat,Ketoprofen,NSAID,Parasitic infestation,27.17,g,2,7,Lameness,50.95,ug/kg,9
+cattle,meat,Meloxicam,NSAID,Bacterial infection,5.0,tablet,1,7,Diarrhea,45.35,ug/kg,9
+cattle,meat,Meloxicam,NSAID,Contaminated feed/water,697.29,mg,3,2,Cough,48.52,ug/kg,14
+goat,meat,Meloxicam,NSAID,Parasitic infestation,22.52,g,1,14,Diarrhea,52.66,ug/kg,11
+sheep,meat,Ketoprofen,NSAID,Secondary bacterial infection,0.96,g,1,10,Wounds,51.01,ug/kg,6
+pig,meat,Meloxicam,NSAID,Contaminated feed/water,3.34,g,3,10,Drop in egg production,50.63,ug/kg,14
+pig,meat,Ketoprofen,NSAID,Bacterial infection,1.0,tablet,1,2,Diarrhea,47.75,ug/kg,9
+sheep,meat,Meloxicam,NSAID,Bacterial infection,1.48,g,1,5,Cough,51.52,ug/kg,2
+goat,meat,Ketoprofen,NSAID,Mycoplasma infection,990.58,mg,2,3,Fever,49.71,ug/kg,1
+poultry,meat,Meloxicam,NSAID,Secondary bacterial infection,3.48,kg,3,3,Drop in egg production,48.98,ug/kg,8
+poultry,meat,Meloxicam,NSAID,Poor hygiene,20.63,g,2,1,Wounds,53.87,ug/kg,5
+sheep,meat,Ketoprofen,NSAID,Viral infection,43.9,ml,2,10,Respiratory distress,48.38,ug/kg,9
+poultry,meat,Meloxicam,NSAID,Parasitic infestation,2.0,sachet,1,10,Poor weight gain,45.61,ug/kg,14
+pig,meat,Ketoprofen,NSAID,Viral infection,5.0,tablet,1,3,Wounds,51.33,ug/kg,1
+cattle,milk,Meloxicam,NSAID,Parasitic infestation,10.0,tablet,1,10,Poor weight gain,14.94,ug/kg,5
+poultry,egg,Meloxicam,NSAID,Fungal infection,8.66,g,2,4,Wounds,51.48,ug/kg,12
+poultry,meat,Meloxicam,NSAID,Nutritional deficiency,2.08,litre,3,2,Poor weight gain,48.1,ug/kg,13
+goat,meat,Ketoprofen,NSAID,Secondary bacterial infection,27.33,g,1,3,Fever,49.56,ug/kg,3
+cattle,meat,Flunixin Meglumine,NSAID,Viral infection,263.8,mg,2,1,Wounds,51.13,ug/kg,6
+cattle,milk,Flunixin Meglumine,NSAID,Secondary bacterial infection,29.97,g,1,14,Lameness,18.54,ug/kg,1
+goat,meat,Meloxicam,NSAID,Mycoplasma infection,18.43,ml,1,4,Fever,48.46,ug/kg,10
+pig,meat,Meloxicam,NSAID,Poor hygiene,9.7,ml,2,14,Poor weight gain,46.91,ug/kg,5
+sheep,meat,Meloxicam,NSAID,Fungal infection,18.81,ml,2,5,Skin lesions,53.27,ug/kg,4
+cattle,milk,Flunixin Meglumine,NSAID,Parasitic infestation,612.05,mg,2,5,Diarrhea,18.35,ug/kg,10
+pig,meat,Ketoprofen,NSAID,Mycoplasma infection,229.12,mg,2,5,Cough,53.73,ug/kg,2
+goat,meat,Meloxicam,NSAID,Mycoplasma infection,49.14,g,1,7,Fever,51.62,ug/kg,1
+goat,meat,Ketoprofen,NSAID,Protozoal infection,1.0,tablet,2,4,Respiratory distress,50.06,ug/kg,2
+goat,meat,Ketoprofen,NSAID,Contaminated feed/water,1.0,tablet,2,2,Drop in egg production,52.03,ug/kg,9
+pig,meat,Meloxicam,NSAID,Contaminated feed/water,0.5,tablet,2,14,Fever,50.93,ug/kg,6
+poultry,egg,Meloxicam,NSAID,Fungal infection,8.26,litre,1,7,Skin lesions,52.04,ug/kg,8
+sheep,meat,Meloxicam,NSAID,Poor hygiene,31.08,ml,2,4,Wounds,53.94,ug/kg,6
+pig,meat,Ketoprofen,NSAID,Secondary bacterial infection,398.3,mg,3,5,Respiratory distress,47.83,ug/kg,5
+goat,meat,Ketoprofen,NSAID,Protozoal infection,45.44,g,3,5,Cough,49.97,ug/kg,6
+goat,meat,Ketoprofen,NSAID,Mycoplasma infection,0.29,g,1,5,Reduced production,45.89,ug/kg,11
+sheep,meat,Meloxicam,NSAID,Mycoplasma infection,21.51,ml,1,1,Reduced production,51.31,ug/kg,2
+poultry,egg,Meloxicam,NSAID,Poor hygiene,3.6,g,3,3,Lameness,49.18,ug/kg,11
+sheep,meat,Meloxicam,NSAID,Contaminated feed/water,0.5,tablet,1,5,Reduced production,53.08,ug/kg,11
+cattle,milk,Flunixin Meglumine,NSAID,Poor hygiene,195.74,mg,1,7,Wounds,18.31,ug/kg,12
+cattle,meat,Ketoprofen,NSAID,Protozoal infection,39.14,ml,3,7,Drop in egg production,51.51,ug/kg,14
+pig,meat,Ketoprofen,NSAID,Secondary bacterial infection,0.28,kg,2,3,Skin lesions,53.9,ug/kg,11
+poultry,egg,Meloxicam,NSAID,Poor hygiene,1.0,sachet,2,10,Respiratory distress,45.26,ug/kg,12
+goat,meat,Ketoprofen,NSAID,Poor hygiene,8.11,ml,2,5,Diarrhea,46.87,ug/kg,9
+sheep,meat,Ketoprofen,NSAID,Viral infection,26.44,g,1,2,Poor weight gain,53.32,ug/kg,3
+pig,meat,Ketoprofen,NSAID,Viral infection,803.2,mg,2,7,Respiratory distress,48.42,ug/kg,7
+sheep,meat,Ketoprofen,NSAID,Nutritional deficiency,26.66,g,3,14,Reduced production,54.03,ug/kg,10
+pig,meat,Ketoprofen,NSAID,Secondary bacterial infection,18.24,ml,3,10,Poor weight gain,51.48,ug/kg,2
+poultry,egg,Meloxicam,NSAID,Poor hygiene,3.87,kg,1,7,Wounds,49.46,ug/kg,1
+cattle,meat,Meloxicam,NSAID,Protozoal infection,40.39,ml,2,10,Reduced production,51.09,ug/kg,9
+poultry,egg,Meloxicam,NSAID,Nutritional deficiency,5.0,sachet,1,5,Fever,50.03,ug/kg,10
+pig,meat,Meloxicam,NSAID,Contaminated feed/water,34.22,ml,1,2,Fever,54.59,ug/kg,3
+goat,meat,Meloxicam,NSAID,Viral infection,485.38,mg,3,2,Respiratory distress,54.35,ug/kg,10
+sheep,meat,Meloxicam,NSAID,Secondary bacterial infection,40.91,g,2,4,Lameness,48.72,ug/kg,5
+pig,meat,Ketoprofen,NSAID,Nutritional deficiency,11.56,g,2,5,Cough,54.1,ug/kg,10
+pig,meat,Meloxicam,NSAID,Fungal infection,32.26,g,2,10,Reduced production,53.56,ug/kg,8
+cattle,meat,Flunixin Meglumine,NSAID,Parasitic infestation,5.54,g,2,4,Fever,50.04,ug/kg,7
+poultry,egg,Meloxicam,NSAID,Bacterial infection,3.24,kg,3,3,Skin lesions,45.99,ug/kg,5
+poultry,egg,Meloxicam,NSAID,Protozoal infection,39.43,g,1,2,Skin lesions,45.93,ug/kg,8
+poultry,egg,Meloxicam,NSAID,Protozoal infection,5.0,sachet,2,1,Poor weight gain,54.58,ug/kg,3
+cattle,meat,Meloxicam,NSAID,Protozoal infection,5.0,tablet,1,2,Reduced production,51.97,ug/kg,1
+sheep,meat,Ketoprofen,NSAID,Secondary bacterial infection,16.32,ml,1,7,Diarrhea,48.78,ug/kg,5
+goat,meat,Meloxicam,NSAID,Viral infection,20.63,ml,2,1,Cough,52.13,ug/kg,10
+poultry,meat,Meloxicam,NSAID,Mycoplasma infection,1.75,g,2,1,Lameness,52.93,ug/kg,2
+sheep,meat,Meloxicam,NSAID,Protozoal infection,761.07,mg,1,2,Drop in egg production,54.74,ug/kg,8
+cattle,milk,Meloxicam,NSAID,Viral infection,749.42,mg,3,4,Fever,16.32,ug/kg,13
+sheep,meat,Meloxicam,NSAID,Parasitic infestation,2.0,tablet,1,3,Drop in egg production,54.2,ug/kg,4
+pig,meat,Meloxicam,NSAID,Contaminated feed/water,470.31,mg,2,7,Lameness,51.36,ug/kg,3
+poultry,egg,Meloxicam,NSAID,Secondary bacterial infection,7.54,litre,1,4,Lameness,46.0,ug/kg,14
+goat,meat,Meloxicam,NSAID,Fungal infection,33.06,g,3,5,Respiratory distress,52.59,ug/kg,8
+sheep,meat,Meloxicam,NSAID,Fungal infection,0.5,tablet,3,5,Lameness,47.09,ug/kg,11
+goat,meat,Meloxicam,NSAID,Bacterial infection,1.0,tablet,1,10,Reduced production,51.24,ug/kg,7
+sheep,meat,Meloxicam,NSAID,Protozoal infection,1.0,tablet,1,2,Respiratory distress,45.49,ug/kg,13
+cattle,meat,Ketoprofen,NSAID,Fungal infection,39.6,g,1,5,Respiratory distress,45.23,ug/kg,5
+cattle,milk,Ketoprofen,NSAID,Poor hygiene,534.2,mg,3,4,Skin lesions,21.58,ug/kg,6
+pig,meat,Meloxicam,NSAID,Bacterial infection,22.11,ml,1,2,Wounds,52.5,ug/kg,5
+sheep,meat,Meloxicam,NSAID,Nutritional deficiency,39.91,ml,3,5,Reduced production,47.63,ug/kg,13
+sheep,meat,Ketoprofen,NSAID,Contaminated feed/water,26.21,g,3,4,Reduced production,51.77,ug/kg,6
+sheep,meat,Ketoprofen,NSAID,Parasitic infestation,2.89,g,1,7,Fever,49.17,ug/kg,9
+poultry,egg,Meloxicam,NSAID,Poor hygiene,3.86,kg,2,2,Lameness,48.77,ug/kg,13
+goat,meat,Ketoprofen,NSAID,Protozoal infection,48.44,g,2,2,Drop in egg production,52.36,ug/kg,4
+cattle,milk,Meloxicam,NSAID,Nutritional deficiency,0.85,ml,2,7,Wounds,14.72,ug/kg,8
+poultry,meat,Meloxicam,NSAID,Contaminated feed/water,3.09,litre,3,10,Poor weight gain,54.75,ug/kg,8
+cattle,meat,Meloxicam,NSAID,Poor hygiene,0.5,tablet,3,5,Drop in egg production,47.69,ug/kg,1
+cattle,milk,Flunixin Meglumine,NSAID,Protozoal infection,908.29,mg,1,10,Cough,19.13,ug/kg,6
+pig,meat,Meloxicam,NSAID,Mycoplasma infection,34.48,g,3,14,Poor weight gain,54.77,ug/kg,9
+goat,meat,Meloxicam,NSAID,Parasitic infestation,8.66,g,3,5,Diarrhea,52.27,ug/kg,14
+sheep,meat,Ketoprofen,NSAID,Bacterial infection,35.29,ml,1,4,Skin lesions,50.62,ug/kg,12
+poultry,meat,Meloxicam,NSAID,Protozoal infection,13.31,g,2,4,Wounds,49.11,ug/kg,1
+sheep,meat,Ketoprofen,NSAID,Secondary bacterial infection,2.0,tablet,2,7,Cough,53.53,ug/kg,7
+sheep,meat,Ketoprofen,NSAID,Secondary bacterial infection,435.17,mg,3,2,Respiratory distress,51.05,ug/kg,1
+poultry,meat,Meloxicam,NSAID,Viral infection,0.88,litre,1,10,Skin lesions,49.11,ug/kg,3
+sheep,meat,Ketoprofen,NSAID,Bacterial infection,1.0,tablet,2,1,Drop in egg production,47.52,ug/kg,5
+sheep,meat,Ketoprofen,NSAID,Bacterial infection,687.29,mg,1,3,Cough,53.12,ug/kg,2
+poultry,meat,Meloxicam,NSAID,Protozoal infection,1.56,litre,2,10,Drop in egg production,46.4,ug/kg,8
+cattle,milk,Flunixin Meglumine,NSAID,Fungal infection,2.0,tablet,2,7,Lameness,18.69,ug/kg,12
+pig,meat,Ketoprofen,NSAID,Viral infection,891.15,mg,3,4,Cough,49.23,ug/kg,11
+pig,meat,Ketoprofen,NSAID,Nutritional deficiency,1.09,kg,2,7,Poor weight gain,50.64,ug/kg,9
+poultry,meat,Meloxicam,NSAID,Viral infection,10.0,sachet,1,3,Diarrhea,53.77,ug/kg,13
+cattle,meat,Ketoprofen,NSAID,Protozoal infection,864.93,mg,2,5,Wounds,52.32,ug/kg,1
+cattle,meat,Flunixin Meglumine,NSAID,Viral infection,10.0,tablet,1,14,Lameness,51.79,ug/kg,2
+goat,meat,Ketoprofen,NSAID,Mycoplasma infection,202.57,mg,1,14,Reduced production,49.66,ug/kg,8
+goat,meat,Meloxicam,NSAID,Secondary bacterial infection,33.51,ml,2,7,Wounds,47.29,ug/kg,10
+sheep,meat,Ketoprofen,NSAID,Viral infection,28.91,g,2,10,Lameness,47.48,ug/kg,5
+poultry,meat,Meloxicam,NSAID,Contaminated feed/water,3.23,kg,1,3,Cough,48.4,ug/kg,3
+cattle,meat,Meloxicam,NSAID,Fungal infection,17.22,mg,2,3,Reduced production,47.16,ug/kg,11
+pig,meat,Ketoprofen,NSAID,Poor hygiene,77.42,mg,1,7,Poor weight gain,47.49,ug/kg,12
+poultry,meat,Meloxicam,NSAID,Mycoplasma infection,3.67,kg,2,3,Poor weight gain,53.99,ug/kg,12
+sheep,meat,Ketoprofen,NSAID,Protozoal infection,10.0,tablet,1,1,Poor weight gain,52.55,ug/kg,1
+goat,meat,Ketoprofen,NSAID,Parasitic infestation,313.95,mg,1,2,Fever,48.25,ug/kg,14
+pig,meat,Meloxicam,NSAID,Nutritional deficiency,516.84,mg,1,10,Respiratory distress,49.57,ug/kg,7
+sheep,meat,Meloxicam,NSAID,Mycoplasma infection,5.0,tablet,3,2,Respiratory distress,49.86,ug/kg,1
+sheep,meat,Meloxicam,NSAID,Contaminated feed/water,10.84,g,2,7,Wounds,49.17,ug/kg,2
+pig,meat,Ketoprofen,NSAID,Viral infection,13.06,ml,2,4,Cough,53.92,ug/kg,14
+goat,meat,Ketoprofen,NSAID,Viral infection,151.76,mg,2,10,Wounds,45.31,ug/kg,11
+goat,meat,Ketoprofen,NSAID,Fungal infection,173.32,mg,2,3,Lameness,48.94,ug/kg,13
+sheep,meat,Ketoprofen,NSAID,Protozoal infection,1.61,ml,1,1,Drop in egg production,54.98,ug/kg,11
+pig,meat,Meloxicam,NSAID,Poor hygiene,569.48,mg,3,2,Drop in egg production,52.23,ug/kg,10
+cattle,milk,Meloxicam,NSAID,Secondary bacterial infection,19.61,ml,1,7,Lameness,14.71,ug/kg,9
+pig,meat,Meloxicam,NSAID,Bacterial infection,860.87,mg,2,7,Lameness,47.58,ug/kg,3
+goat,meat,Meloxicam,NSAID,Mycoplasma infection,5.0,tablet,3,14,Skin lesions,47.0,ug/kg,8
+pig,meat,Meloxicam,NSAID,Mycoplasma infection,14.46,g,2,5,Reduced production,51.95,ug/kg,9
+pig,meat,Meloxicam,NSAID,Poor hygiene,1.0,tablet,1,3,Reduced production,46.13,ug/kg,9
+pig,meat,Ketoprofen,NSAID,Bacterial infection,24.4,ml,3,10,Poor weight gain,45.94,ug/kg,11
+sheep,meat,Meloxicam,NSAID,Fungal infection,10.0,tablet,1,5,Poor weight gain,47.37,ug/kg,4
+sheep,meat,Meloxicam,NSAID,Parasitic infestation,10.05,ml,2,5,Diarrhea,47.67,ug/kg,6
+cattle,meat,Flunixin Meglumine,NSAID,Parasitic infestation,577.03,mg,1,14,Wounds,48.2,ug/kg,8
+goat,meat,Ketoprofen,NSAID,Nutritional deficiency,42.61,ml,2,4,Fever,46.4,ug/kg,2
+poultry,egg,Meloxicam,NSAID,Protozoal infection,26.5,g,1,2,Reduced production,54.8,ug/kg,6
+goat,meat,Ketoprofen,NSAID,Mycoplasma infection,27.64,g,1,4,Drop in egg production,49.87,ug/kg,13
+poultry,egg,Meloxicam,NSAID,Protozoal infection,4.12,kg,1,2,Drop in egg production,46.38,ug/kg,10
+cattle,milk,Ketoprofen,NSAID,Contaminated feed/water,30.64,ml,3,10,Lameness,20.12,ug/kg,8
+poultry,egg,Meloxicam,NSAID,Parasitic infestation,2.04,kg,1,7,Reduced production,49.25,ug/kg,10
+poultry,egg,Meloxicam,NSAID,Viral infection,35.11,g,1,3,Diarrhea,45.69,ug/kg,5
+poultry,meat,Meloxicam,NSAID,Secondary bacterial infection,5.04,litre,2,4,Poor weight gain,54.57,ug/kg,10
+cattle,milk,Flunixin Meglumine,NSAID,Contaminated feed/water,1.0,tablet,2,1,Poor weight gain,18.98,ug/kg,11
+pig,meat,Meloxicam,NSAID,Protozoal infection,2.62,kg,2,5,Drop in egg production,51.56,ug/kg,8
+goat,meat,Ketoprofen,NSAID,Mycoplasma infection,28.36,ml,2,10,Cough,47.46,ug/kg,3
+goat,meat,Ketoprofen,NSAID,Parasitic infestation,670.21,mg,1,7,Wounds,51.81,ug/kg,2
+goat,meat,Meloxicam,NSAID,Contaminated feed/water,48.98,g,1,14,Cough,45.95,ug/kg,12
+sheep,meat,Ketoprofen,NSAID,Fungal infection,34.22,g,2,1,Drop in egg production,46.16,ug/kg,4
+poultry,meat,Meloxicam,NSAID,Fungal infection,4.4,litre,1,4,Reduced production,54.06,ug/kg,1
+poultry,egg,Meloxicam,NSAID,Contaminated feed/water,3.56,kg,1,4,Poor weight gain,47.98,ug/kg,10
+pig,meat,Meloxicam,NSAID,Secondary bacterial infection,6.66,g,3,10,Drop in egg production,45.76,ug/kg,9
+sheep,meat,Meloxicam,NSAID,Viral infection,48.9,ml,3,4,Skin lesions,48.57,ug/kg,4
+poultry,egg,Meloxicam,NSAID,Secondary bacterial infection,7.68,litre,1,14,Poor weight gain,50.54,ug/kg,11
+poultry,egg,Meloxicam,NSAID,Bacterial infection,10.0,sachet,1,2,Reduced production,49.28,ug/kg,2
+pig,meat,Meloxicam,NSAID,Secondary bacterial infection,0.5,tablet,2,5,Reduced production,53.84,ug/kg,2
+poultry,egg,Meloxicam,NSAID,Contaminated feed/water,41.78,g,2,10,Skin lesions,50.11,ug/kg,6
+cattle,milk,Meloxicam,NSAID,Poor hygiene,36.4,g,2,2,Drop in egg production,16.19,ug/kg,2
+sheep,meat,Meloxicam,NSAID,Mycoplasma infection,49.97,ml,1,7,Lameness,46.44,ug/kg,2
+goat,meat,Meloxicam,NSAID,Nutritional deficiency,181.77,mg,2,7,Skin lesions,50.07,ug/kg,5
+cattle,milk,Ketoprofen,NSAID,Nutritional deficiency,5.0,tablet,3,4,Lameness,18.33,ug/kg,7
+poultry,meat,Meloxicam,NSAID,Fungal infection,5.0,sachet,3,3,Skin lesions,48.43,ug/kg,13
+sheep,meat,Ketoprofen,NSAID,Nutritional deficiency,846.89,mg,2,3,Drop in egg production,45.15,ug/kg,4
+sheep,meat,Ketoprofen,NSAID,Parasitic infestation,509.33,mg,1,2,Wounds,54.9,ug/kg,11
+goat,meat,Ketoprofen,NSAID,Poor hygiene,751.61,mg,1,1,Lameness,47.19,ug/kg,2
+cattle,meat,Flunixin Meglumine,NSAID,Mycoplasma infection,0.5,tablet,2,4,Drop in egg production,45.98,ug/kg,14
+pig,meat,Ketoprofen,NSAID,Viral infection,40.42,g,3,2,Wounds,50.81,ug/kg,5
+sheep,meat,Meloxicam,NSAID,Bacterial infection,34.34,ml,2,14,Drop in egg production,45.24,ug/kg,9
+pig,meat,Meloxicam,NSAID,Protozoal infection,23.3,g,1,4,Reduced production,50.74,ug/kg,2
+poultry,egg,Meloxicam,NSAID,Mycoplasma infection,4.23,kg,2,14,Diarrhea,45.85,ug/kg,4
+sheep,meat,Meloxicam,NSAID,Mycoplasma infection,338.44,mg,2,10,Skin lesions,54.4,ug/kg,14
+cattle,milk,Ketoprofen,NSAID,Viral infection,3.41,ml,3,3,Reduced production,18.58,ug/kg,1
+poultry,egg,Meloxicam,NSAID,Mycoplasma infection,0.17,kg,1,7,Skin lesions,45.02,ug/kg,3
+sheep,meat,Ketoprofen,NSAID,Poor hygiene,42.71,g,1,5,Wounds,51.97,ug/kg,14
+cattle,milk,Flunixin Meglumine,NSAID,Parasitic infestation,18.25,g,3,7,Wounds,21.76,ug/kg,14
+sheep,meat,Meloxicam,NSAID,Mycoplasma infection,2.6,g,2,1,Skin lesions,45.72,ug/kg,13
+goat,meat,Meloxicam,NSAID,Secondary bacterial infection,30.49,ml,1,4,Wounds,51.1,ug/kg,8
+poultry,egg,Meloxicam,NSAID,Protozoal infection,9.96,g,2,1,Lameness,47.7,ug/kg,2
+pig,meat,Ketoprofen,NSAID,Parasitic infestation,5.0,tablet,2,14,Drop in egg production,46.77,ug/kg,10
+poultry,meat,Meloxicam,NSAID,Mycoplasma infection,2.99,litre,1,14,Reduced production,46.92,ug/kg,9
+cattle,meat,Ketoprofen,NSAID,Viral infection,953.52,mg,1,2,Skin lesions,51.69,ug/kg,5
+poultry,egg,Meloxicam,NSAID,Secondary bacterial infection,22.5,g,1,14,Poor weight gain,50.74,ug/kg,1
+pig,meat,Ketoprofen,NSAID,Parasitic infestation,1.31,kg,2,7,Fever,47.28,ug/kg,11
+poultry,meat,Meloxicam,NSAID,Mycoplasma infection,39.85,g,2,14,Reduced production,50.64,ug/kg,11
+poultry,meat,Meloxicam,NSAID,Fungal infection,8.08,litre,2,3,Fever,46.96,ug/kg,14
+sheep,meat,Ketoprofen,NSAID,Fungal infection,36.36,ml,1,5,Reduced production,51.53,ug/kg,8
+cattle,milk,Meloxicam,NSAID,Bacterial infection,23.41,g,3,2,Cough,15.74,ug/kg,7
+sheep,meat,Meloxicam,NSAID,Protozoal infection,30.66,g,3,1,Drop in egg production,48.57,ug/kg,9
+goat,meat,Meloxicam,NSAID,Poor hygiene,38.34,g,3,5,Fever,51.02,ug/kg,13
+goat,meat,Meloxicam,NSAID,Nutritional deficiency,258.81,mg,2,3,Diarrhea,49.33,ug/kg,7
+sheep,meat,Meloxicam,NSAID,Bacterial infection,2.0,tablet,1,5,Lameness,51.97,ug/kg,12
+cattle,milk,Flunixin Meglumine,NSAID,Secondary bacterial infection,21.54,ml,2,3,Diarrhea,20.15,ug/kg,8
+goat,meat,Ketoprofen,NSAID,Protozoal infection,1.0,tablet,1,2,Fever,51.49,ug/kg,6
+cattle,meat,Meloxicam,NSAID,Secondary bacterial infection,2.0,tablet,1,2,Respiratory distress,50.63,ug/kg,5
+sheep,meat,Ketoprofen,NSAID,Nutritional deficiency,46.81,ml,3,10,Diarrhea,52.46,ug/kg,6
+sheep,meat,Ketoprofen,NSAID,Bacterial infection,6.93,ml,3,3,Skin lesions,50.53,ug/kg,2
+cattle,meat,Flunixin Meglumine,NSAID,Nutritional deficiency,710.03,mg,2,5,Lameness,48.51,ug/kg,10
+pig,meat,Meloxicam,NSAID,Poor hygiene,2.48,kg,2,14,Cough,53.52,ug/kg,12
+goat,meat,Meloxicam,NSAID,Secondary bacterial infection,21.27,g,2,10,Poor weight gain,49.93,ug/kg,5
+sheep,meat,Meloxicam,NSAID,Protozoal infection,10.59,g,3,4,Poor weight gain,48.89,ug/kg,12
+goat,meat,Ketoprofen,NSAID,Viral infection,27.3,ml,1,3,Skin lesions,45.73,ug/kg,1
+sheep,meat,Ketoprofen,NSAID,Contaminated feed/water,43.54,g,2,5,Lameness,52.98,ug/kg,10
+sheep,meat,Meloxicam,NSAID,Secondary bacterial infection,57.55,mg,1,14,Lameness,46.27,ug/kg,11
+pig,meat,Meloxicam,NSAID,Secondary bacterial infection,553.35,mg,1,3,Diarrhea,53.45,ug/kg,7
+cattle,meat,Ketoprofen,NSAID,Viral infection,45.33,g,2,3,Fever,52.88,ug/kg,7
+pig,meat,Ketoprofen,NSAID,Bacterial infection,2.79,kg,1,14,Drop in egg production,45.5,ug/kg,10
+goat,meat,Meloxicam,NSAID,Protozoal infection,4.81,g,3,3,Fever,51.38,ug/kg,11
+cattle,milk,Flunixin Meglumine,NSAID,Viral infection,10.66,ml,1,1,Lameness,18.4,ug/kg,12
+goat,meat,Ketoprofen,NSAID,Fungal infection,10.0,tablet,2,1,Lameness,51.84,ug/kg,12
+goat,meat,Meloxicam,NSAID,Poor hygiene,25.7,ml,2,14,Reduced production,50.52,ug/kg,4
+cattle,meat,Meloxicam,NSAID,Fungal infection,907.65,mg,2,2,Poor weight gain,46.35,ug/kg,13
+pig,meat,Meloxicam,NSAID,Nutritional deficiency,835.32,mg,2,3,Skin lesions,53.01,ug/kg,9
+sheep,meat,Ketoprofen,NSAID,Mycoplasma infection,14.75,g,2,2,Poor weight gain,53.25,ug/kg,2
+sheep,meat,Ketoprofen,NSAID,Poor hygiene,35.39,g,2,3,Cough,46.62,ug/kg,14
+pig,meat,Ketoprofen,NSAID,Secondary bacterial infection,36.24,g,1,7,Respiratory distress,48.04,ug/kg,11
+cattle,milk,Ketoprofen,NSAID,Nutritional deficiency,23.8,g,2,4,Fever,21.57,ug/kg,12
+cattle,milk,Ketoprofen,NSAID,Contaminated feed/water,18.95,ml,1,4,Poor weight gain,19.56,ug/kg,4
+goat,meat,Vitamin B-Complex,vitamin,Contaminated feed/water,1.68,ml,1,7,Fever,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Parasitic infestation,35.68,g,3,14,Poor weight gain,0.0,ug/kg,0
+goat,meat,Vitamin B-Complex,vitamin,Viral infection,5.0,tablet,3,21,Poor weight gain,0.0,ug/kg,0
+sheep,meat,Electrolytes,vitamin,Poor hygiene,12.7,ml,1,5,Diarrhea,0.0,ug/kg,0
+sheep,meat,Vitamin B-Complex,vitamin,Fungal infection,931.04,mg,1,14,Reduced production,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Contaminated feed/water,16.2,g,3,3,Poor weight gain,0.0,ug/kg,2
+cattle,meat,Electrolytes,vitamin,Mycoplasma infection,21.15,ml,2,3,Cough,0.0,ug/kg,2
+cattle,meat,Vitamin E,vitamin,Contaminated feed/water,14.47,g,3,14,Cough,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Mycoplasma infection,807.96,mg,1,21,Diarrhea,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Nutritional deficiency,5.0,tablet,2,21,Wounds,0.0,ug/kg,0
+poultry,egg,Electrolytes,vitamin,Protozoal infection,4.71,kg,1,5,Poor weight gain,0.0,ug/kg,2
+pig,meat,Vitamin E,vitamin,Parasitic infestation,28.22,ml,3,3,Drop in egg production,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Viral infection,9.77,litre,2,21,Drop in egg production,0.0,ug/kg,3
+sheep,meat,Vitamin B-Complex,vitamin,Bacterial infection,502.82,mg,3,7,Diarrhea,0.0,ug/kg,1
+cattle,meat,Vitamin B-Complex,vitamin,Bacterial infection,0.5,tablet,2,7,Lameness,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Viral infection,2.0,sachet,1,21,Poor weight gain,0.0,ug/kg,1
+pig,meat,Vitamin E,vitamin,Fungal infection,43.59,ml,1,3,Diarrhea,0.0,ug/kg,0
+pig,meat,Vitamin E,vitamin,Fungal infection,12.52,g,2,14,Diarrhea,0.0,ug/kg,1
+pig,meat,Vitamin E,vitamin,Parasitic infestation,2.68,kg,1,14,Skin lesions,0.0,ug/kg,2
+sheep,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,317.17,mg,1,3,Reduced production,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Bacterial infection,664.72,mg,1,21,Poor weight gain,0.0,ug/kg,3
+pig,meat,Vitamin E,vitamin,Mycoplasma infection,26.66,ml,2,7,Drop in egg production,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Viral infection,48.55,ml,2,14,Wounds,0.0,ug/kg,3
+cattle,milk,Vitamin B-Complex,vitamin,Bacterial infection,24.3,g,1,14,Cough,0.0,ug/kg,3
+sheep,meat,Vitamin B-Complex,vitamin,Parasitic infestation,25.9,ml,2,7,Fever,0.0,ug/kg,1
+poultry,egg,Vitamin premix,vitamin,Bacterial infection,1.08,g,2,5,Wounds,0.0,ug/kg,2
+sheep,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,2.0,tablet,2,3,Drop in egg production,0.0,ug/kg,1
+cattle,meat,Calcium-Borogluconate,vitamin,Nutritional deficiency,2.0,tablet,2,14,Poor weight gain,0.0,ug/kg,0
+goat,meat,Electrolytes,vitamin,Parasitic infestation,726.06,mg,2,3,Lameness,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Viral infection,35.59,ml,1,3,Lameness,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Bacterial infection,2.0,tablet,1,3,Reduced production,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Mycoplasma infection,33.48,ml,2,7,Fever,0.0,ug/kg,2
+cattle,meat,Electrolytes,vitamin,Nutritional deficiency,1.0,tablet,1,21,Poor weight gain,0.0,ug/kg,0
+poultry,meat,Electrolytes,vitamin,Protozoal infection,0.79,kg,2,14,Skin lesions,0.0,ug/kg,0
+sheep,meat,Vitamin B-Complex,vitamin,Contaminated feed/water,2.0,tablet,2,21,Wounds,0.0,ug/kg,1
+cattle,meat,Calcium-Borogluconate,vitamin,Secondary bacterial infection,29.14,g,3,21,Lameness,0.0,ug/kg,1
+cattle,meat,Calcium-Borogluconate,vitamin,Fungal infection,5.0,tablet,2,14,Fever,0.0,ug/kg,0
+sheep,meat,Electrolytes,vitamin,Mycoplasma infection,26.57,ml,2,7,Reduced production,0.0,ug/kg,1
+pig,meat,Electrolytes,vitamin,Secondary bacterial infection,2.58,kg,3,7,Fever,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Contaminated feed/water,728.1,mg,2,14,Drop in egg production,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Protozoal infection,868.85,mg,1,7,Reduced production,0.0,ug/kg,3
+pig,meat,Vitamin E,vitamin,Contaminated feed/water,37.72,ml,1,14,Wounds,0.0,ug/kg,0
+cattle,milk,Vitamin B-Complex,vitamin,Parasitic infestation,26.12,g,3,7,Poor weight gain,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Viral infection,465.44,mg,1,14,Fever,0.0,ug/kg,1
+poultry,egg,Electrolytes,vitamin,Nutritional deficiency,0.29,kg,1,14,Fever,0.0,ug/kg,3
+goat,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,30.46,g,2,7,Drop in egg production,0.0,ug/kg,0
+poultry,meat,Electrolytes,vitamin,Poor hygiene,4.91,kg,1,3,Diarrhea,0.0,ug/kg,1
+cattle,milk,Electrolytes,vitamin,Viral infection,44.7,g,3,14,Reduced production,0.0,ug/kg,1
+cattle,milk,Calcium-Borogluconate,vitamin,Parasitic infestation,16.06,ml,2,21,Respiratory distress,0.0,ug/kg,3
+poultry,egg,Vitamin premix,vitamin,Fungal infection,2.57,litre,1,3,Lameness,0.0,ug/kg,2
+poultry,meat,Vitamin premix,vitamin,Bacterial infection,1.0,sachet,1,7,Lameness,0.0,ug/kg,1
+cattle,milk,Vitamin E,vitamin,Contaminated feed/water,0.5,tablet,1,14,Cough,0.0,ug/kg,1
+pig,meat,Electrolytes,vitamin,Secondary bacterial infection,20.65,ml,2,14,Skin lesions,0.0,ug/kg,3
+poultry,meat,Electrolytes,vitamin,Fungal infection,7.91,litre,2,3,Poor weight gain,0.0,ug/kg,1
+poultry,meat,Electrolytes,vitamin,Parasitic infestation,25.01,g,1,5,Lameness,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Mycoplasma infection,42.66,g,2,21,Reduced production,0.0,ug/kg,3
+pig,meat,Electrolytes,vitamin,Viral infection,39.84,ml,3,7,Diarrhea,0.0,ug/kg,2
+sheep,meat,Vitamin B-Complex,vitamin,Fungal infection,4.14,g,2,7,Drop in egg production,0.0,ug/kg,1
+poultry,egg,Vitamin premix,vitamin,Viral infection,9.84,litre,1,14,Skin lesions,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Protozoal infection,16.29,ml,2,7,Reduced production,0.0,ug/kg,2
+pig,meat,Electrolytes,vitamin,Fungal infection,1.0,tablet,3,5,Reduced production,0.0,ug/kg,1
+cattle,milk,Vitamin B-Complex,vitamin,Fungal infection,484.16,mg,1,3,Reduced production,0.0,ug/kg,0
+goat,meat,Electrolytes,vitamin,Nutritional deficiency,10.0,tablet,3,3,Skin lesions,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Fungal infection,20.75,g,3,7,Diarrhea,0.0,ug/kg,0
+poultry,egg,Vitamin premix,vitamin,Fungal infection,2.0,sachet,1,21,Skin lesions,0.0,ug/kg,3
+goat,meat,Vitamin B-Complex,vitamin,Poor hygiene,35.91,g,2,3,Fever,0.0,ug/kg,3
+poultry,egg,Electrolytes,vitamin,Secondary bacterial infection,5.2,litre,1,14,Fever,0.0,ug/kg,0
+cattle,meat,Calcium-Borogluconate,vitamin,Viral infection,41.47,g,3,5,Diarrhea,0.0,ug/kg,3
+poultry,egg,Vitamin premix,vitamin,Protozoal infection,2.54,litre,2,21,Drop in egg production,0.0,ug/kg,2
+goat,meat,Vitamin B-Complex,vitamin,Protozoal infection,2.0,tablet,1,7,Lameness,0.0,ug/kg,0
+sheep,meat,Electrolytes,vitamin,Viral infection,2.26,ml,1,21,Drop in egg production,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Secondary bacterial infection,42.47,mg,2,5,Drop in egg production,0.0,ug/kg,3
+poultry,egg,Vitamin premix,vitamin,Poor hygiene,7.64,litre,2,5,Cough,0.0,ug/kg,2
+goat,meat,Vitamin B-Complex,vitamin,Bacterial infection,32.87,ml,1,7,Lameness,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Contaminated feed/water,236.87,mg,2,3,Skin lesions,0.0,ug/kg,2
+cattle,milk,Vitamin E,vitamin,Poor hygiene,47.96,ml,2,14,Reduced production,0.0,ug/kg,3
+poultry,egg,Electrolytes,vitamin,Poor hygiene,35.66,g,1,3,Drop in egg production,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Protozoal infection,2.15,kg,2,14,Drop in egg production,0.0,ug/kg,3
+poultry,egg,Vitamin premix,vitamin,Parasitic infestation,1.0,sachet,2,21,Wounds,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Secondary bacterial infection,18.89,ml,2,5,Poor weight gain,0.0,ug/kg,3
+pig,meat,Electrolytes,vitamin,Viral infection,292.53,mg,2,21,Diarrhea,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Nutritional deficiency,10.0,sachet,3,14,Poor weight gain,0.0,ug/kg,1
+poultry,egg,Electrolytes,vitamin,Contaminated feed/water,1.0,sachet,1,5,Reduced production,0.0,ug/kg,3
+goat,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,653.71,mg,2,14,Fever,0.0,ug/kg,0
+cattle,milk,Calcium-Borogluconate,vitamin,Secondary bacterial infection,7.69,g,1,3,Skin lesions,0.0,ug/kg,1
+pig,meat,Vitamin B-Complex,vitamin,Parasitic infestation,4.45,kg,1,21,Wounds,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Protozoal infection,41.81,ml,3,14,Skin lesions,0.0,ug/kg,2
+poultry,meat,Vitamin premix,vitamin,Bacterial infection,3.87,kg,1,3,Poor weight gain,0.0,ug/kg,2
+goat,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,656.6,mg,2,5,Wounds,0.0,ug/kg,0
+pig,meat,Electrolytes,vitamin,Nutritional deficiency,808.84,mg,1,21,Poor weight gain,0.0,ug/kg,1
+cattle,milk,Vitamin B-Complex,vitamin,Protozoal infection,40.07,g,2,3,Skin lesions,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Bacterial infection,1.26,g,1,14,Drop in egg production,0.0,ug/kg,0
+poultry,meat,Electrolytes,vitamin,Contaminated feed/water,43.3,g,1,5,Wounds,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Parasitic infestation,0.5,tablet,3,21,Wounds,0.0,ug/kg,1
+pig,meat,Vitamin B-Complex,vitamin,Bacterial infection,24.51,ml,1,21,Respiratory distress,0.0,ug/kg,2
+cattle,meat,Vitamin B-Complex,vitamin,Viral infection,300.16,mg,2,3,Wounds,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Viral infection,4.51,kg,2,7,Wounds,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Mycoplasma infection,385.25,mg,1,21,Poor weight gain,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Viral infection,5.0,tablet,2,3,Respiratory distress,0.0,ug/kg,3
+cattle,milk,Vitamin E,vitamin,Parasitic infestation,24.61,ml,2,3,Poor weight gain,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Fungal infection,2.0,tablet,3,14,Wounds,0.0,ug/kg,3
+pig,meat,Vitamin E,vitamin,Bacterial infection,14.32,g,1,14,Respiratory distress,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Parasitic infestation,31.35,g,2,21,Drop in egg production,0.0,ug/kg,3
+cattle,milk,Electrolytes,vitamin,Mycoplasma infection,20.13,ml,3,3,Poor weight gain,0.0,ug/kg,1
+poultry,egg,Vitamin premix,vitamin,Nutritional deficiency,4.12,litre,2,3,Drop in egg production,0.0,ug/kg,1
+pig,meat,Vitamin E,vitamin,Bacterial infection,10.42,g,1,3,Respiratory distress,0.0,ug/kg,3
+cattle,meat,Calcium-Borogluconate,vitamin,Secondary bacterial infection,3.19,ml,3,14,Poor weight gain,0.0,ug/kg,0
+cattle,milk,Electrolytes,vitamin,Protozoal infection,10.0,tablet,3,5,Reduced production,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Poor hygiene,22.66,g,1,21,Wounds,0.0,ug/kg,0
+sheep,meat,Electrolytes,vitamin,Poor hygiene,187.02,mg,2,5,Drop in egg production,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Mycoplasma infection,10.0,tablet,3,7,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Vitamin premix,vitamin,Contaminated feed/water,2.52,litre,3,5,Lameness,0.0,ug/kg,1
+pig,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,2.41,kg,2,3,Diarrhea,0.0,ug/kg,2
+pig,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,933.09,mg,1,7,Poor weight gain,0.0,ug/kg,3
+goat,meat,Vitamin B-Complex,vitamin,Bacterial infection,18.75,ml,2,7,Drop in egg production,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Fungal infection,20.27,ml,2,7,Diarrhea,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Parasitic infestation,24.22,g,1,21,Reduced production,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Protozoal infection,28.84,g,2,3,Skin lesions,0.0,ug/kg,0
+poultry,egg,Vitamin premix,vitamin,Bacterial infection,22.09,g,3,21,Skin lesions,0.0,ug/kg,0
+goat,meat,Vitamin B-Complex,vitamin,Bacterial infection,2.0,tablet,1,7,Reduced production,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,13.82,g,1,5,Wounds,0.0,ug/kg,0
+pig,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,9.38,g,2,14,Fever,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Secondary bacterial infection,20.92,g,1,21,Lameness,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Protozoal infection,0.91,litre,1,7,Poor weight gain,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,25.9,g,2,14,Respiratory distress,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Secondary bacterial infection,915.75,mg,3,14,Drop in egg production,0.0,ug/kg,0
+sheep,meat,Vitamin B-Complex,vitamin,Protozoal infection,17.76,g,3,5,Lameness,0.0,ug/kg,0
+sheep,meat,Electrolytes,vitamin,Bacterial infection,0.5,tablet,2,21,Poor weight gain,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Fungal infection,44.09,ml,2,7,Lameness,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Mycoplasma infection,25.1,ml,1,21,Respiratory distress,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Poor hygiene,0.5,tablet,2,21,Diarrhea,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Parasitic infestation,37.62,ml,1,14,Reduced production,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Contaminated feed/water,9.78,ml,3,21,Wounds,0.0,ug/kg,3
+poultry,meat,Vitamin premix,vitamin,Nutritional deficiency,5.0,sachet,3,7,Skin lesions,0.0,ug/kg,3
+poultry,meat,Electrolytes,vitamin,Protozoal infection,10.0,sachet,1,21,Reduced production,0.0,ug/kg,0
+pig,meat,Vitamin B-Complex,vitamin,Fungal infection,5.0,tablet,1,21,Cough,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Contaminated feed/water,931.01,mg,2,21,Diarrhea,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Fungal infection,259.93,mg,2,7,Fever,0.0,ug/kg,3
+sheep,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,2.0,tablet,2,7,Reduced production,0.0,ug/kg,1
+cattle,milk,Vitamin B-Complex,vitamin,Mycoplasma infection,12.35,ml,2,14,Diarrhea,0.0,ug/kg,1
+poultry,egg,Vitamin premix,vitamin,Protozoal infection,1.0,sachet,2,3,Poor weight gain,0.0,ug/kg,0
+pig,meat,Vitamin B-Complex,vitamin,Poor hygiene,44.7,g,2,5,Respiratory distress,0.0,ug/kg,0
+cattle,meat,Calcium-Borogluconate,vitamin,Bacterial infection,10.0,tablet,1,7,Respiratory distress,0.0,ug/kg,3
+cattle,milk,Calcium-Borogluconate,vitamin,Nutritional deficiency,0.5,tablet,2,14,Diarrhea,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Nutritional deficiency,45.41,ml,2,3,Diarrhea,0.0,ug/kg,3
+pig,meat,Vitamin E,vitamin,Contaminated feed/water,10.0,tablet,2,5,Drop in egg production,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,95.7,mg,3,14,Fever,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Poor hygiene,32.74,ml,1,21,Diarrhea,0.0,ug/kg,0
+cattle,meat,Electrolytes,vitamin,Nutritional deficiency,873.95,mg,1,7,Respiratory distress,0.0,ug/kg,0
+pig,meat,Vitamin E,vitamin,Poor hygiene,10.0,tablet,1,21,Diarrhea,0.0,ug/kg,1
+poultry,meat,Electrolytes,vitamin,Protozoal infection,9.86,litre,1,14,Drop in egg production,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,44.86,ml,1,21,Reduced production,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Protozoal infection,21.5,ml,1,14,Diarrhea,0.0,ug/kg,0
+cattle,meat,Calcium-Borogluconate,vitamin,Contaminated feed/water,10.0,tablet,2,5,Cough,0.0,ug/kg,2
+cattle,milk,Electrolytes,vitamin,Poor hygiene,40.45,ml,2,3,Drop in egg production,0.0,ug/kg,0
+poultry,meat,Electrolytes,vitamin,Mycoplasma infection,1.22,kg,1,7,Drop in egg production,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Mycoplasma infection,0.5,tablet,2,7,Lameness,0.0,ug/kg,0
+pig,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,27.74,g,2,3,Poor weight gain,0.0,ug/kg,0
+sheep,meat,Vitamin B-Complex,vitamin,Bacterial infection,488.68,mg,2,3,Wounds,0.0,ug/kg,3
+pig,meat,Vitamin E,vitamin,Nutritional deficiency,40.9,ml,2,14,Skin lesions,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Bacterial infection,6.24,g,2,3,Fever,0.0,ug/kg,0
+sheep,meat,Electrolytes,vitamin,Bacterial infection,13.26,g,1,3,Diarrhea,0.0,ug/kg,0
+cattle,meat,Vitamin E,vitamin,Nutritional deficiency,2.0,tablet,2,5,Cough,0.0,ug/kg,0
+goat,meat,Electrolytes,vitamin,Protozoal infection,28.57,ml,1,14,Respiratory distress,0.0,ug/kg,0
+poultry,egg,Vitamin premix,vitamin,Secondary bacterial infection,1.86,kg,2,3,Drop in egg production,0.0,ug/kg,1
+cattle,meat,Calcium-Borogluconate,vitamin,Secondary bacterial infection,0.5,tablet,3,21,Drop in egg production,0.0,ug/kg,0
+pig,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,3.97,g,1,21,Reduced production,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Bacterial infection,25.1,ml,2,21,Reduced production,0.0,ug/kg,1
+poultry,egg,Electrolytes,vitamin,Secondary bacterial infection,2.12,litre,3,3,Poor weight gain,0.0,ug/kg,3
+pig,meat,Electrolytes,vitamin,Contaminated feed/water,4.96,kg,1,7,Drop in egg production,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Bacterial infection,5.0,tablet,3,3,Skin lesions,0.0,ug/kg,2
+pig,meat,Vitamin B-Complex,vitamin,Protozoal infection,42.12,g,1,14,Reduced production,0.0,ug/kg,0
+sheep,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,33.03,ml,1,21,Respiratory distress,0.0,ug/kg,0
+goat,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,1.0,tablet,1,7,Drop in egg production,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Secondary bacterial infection,37.71,g,1,7,Lameness,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Viral infection,5.34,ml,2,7,Fever,0.0,ug/kg,2
+poultry,egg,Vitamin premix,vitamin,Fungal infection,38.89,g,2,14,Poor weight gain,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Mycoplasma infection,8.44,ml,1,5,Drop in egg production,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,24.53,ml,1,14,Lameness,0.0,ug/kg,1
+pig,meat,Electrolytes,vitamin,Viral infection,10.81,g,1,3,Drop in egg production,0.0,ug/kg,2
+pig,meat,Electrolytes,vitamin,Poor hygiene,49.34,g,2,21,Reduced production,0.0,ug/kg,3
+sheep,meat,Electrolytes,vitamin,Secondary bacterial infection,14.01,ml,1,3,Cough,0.0,ug/kg,0
+sheep,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,6.46,g,1,5,Drop in egg production,0.0,ug/kg,2
+goat,meat,Electrolytes,vitamin,Contaminated feed/water,127.21,mg,2,7,Respiratory distress,0.0,ug/kg,2
+pig,meat,Vitamin E,vitamin,Poor hygiene,10.0,tablet,3,21,Wounds,0.0,ug/kg,0
+poultry,meat,Electrolytes,vitamin,Parasitic infestation,4.29,kg,2,21,Fever,0.0,ug/kg,3
+cattle,meat,Vitamin E,vitamin,Fungal infection,22.59,ml,1,3,Cough,0.0,ug/kg,2
+cattle,milk,Vitamin B-Complex,vitamin,Nutritional deficiency,162.8,mg,2,21,Diarrhea,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Protozoal infection,9.5,g,1,21,Reduced production,0.0,ug/kg,3
+poultry,egg,Electrolytes,vitamin,Secondary bacterial infection,34.7,g,3,5,Wounds,0.0,ug/kg,2
+pig,meat,Electrolytes,vitamin,Parasitic infestation,2.0,tablet,1,3,Poor weight gain,0.0,ug/kg,0
+cattle,meat,Vitamin E,vitamin,Nutritional deficiency,37.76,g,2,5,Skin lesions,0.0,ug/kg,0
+cattle,meat,Vitamin B-Complex,vitamin,Poor hygiene,2.0,tablet,3,21,Diarrhea,0.0,ug/kg,2
+cattle,milk,Vitamin E,vitamin,Poor hygiene,34.67,ml,3,5,Reduced production,0.0,ug/kg,3
+poultry,meat,Vitamin premix,vitamin,Mycoplasma infection,21.19,g,2,3,Wounds,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Poor hygiene,5.0,tablet,1,21,Skin lesions,0.0,ug/kg,0
+poultry,egg,Electrolytes,vitamin,Protozoal infection,1.0,sachet,3,21,Respiratory distress,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Parasitic infestation,27.16,ml,3,14,Poor weight gain,0.0,ug/kg,2
+pig,meat,Vitamin B-Complex,vitamin,Parasitic infestation,5.0,tablet,1,3,Fever,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Viral infection,31.66,g,3,21,Cough,0.0,ug/kg,2
+goat,meat,Vitamin B-Complex,vitamin,Fungal infection,1.11,g,1,14,Lameness,0.0,ug/kg,3
+pig,meat,Electrolytes,vitamin,Parasitic infestation,1.1,kg,2,14,Skin lesions,0.0,ug/kg,0
+cattle,meat,Vitamin E,vitamin,Fungal infection,323.05,mg,1,5,Skin lesions,0.0,ug/kg,0
+cattle,meat,Electrolytes,vitamin,Viral infection,2.0,tablet,1,3,Skin lesions,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,8.38,g,2,14,Poor weight gain,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Fungal infection,471.71,mg,1,3,Respiratory distress,0.0,ug/kg,1
+poultry,egg,Electrolytes,vitamin,Nutritional deficiency,3.14,kg,2,14,Drop in egg production,0.0,ug/kg,2
+pig,meat,Vitamin E,vitamin,Mycoplasma infection,31.71,g,1,3,Drop in egg production,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,731.9,mg,2,5,Reduced production,0.0,ug/kg,3
+goat,meat,Electrolytes,vitamin,Bacterial infection,1.0,tablet,1,5,Skin lesions,0.0,ug/kg,0
+poultry,egg,Electrolytes,vitamin,Poor hygiene,6.2,g,1,21,Respiratory distress,0.0,ug/kg,3
+poultry,egg,Vitamin premix,vitamin,Contaminated feed/water,28.79,g,3,7,Lameness,0.0,ug/kg,3
+poultry,meat,Electrolytes,vitamin,Protozoal infection,3.2,kg,3,14,Poor weight gain,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Fungal infection,0.5,tablet,1,5,Poor weight gain,0.0,ug/kg,3
+cattle,meat,Vitamin E,vitamin,Mycoplasma infection,47.98,ml,1,14,Cough,0.0,ug/kg,1
+cattle,meat,Vitamin E,vitamin,Fungal infection,5.88,ml,2,21,Diarrhea,0.0,ug/kg,1
+sheep,meat,Electrolytes,vitamin,Viral infection,15.17,g,2,7,Wounds,0.0,ug/kg,1
+poultry,egg,Vitamin premix,vitamin,Contaminated feed/water,3.92,kg,3,14,Drop in egg production,0.0,ug/kg,0
+poultry,meat,Electrolytes,vitamin,Bacterial infection,37.72,g,2,14,Wounds,0.0,ug/kg,0
+poultry,egg,Vitamin premix,vitamin,Nutritional deficiency,3.91,kg,3,21,Skin lesions,0.0,ug/kg,3
+sheep,meat,Vitamin B-Complex,vitamin,Secondary bacterial infection,821.74,mg,2,7,Poor weight gain,0.0,ug/kg,1
+cattle,meat,Calcium-Borogluconate,vitamin,Poor hygiene,4.07,g,2,21,Respiratory distress,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Poor hygiene,10.2,g,2,3,Skin lesions,0.0,ug/kg,0
+cattle,meat,Calcium-Borogluconate,vitamin,Nutritional deficiency,0.73,g,3,21,Poor weight gain,0.0,ug/kg,2
+cattle,milk,Calcium-Borogluconate,vitamin,Protozoal infection,563.06,mg,2,5,Lameness,0.0,ug/kg,2
+sheep,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,891.02,mg,2,3,Respiratory distress,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Protozoal infection,19.67,g,1,5,Wounds,0.0,ug/kg,1
+sheep,meat,Vitamin B-Complex,vitamin,Viral infection,43.03,g,1,21,Skin lesions,0.0,ug/kg,3
+cattle,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,27.53,g,2,5,Diarrhea,0.0,ug/kg,3
+pig,meat,Vitamin B-Complex,vitamin,Nutritional deficiency,818.93,mg,2,21,Poor weight gain,0.0,ug/kg,2
+poultry,egg,Vitamin premix,vitamin,Protozoal infection,2.0,sachet,2,7,Cough,0.0,ug/kg,2
+sheep,meat,Vitamin B-Complex,vitamin,Poor hygiene,23.43,ml,1,5,Respiratory distress,0.0,ug/kg,2
+pig,meat,Vitamin E,vitamin,Bacterial infection,13.28,ml,1,14,Diarrhea,0.0,ug/kg,2
+cattle,milk,Calcium-Borogluconate,vitamin,Bacterial infection,24.42,g,1,21,Reduced production,0.0,ug/kg,1
+poultry,egg,Electrolytes,vitamin,Fungal infection,7.07,g,2,5,Drop in egg production,0.0,ug/kg,2
+poultry,egg,Electrolytes,vitamin,Viral infection,4.25,kg,1,3,Respiratory distress,0.0,ug/kg,2
+cattle,milk,Electrolytes,vitamin,Parasitic infestation,14.53,g,1,7,Reduced production,0.0,ug/kg,2
+cattle,meat,Vitamin B-Complex,vitamin,Fungal infection,274.61,mg,2,14,Skin lesions,0.0,ug/kg,2
+sheep,meat,Electrolytes,vitamin,Protozoal infection,1.0,tablet,2,5,Drop in egg production,0.0,ug/kg,2
+goat,meat,Vitamin B-Complex,vitamin,Bacterial infection,36.32,g,1,3,Reduced production,0.0,ug/kg,1
+pig,meat,Vitamin E,vitamin,Nutritional deficiency,2.07,kg,2,14,Diarrhea,0.0,ug/kg,0
+cattle,milk,Vitamin B-Complex,vitamin,Bacterial infection,796.98,mg,2,14,Respiratory distress,0.0,ug/kg,1
+pig,meat,Vitamin E,vitamin,Nutritional deficiency,3.57,g,1,5,Lameness,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Mycoplasma infection,10.0,tablet,1,5,Drop in egg production,0.0,ug/kg,3
+poultry,meat,Electrolytes,vitamin,Viral infection,3.7,g,3,7,Cough,0.0,ug/kg,0
+poultry,egg,Vitamin premix,vitamin,Protozoal infection,1.1,kg,1,7,Poor weight gain,0.0,ug/kg,1
+goat,meat,Electrolytes,vitamin,Bacterial infection,32.16,ml,1,21,Diarrhea,0.0,ug/kg,0
+poultry,egg,Electrolytes,vitamin,Contaminated feed/water,48.71,g,2,3,Cough,0.0,ug/kg,2
+sheep,meat,Vitamin B-Complex,vitamin,Mycoplasma infection,257.81,mg,3,14,Lameness,0.0,ug/kg,1
+goat,meat,Vitamin B-Complex,vitamin,Fungal infection,10.0,tablet,1,7,Fever,0.0,ug/kg,2
+goat,meat,PPR Vaccine,vaccine,Poor hygiene,150.39,mg,1,1,Respiratory distress,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Poor hygiene,461.24,mg,1,1,Cough,0.0,ug/kg,0
+poultry,meat,Lasota,vaccine,Contaminated feed/water,30.01,g,2,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,BQ Vaccine,vaccine,Protozoal infection,47.78,g,3,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,Brucellosis Vaccine,vaccine,Contaminated feed/water,45.13,ml,1,1,Wounds,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Secondary bacterial infection,49.74,g,3,1,Poor weight gain,0.0,ug/kg,0
+poultry,meat,Fowl Pox Vaccine,vaccine,Viral infection,42.41,g,2,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Viral infection,0.5,tablet,2,1,Wounds,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Nutritional deficiency,40.99,ml,2,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Nutritional deficiency,657.29,mg,2,1,Diarrhea,0.0,ug/kg,0
+cattle,milk,FMD Vaccine,vaccine,Viral infection,3.99,ml,2,1,Reduced production,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Mycoplasma infection,67.94,mg,2,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Fowl Pox Vaccine,vaccine,Secondary bacterial infection,45.83,g,1,1,Diarrhea,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Fungal infection,3.31,g,2,1,Wounds,0.0,ug/kg,0
+cattle,meat,Brucellosis Vaccine,vaccine,Mycoplasma infection,1.0,tablet,2,1,Skin lesions,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Bacterial infection,0.5,tablet,2,1,Lameness,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Parasitic infestation,6.48,ml,3,1,Diarrhea,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Protozoal infection,32.66,ml,2,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,IBD Vaccine,vaccine,Protozoal infection,5.0,sachet,2,1,Fever,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Parasitic infestation,1.0,tablet,1,1,Diarrhea,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Viral infection,0.95,ml,1,1,Lameness,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Mycoplasma infection,11.3,ml,1,1,Respiratory distress,0.0,ug/kg,0
+poultry,egg,ND Vaccine,vaccine,Fungal infection,2.43,kg,2,1,Reduced production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Bacterial infection,1.0,tablet,3,1,Drop in egg production,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Protozoal infection,12.09,g,1,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Poor hygiene,0.5,tablet,3,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,HS Vaccine,vaccine,Fungal infection,5.0,tablet,1,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Mycoplasma infection,2.83,kg,3,1,Skin lesions,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Parasitic infestation,23.66,ml,1,1,Reduced production,0.0,ug/kg,0
+cattle,milk,BQ Vaccine,vaccine,Mycoplasma infection,33.7,ml,1,1,Reduced production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Poor hygiene,2.0,tablet,2,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Viral infection,386.2,mg,1,1,Reduced production,0.0,ug/kg,0
+poultry,meat,Marek's Disease Vaccine,vaccine,Viral infection,3.37,litre,2,1,Drop in egg production,0.0,ug/kg,0
+cattle,meat,FMD Vaccine,vaccine,Protozoal infection,35.87,ml,2,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Viral infection,37.43,g,3,1,Lameness,0.0,ug/kg,0
+poultry,egg,Fowl Pox Vaccine,vaccine,Parasitic infestation,2.81,kg,2,1,Cough,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Protozoal infection,0.5,tablet,1,1,Lameness,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Contaminated feed/water,298.65,mg,1,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Viral infection,32.62,ml,2,1,Cough,0.0,ug/kg,0
+poultry,meat,Marek's Disease Vaccine,vaccine,Fungal infection,1.87,kg,2,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Nutritional deficiency,3.75,g,2,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Parasitic infestation,37.45,ml,1,1,Drop in egg production,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Nutritional deficiency,863.71,mg,1,1,Diarrhea,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Bacterial infection,2.0,tablet,1,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Contaminated feed/water,1.0,tablet,2,1,Skin lesions,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Poor hygiene,3.53,litre,1,1,Drop in egg production,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,41.59,ml,2,1,Lameness,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Mycoplasma infection,10.2,g,3,1,Lameness,0.0,ug/kg,0
+poultry,egg,Marek's Disease Vaccine,vaccine,Protozoal infection,2.0,sachet,1,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Secondary bacterial infection,666.39,mg,2,1,Cough,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Parasitic infestation,860.04,mg,1,1,Wounds,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Nutritional deficiency,821.19,mg,1,1,Fever,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Mycoplasma infection,17.35,g,2,1,Diarrhea,0.0,ug/kg,0
+poultry,meat,Lasota,vaccine,Poor hygiene,13.43,g,2,1,Diarrhea,0.0,ug/kg,0
+cattle,meat,Brucellosis Vaccine,vaccine,Secondary bacterial infection,37.52,ml,3,1,Fever,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Bacterial infection,1.0,tablet,2,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Protozoal infection,42.77,g,3,1,Fever,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Contaminated feed/water,15.26,g,3,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Parasitic infestation,852.27,mg,2,1,Reduced production,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Secondary bacterial infection,1.41,ml,1,1,Wounds,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Nutritional deficiency,37.24,ml,3,1,Diarrhea,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Mycoplasma infection,341.23,mg,2,1,Fever,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Poor hygiene,210.36,mg,3,1,Fever,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Fungal infection,2.84,kg,2,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,Theileria Vaccine,vaccine,Parasitic infestation,10.0,tablet,1,1,Lameness,0.0,ug/kg,0
+cattle,milk,FMD Vaccine,vaccine,Viral infection,22.63,g,2,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Fowl Pox Vaccine,vaccine,Secondary bacterial infection,5.0,sachet,1,1,Lameness,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Poor hygiene,31.5,g,2,1,Fever,0.0,ug/kg,0
+cattle,milk,HS Vaccine,vaccine,Bacterial infection,11.01,ml,2,1,Wounds,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Bacterial infection,604.02,mg,1,1,Wounds,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Protozoal infection,1.0,tablet,1,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Poor hygiene,2.0,tablet,1,1,Drop in egg production,0.0,ug/kg,0
+poultry,egg,IBD Vaccine,vaccine,Poor hygiene,8.98,litre,1,1,Respiratory distress,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Bacterial infection,2.53,g,2,1,Poor weight gain,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Mycoplasma infection,5.0,tablet,3,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Fungal infection,33.91,g,2,1,Reduced production,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Bacterial infection,45.62,g,2,1,Reduced production,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Protozoal infection,870.38,mg,2,1,Fever,0.0,ug/kg,0
+poultry,meat,IBD Vaccine,vaccine,Secondary bacterial infection,15.28,g,2,1,Wounds,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Parasitic infestation,27.76,ml,2,1,Cough,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Contaminated feed/water,1.75,litre,1,1,Diarrhea,0.0,ug/kg,0
+cattle,milk,BQ Vaccine,vaccine,Secondary bacterial infection,16.1,g,2,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Mycoplasma infection,27.05,g,1,1,Drop in egg production,0.0,ug/kg,0
+poultry,egg,ND Vaccine,vaccine,Secondary bacterial infection,41.99,g,2,1,Respiratory distress,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Contaminated feed/water,1.0,tablet,2,1,Fever,0.0,ug/kg,0
+cattle,milk,FMD Vaccine,vaccine,Poor hygiene,10.0,tablet,2,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Nutritional deficiency,757.43,mg,1,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,HS Vaccine,vaccine,Viral infection,10.0,tablet,1,1,Lameness,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Viral infection,15.06,ml,2,1,Lameness,0.0,ug/kg,0
+poultry,meat,Lasota,vaccine,Mycoplasma infection,1.77,kg,2,1,Drop in egg production,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Nutritional deficiency,1.0,tablet,1,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Poor hygiene,718.82,mg,1,1,Skin lesions,0.0,ug/kg,0
+poultry,egg,Marek's Disease Vaccine,vaccine,Nutritional deficiency,3.74,kg,1,1,Reduced production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Protozoal infection,2.15,kg,1,1,Drop in egg production,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Parasitic infestation,2.61,kg,1,1,Fever,0.0,ug/kg,0
+cattle,milk,BQ Vaccine,vaccine,Secondary bacterial infection,2.0,tablet,1,1,Reduced production,0.0,ug/kg,0
+cattle,meat,Theileria Vaccine,vaccine,Protozoal infection,326.63,mg,1,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Bacterial infection,131.74,mg,1,1,Skin lesions,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Fungal infection,20.32,g,1,1,Reduced production,0.0,ug/kg,0
+cattle,milk,FMD Vaccine,vaccine,Viral infection,30.57,ml,1,1,Wounds,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Parasitic infestation,2.58,kg,3,1,Lameness,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Mycoplasma infection,26.11,g,1,1,Skin lesions,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Parasitic infestation,2.08,g,1,1,Diarrhea,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Nutritional deficiency,20.91,g,2,1,Diarrhea,0.0,ug/kg,0
+poultry,meat,IB Vaccine,vaccine,Parasitic infestation,22.93,g,2,1,Lameness,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Bacterial infection,590.9,mg,1,1,Wounds,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Bacterial infection,10.0,tablet,3,1,Poor weight gain,0.0,ug/kg,0
+poultry,meat,Lasota,vaccine,Mycoplasma infection,4.44,kg,2,1,Lameness,0.0,ug/kg,0
+cattle,milk,Theileria Vaccine,vaccine,Mycoplasma infection,28.72,g,2,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Protozoal infection,351.47,mg,3,1,Poor weight gain,0.0,ug/kg,0
+poultry,meat,Lasota,vaccine,Fungal infection,3.99,kg,1,1,Cough,0.0,ug/kg,0
+poultry,meat,Fowl Pox Vaccine,vaccine,Secondary bacterial infection,2.0,sachet,1,1,Diarrhea,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Protozoal infection,19.93,g,2,1,Respiratory distress,0.0,ug/kg,0
+cattle,milk,BQ Vaccine,vaccine,Nutritional deficiency,9.31,ml,1,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,BQ Vaccine,vaccine,Protozoal infection,41.48,ml,2,1,Drop in egg production,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Secondary bacterial infection,2.0,tablet,3,1,Cough,0.0,ug/kg,0
+cattle,meat,Theileria Vaccine,vaccine,Protozoal infection,526.56,mg,1,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Mycoplasma infection,737.46,mg,2,1,Respiratory distress,0.0,ug/kg,0
+poultry,meat,Fowl Pox Vaccine,vaccine,Viral infection,6.73,litre,1,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Lasota,vaccine,Nutritional deficiency,5.0,sachet,3,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Protozoal infection,825.1,mg,1,1,Lameness,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Parasitic infestation,0.74,kg,2,1,Fever,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Contaminated feed/water,24.81,ml,1,1,Wounds,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Secondary bacterial infection,15.44,ml,1,1,Skin lesions,0.0,ug/kg,0
+poultry,meat,IBD Vaccine,vaccine,Mycoplasma infection,7.74,litre,3,1,Reduced production,0.0,ug/kg,0
+cattle,milk,Theileria Vaccine,vaccine,Nutritional deficiency,2.69,g,2,1,Cough,0.0,ug/kg,0
+cattle,meat,Theileria Vaccine,vaccine,Fungal infection,31.44,g,3,1,Cough,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Fungal infection,43.23,ml,2,1,Fever,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,0.5,tablet,1,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Mycoplasma infection,665.76,mg,3,1,Skin lesions,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,0.5,tablet,1,1,Cough,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Contaminated feed/water,23.13,g,2,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Mycoplasma infection,21.6,ml,2,1,Skin lesions,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Mycoplasma infection,46.1,g,1,1,Cough,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Viral infection,1.0,tablet,1,1,Fever,0.0,ug/kg,0
+cattle,meat,BQ Vaccine,vaccine,Protozoal infection,41.11,ml,2,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Nutritional deficiency,41.64,mg,1,1,Wounds,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Parasitic infestation,5.0,tablet,2,1,Diarrhea,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Nutritional deficiency,951.21,mg,2,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Viral infection,873.75,mg,1,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Bacterial infection,20.03,g,3,1,Poor weight gain,0.0,ug/kg,0
+cattle,meat,BQ Vaccine,vaccine,Nutritional deficiency,0.5,tablet,1,1,Fever,0.0,ug/kg,0
+cattle,meat,FMD Vaccine,vaccine,Protozoal infection,10.0,tablet,1,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Marek's Disease Vaccine,vaccine,Fungal infection,4.32,kg,1,1,Drop in egg production,0.0,ug/kg,0
+poultry,meat,IBD Vaccine,vaccine,Parasitic infestation,8.41,litre,1,1,Reduced production,0.0,ug/kg,0
+poultry,meat,IB Vaccine,vaccine,Nutritional deficiency,2.0,sachet,2,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Protozoal infection,4.25,g,1,1,Respiratory distress,0.0,ug/kg,0
+poultry,meat,Fowl Pox Vaccine,vaccine,Bacterial infection,15.35,g,2,1,Reduced production,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Fungal infection,1.0,tablet,1,1,Wounds,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,5.88,g,2,1,Fever,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Contaminated feed/water,46.33,ml,2,1,Respiratory distress,0.0,ug/kg,0
+poultry,meat,IB Vaccine,vaccine,Bacterial infection,0.64,kg,2,1,Diarrhea,0.0,ug/kg,0
+cattle,meat,Theileria Vaccine,vaccine,Nutritional deficiency,5.0,tablet,3,1,Wounds,0.0,ug/kg,0
+cattle,milk,BQ Vaccine,vaccine,Nutritional deficiency,5.44,ml,3,1,Fever,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Fungal infection,43.96,g,1,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Mycoplasma infection,4.74,kg,3,1,Skin lesions,0.0,ug/kg,0
+poultry,egg,ND Vaccine,vaccine,Secondary bacterial infection,0.1,kg,3,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Viral infection,1.0,tablet,2,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Viral infection,5.0,sachet,1,1,Diarrhea,0.0,ug/kg,0
+poultry,egg,Lasota,vaccine,Poor hygiene,1.84,litre,1,1,Lameness,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,43.42,ml,1,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Parasitic infestation,1.0,tablet,2,1,Reduced production,0.0,ug/kg,0
+cattle,milk,Theileria Vaccine,vaccine,Fungal infection,22.41,g,3,1,Drop in egg production,0.0,ug/kg,0
+cattle,milk,FMD Vaccine,vaccine,Bacterial infection,3.93,ml,2,1,Cough,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Protozoal infection,23.91,ml,1,1,Wounds,0.0,ug/kg,0
+poultry,meat,IB Vaccine,vaccine,Viral infection,2.54,litre,3,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Mycoplasma infection,0.5,tablet,2,1,Fever,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,33.5,ml,2,1,Skin lesions,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Fungal infection,1.0,tablet,2,1,Fever,0.0,ug/kg,0
+poultry,egg,Marek's Disease Vaccine,vaccine,Secondary bacterial infection,1.25,litre,2,1,Drop in egg production,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Protozoal infection,13.84,g,2,1,Fever,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Secondary bacterial infection,0.5,tablet,3,1,Diarrhea,0.0,ug/kg,0
+cattle,milk,Brucellosis Vaccine,vaccine,Mycoplasma infection,22.87,g,3,1,Skin lesions,0.0,ug/kg,0
+poultry,meat,IBD Vaccine,vaccine,Nutritional deficiency,22.86,g,2,1,Diarrhea,0.0,ug/kg,0
+cattle,meat,Brucellosis Vaccine,vaccine,Viral infection,393.31,mg,2,1,Cough,0.0,ug/kg,0
+poultry,meat,IBD Vaccine,vaccine,Mycoplasma infection,5.04,litre,2,1,Diarrhea,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Secondary bacterial infection,28.72,g,1,1,Respiratory distress,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Mycoplasma infection,53.11,mg,2,1,Fever,0.0,ug/kg,0
+cattle,meat,BQ Vaccine,vaccine,Protozoal infection,5.0,tablet,3,1,Diarrhea,0.0,ug/kg,0
+cattle,meat,Theileria Vaccine,vaccine,Parasitic infestation,14.48,ml,1,1,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Marek's Disease Vaccine,vaccine,Secondary bacterial infection,5.0,sachet,1,1,Reduced production,0.0,ug/kg,0
+poultry,egg,Marek's Disease Vaccine,vaccine,Nutritional deficiency,0.38,kg,1,1,Wounds,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Bacterial infection,24.88,g,2,1,Skin lesions,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Viral infection,1.0,tablet,2,1,Lameness,0.0,ug/kg,0
+cattle,milk,HS Vaccine,vaccine,Bacterial infection,36.19,ml,1,1,Cough,0.0,ug/kg,0
+cattle,meat,Brucellosis Vaccine,vaccine,Contaminated feed/water,752.56,mg,2,1,Wounds,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Fungal infection,5.02,g,2,1,Lameness,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Viral infection,20.66,ml,3,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Fungal infection,37.37,ml,2,1,Fever,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Fungal infection,5.0,sachet,1,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Viral infection,10.0,tablet,1,1,Drop in egg production,0.0,ug/kg,0
+cattle,meat,BQ Vaccine,vaccine,Parasitic infestation,3.97,ml,2,1,Diarrhea,0.0,ug/kg,0
+cattle,meat,Brucellosis Vaccine,vaccine,Parasitic infestation,826.87,mg,1,1,Drop in egg production,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Contaminated feed/water,1.87,litre,3,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Contaminated feed/water,2.0,tablet,1,1,Skin lesions,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Bacterial infection,283.55,mg,3,1,Reduced production,0.0,ug/kg,0
+poultry,egg,IBD Vaccine,vaccine,Viral infection,1.0,sachet,1,1,Reduced production,0.0,ug/kg,0
+poultry,egg,Lasota,vaccine,Nutritional deficiency,2.0,sachet,1,1,Cough,0.0,ug/kg,0
+poultry,meat,ND Vaccine,vaccine,Bacterial infection,4.95,litre,3,1,Poor weight gain,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Bacterial infection,29.0,g,1,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Bacterial infection,855.06,mg,3,1,Fever,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Protozoal infection,224.99,mg,2,1,Cough,0.0,ug/kg,0
+cattle,milk,BQ Vaccine,vaccine,Protozoal infection,40.7,ml,3,1,Fever,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Parasitic infestation,35.41,ml,1,1,Lameness,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Fungal infection,46.06,ml,3,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Parasitic infestation,5.0,tablet,3,1,Skin lesions,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Secondary bacterial infection,39.39,g,3,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Nutritional deficiency,1.0,tablet,2,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Mycoplasma infection,15.19,ml,1,1,Lameness,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Mycoplasma infection,2.0,tablet,2,1,Fever,0.0,ug/kg,0
+poultry,meat,Marek's Disease Vaccine,vaccine,Nutritional deficiency,4.37,kg,2,1,Fever,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Secondary bacterial infection,26.92,ml,3,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Protozoal infection,39.27,ml,1,1,Reduced production,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Parasitic infestation,5.47,g,1,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Secondary bacterial infection,45.51,g,1,1,Diarrhea,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Mycoplasma infection,49.93,mg,2,1,Fever,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Viral infection,897.52,mg,1,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Protozoal infection,23.73,g,1,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Secondary bacterial infection,49.48,g,2,1,Respiratory distress,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Viral infection,14.52,g,2,1,Cough,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Poor hygiene,7.7,ml,3,1,Fever,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Parasitic infestation,18.34,g,2,1,Drop in egg production,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Protozoal infection,548.8,mg,1,1,Cough,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Nutritional deficiency,2.0,sachet,1,1,Respiratory distress,0.0,ug/kg,0
+poultry,egg,ND Vaccine,vaccine,Secondary bacterial infection,44.11,g,2,1,Reduced production,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Poor hygiene,5.0,tablet,1,1,Respiratory distress,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Mycoplasma infection,664.21,mg,1,1,Respiratory distress,0.0,ug/kg,0
+poultry,meat,IBD Vaccine,vaccine,Fungal infection,8.06,litre,1,1,Poor weight gain,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Protozoal infection,836.81,mg,1,1,Reduced production,0.0,ug/kg,0
+poultry,egg,IBD Vaccine,vaccine,Parasitic infestation,1.64,litre,1,1,Drop in egg production,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Fungal infection,32.43,g,1,1,Respiratory distress,0.0,ug/kg,0
+cattle,meat,HS Vaccine,vaccine,Bacterial infection,49.6,ml,2,1,Wounds,0.0,ug/kg,0
+poultry,meat,IB Vaccine,vaccine,Parasitic infestation,5.0,sachet,2,1,Drop in egg production,0.0,ug/kg,0
+sheep,meat,Enterotoxemia Vaccine,vaccine,Parasitic infestation,5.0,tablet,1,1,Wounds,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Viral infection,601.3,mg,1,1,Skin lesions,0.0,ug/kg,0
+poultry,egg,IB Vaccine,vaccine,Fungal infection,8.45,litre,2,1,Wounds,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Viral infection,4.5,kg,1,1,Skin lesions,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Nutritional deficiency,8.89,g,1,1,Fever,0.0,ug/kg,0
+cattle,milk,FMD Vaccine,vaccine,Secondary bacterial infection,5.0,tablet,1,1,Diarrhea,0.0,ug/kg,0
+pig,meat,Classical Swine Fever Vaccine,vaccine,Bacterial infection,2.0,tablet,2,1,Drop in egg production,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Bacterial infection,37.8,g,3,1,Skin lesions,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Viral infection,2.4,kg,1,1,Lameness,0.0,ug/kg,0
+goat,meat,PPR Vaccine,vaccine,Nutritional deficiency,24.37,g,3,1,Diarrhea,0.0,ug/kg,0
+sheep,meat,PPR Vaccine,vaccine,Contaminated feed/water,413.39,mg,3,1,Lameness,0.0,ug/kg,0
+pig,meat,FMD Vaccine,vaccine,Secondary bacterial infection,30.16,g,1,1,Wounds,0.0,ug/kg,0
+poultry,meat,Marek's Disease Vaccine,vaccine,Nutritional deficiency,5.0,sachet,1,1,Skin lesions,0.0,ug/kg,0
+cattle,milk,Brucellosis Vaccine,vaccine,Poor hygiene,659.3,mg,1,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Viral infection,40.48,g,2,1,Reduced production,0.0,ug/kg,0
+goat,meat,FMD Vaccine,vaccine,Bacterial infection,0.5,tablet,1,1,Diarrhea,0.0,ug/kg,0
+poultry,meat,Lasota,vaccine,Fungal infection,3.41,kg,3,1,Fever,0.0,ug/kg,0
+cattle,milk,GnRH,hormonal,Fungal infection,5.0,tablet,1,2,Cough,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Protozoal infection,0.49,kg,1,3,Cough,0.0,ug/kg,2
+cattle,milk,PGF2a,hormonal,Nutritional deficiency,10.0,tablet,2,2,Diarrhea,0.0,ug/kg,0
+cattle,milk,PGF2a,hormonal,Fungal infection,433.12,mg,2,1,Skin lesions,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Nutritional deficiency,29.88,g,1,7,Skin lesions,0.0,ug/kg,1
+sheep,meat,Oxytocin,hormonal,Parasitic infestation,30.79,ml,1,10,Poor weight gain,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,2.12,kg,2,1,Diarrhea,0.0,ug/kg,2
+cattle,milk,GnRH,hormonal,Secondary bacterial infection,25.27,ml,2,3,Skin lesions,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Mycoplasma infection,2.0,tablet,1,10,Fever,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Parasitic infestation,9.78,litre,2,7,Wounds,0.0,ug/kg,0
+poultry,meat,Oxytocin,hormonal,Viral infection,7.88,litre,3,4,Cough,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Viral infection,387.98,mg,3,14,Poor weight gain,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Bacterial infection,1.0,tablet,3,7,Diarrhea,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Bacterial infection,29.45,g,1,10,Diarrhea,0.0,ug/kg,3
+goat,meat,PGF2a,hormonal,Viral infection,290.74,mg,2,10,Reduced production,0.0,ug/kg,3
+cattle,milk,Oxytocin,hormonal,Poor hygiene,37.51,g,1,2,Skin lesions,0.0,ug/kg,2
+poultry,meat,Oxytocin,hormonal,Secondary bacterial infection,5.0,sachet,2,10,Drop in egg production,0.0,ug/kg,0
+pig,meat,PGF2a,hormonal,Contaminated feed/water,826.77,mg,1,14,Diarrhea,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Poor hygiene,1.0,tablet,1,5,Fever,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,21.67,g,1,1,Wounds,0.0,ug/kg,2
+cattle,meat,Oxytocin,hormonal,Mycoplasma infection,898.34,mg,2,2,Fever,0.0,ug/kg,3
+pig,meat,PGF2a,hormonal,Bacterial infection,22.88,ml,2,1,Lameness,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Bacterial infection,9.14,litre,2,10,Lameness,0.0,ug/kg,3
+pig,meat,PGF2a,hormonal,Bacterial infection,13.88,ml,1,7,Lameness,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Contaminated feed/water,2.0,tablet,1,3,Skin lesions,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Parasitic infestation,30.85,ml,2,2,Lameness,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Parasitic infestation,2.0,tablet,3,7,Cough,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Poor hygiene,3.62,litre,1,10,Drop in egg production,0.0,ug/kg,1
+goat,meat,PGF2a,hormonal,Secondary bacterial infection,240.11,mg,1,3,Drop in egg production,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,5.0,tablet,1,3,Cough,0.0,ug/kg,1
+pig,meat,Oxytocin,hormonal,Parasitic infestation,42.38,g,3,4,Poor weight gain,0.0,ug/kg,1
+pig,meat,PGF2a,hormonal,Poor hygiene,38.33,g,3,3,Diarrhea,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Viral infection,12.38,g,1,1,Poor weight gain,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Secondary bacterial infection,941.61,mg,2,14,Diarrhea,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Bacterial infection,45.45,mg,2,7,Poor weight gain,0.0,ug/kg,0
+cattle,meat,PGF2a,hormonal,Nutritional deficiency,0.5,tablet,1,4,Diarrhea,0.0,ug/kg,0
+poultry,meat,Oxytocin,hormonal,Poor hygiene,2.0,sachet,1,2,Skin lesions,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,30.3,g,1,4,Respiratory distress,0.0,ug/kg,0
+goat,meat,Oxytocin,hormonal,Protozoal infection,1.0,tablet,1,3,Skin lesions,0.0,ug/kg,1
+sheep,meat,Oxytocin,hormonal,Bacterial infection,0.5,tablet,2,5,Cough,0.0,ug/kg,3
+cattle,milk,PGF2a,hormonal,Bacterial infection,46.97,g,2,7,Lameness,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Poor hygiene,1.0,sachet,1,14,Cough,0.0,ug/kg,1
+goat,meat,PGF2a,hormonal,Parasitic infestation,859.12,mg,1,14,Drop in egg production,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,2.0,sachet,2,5,Poor weight gain,0.0,ug/kg,1
+cattle,milk,Oxytocin,hormonal,Fungal infection,604.16,mg,3,4,Poor weight gain,0.0,ug/kg,3
+cattle,milk,Oxytocin,hormonal,Bacterial infection,25.32,g,2,14,Cough,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Fungal infection,22.71,ml,2,2,Respiratory distress,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Viral infection,17.32,ml,2,3,Fever,0.0,ug/kg,0
+cattle,milk,GnRH,hormonal,Contaminated feed/water,10.0,tablet,2,14,Drop in egg production,0.0,ug/kg,0
+poultry,meat,Oxytocin,hormonal,Fungal infection,48.59,g,1,14,Skin lesions,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Fungal infection,1.0,tablet,2,1,Drop in egg production,0.0,ug/kg,0
+cattle,milk,GnRH,hormonal,Bacterial infection,618.61,mg,2,4,Lameness,0.0,ug/kg,3
+goat,meat,PGF2a,hormonal,Mycoplasma infection,609.65,mg,1,2,Wounds,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Fungal infection,8.11,g,1,1,Reduced production,0.0,ug/kg,0
+poultry,meat,Oxytocin,hormonal,Fungal infection,4.51,litre,3,7,Drop in egg production,0.0,ug/kg,3
+poultry,meat,Oxytocin,hormonal,Viral infection,1.0,sachet,2,1,Reduced production,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Poor hygiene,26.44,ml,2,14,Skin lesions,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Bacterial infection,367.71,mg,2,5,Drop in egg production,0.0,ug/kg,1
+cattle,meat,PGF2a,hormonal,Poor hygiene,8.79,g,3,4,Cough,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Secondary bacterial infection,5.0,tablet,2,4,Fever,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Secondary bacterial infection,10.0,sachet,1,7,Respiratory distress,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Bacterial infection,1.0,sachet,3,10,Skin lesions,0.0,ug/kg,3
+cattle,meat,GnRH,hormonal,Contaminated feed/water,27.42,ml,2,7,Poor weight gain,0.0,ug/kg,0
+poultry,meat,Oxytocin,hormonal,Protozoal infection,40.16,g,2,1,Drop in egg production,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Protozoal infection,963.19,mg,2,10,Wounds,0.0,ug/kg,3
+cattle,milk,GnRH,hormonal,Secondary bacterial infection,63.6,mg,1,7,Diarrhea,0.0,ug/kg,2
+cattle,meat,PGF2a,hormonal,Secondary bacterial infection,5.0,tablet,2,10,Reduced production,0.0,ug/kg,3
+goat,meat,PGF2a,hormonal,Parasitic infestation,513.81,mg,1,5,Poor weight gain,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Viral infection,131.72,mg,1,5,Cough,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Contaminated feed/water,12.98,g,2,3,Respiratory distress,0.0,ug/kg,3
+pig,meat,PGF2a,hormonal,Bacterial infection,1.0,tablet,2,2,Drop in egg production,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Parasitic infestation,48.11,g,3,7,Fever,0.0,ug/kg,3
+sheep,meat,PGF2a,hormonal,Contaminated feed/water,728.21,mg,2,10,Fever,0.0,ug/kg,0
+pig,meat,PGF2a,hormonal,Mycoplasma infection,0.5,tablet,3,1,Cough,0.0,ug/kg,2
+pig,meat,Oxytocin,hormonal,Bacterial infection,29.81,mg,2,2,Poor weight gain,0.0,ug/kg,2
+cattle,milk,PGF2a,hormonal,Parasitic infestation,860.15,mg,1,3,Cough,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Contaminated feed/water,583.54,mg,1,1,Diarrhea,0.0,ug/kg,1
+sheep,meat,Oxytocin,hormonal,Secondary bacterial infection,25.97,g,1,3,Fever,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Fungal infection,80.85,mg,1,10,Fever,0.0,ug/kg,3
+cattle,meat,GnRH,hormonal,Parasitic infestation,217.05,mg,2,14,Skin lesions,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Nutritional deficiency,0.92,ml,1,4,Poor weight gain,0.0,ug/kg,2
+pig,meat,Oxytocin,hormonal,Parasitic infestation,1.89,kg,1,4,Poor weight gain,0.0,ug/kg,3
+sheep,meat,PGF2a,hormonal,Contaminated feed/water,14.39,g,2,10,Drop in egg production,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Parasitic infestation,1.0,tablet,1,4,Diarrhea,0.0,ug/kg,3
+goat,meat,PGF2a,hormonal,Bacterial infection,21.14,ml,1,5,Wounds,0.0,ug/kg,3
+pig,meat,Oxytocin,hormonal,Poor hygiene,2.45,kg,2,7,Wounds,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,4.78,kg,2,5,Diarrhea,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Fungal infection,6.83,g,2,1,Wounds,0.0,ug/kg,1
+poultry,egg,Oxytocin,hormonal,Poor hygiene,4.21,litre,1,1,Respiratory distress,0.0,ug/kg,0
+goat,meat,Oxytocin,hormonal,Contaminated feed/water,5.0,tablet,1,3,Skin lesions,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Nutritional deficiency,29.49,g,1,4,Fever,0.0,ug/kg,2
+cattle,meat,PGF2a,hormonal,Nutritional deficiency,5.0,tablet,2,14,Diarrhea,0.0,ug/kg,0
+pig,meat,Oxytocin,hormonal,Nutritional deficiency,2.5,kg,1,3,Lameness,0.0,ug/kg,3
+cattle,meat,Oxytocin,hormonal,Fungal infection,10.0,tablet,1,10,Reduced production,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Poor hygiene,49.6,g,1,4,Skin lesions,0.0,ug/kg,1
+cattle,meat,PGF2a,hormonal,Parasitic infestation,10.0,tablet,1,10,Reduced production,0.0,ug/kg,3
+cattle,meat,GnRH,hormonal,Bacterial infection,33.17,g,1,5,Skin lesions,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,43.39,ml,3,3,Reduced production,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Parasitic infestation,28.46,g,2,10,Lameness,0.0,ug/kg,1
+cattle,milk,Oxytocin,hormonal,Nutritional deficiency,2.17,g,1,14,Poor weight gain,0.0,ug/kg,3
+pig,meat,Oxytocin,hormonal,Contaminated feed/water,2.0,tablet,2,4,Wounds,0.0,ug/kg,1
+cattle,meat,GnRH,hormonal,Viral infection,881.01,mg,1,4,Poor weight gain,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Protozoal infection,1.0,tablet,1,5,Poor weight gain,0.0,ug/kg,3
+sheep,meat,PGF2a,hormonal,Secondary bacterial infection,1.0,tablet,3,4,Skin lesions,0.0,ug/kg,2
+pig,meat,Oxytocin,hormonal,Bacterial infection,10.0,tablet,1,2,Reduced production,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Secondary bacterial infection,422.63,mg,1,1,Skin lesions,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Mycoplasma infection,551.56,mg,1,10,Lameness,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Bacterial infection,18.24,g,3,7,Lameness,0.0,ug/kg,1
+cattle,meat,PGF2a,hormonal,Viral infection,208.33,mg,1,3,Wounds,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Parasitic infestation,34.33,ml,3,1,Reduced production,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Fungal infection,33.7,g,2,10,Cough,0.0,ug/kg,1
+cattle,milk,GnRH,hormonal,Protozoal infection,10.0,tablet,3,10,Fever,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Bacterial infection,1.75,kg,2,3,Poor weight gain,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Secondary bacterial infection,152.08,mg,2,7,Drop in egg production,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Mycoplasma infection,690.04,mg,3,14,Lameness,0.0,ug/kg,1
+cattle,meat,GnRH,hormonal,Mycoplasma infection,5.5,ml,2,7,Wounds,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Parasitic infestation,1.47,g,1,7,Cough,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Parasitic infestation,36.71,ml,1,10,Fever,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Protozoal infection,23.73,g,2,14,Lameness,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Parasitic infestation,47.6,g,2,3,Drop in egg production,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,105.37,mg,1,5,Cough,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Mycoplasma infection,18.81,ml,1,7,Respiratory distress,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Fungal infection,47.12,g,2,3,Drop in egg production,0.0,ug/kg,1
+cattle,milk,PGF2a,hormonal,Nutritional deficiency,22.14,g,1,4,Poor weight gain,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,14.2,g,3,1,Lameness,0.0,ug/kg,3
+cattle,milk,PGF2a,hormonal,Mycoplasma infection,780.11,mg,1,14,Diarrhea,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Poor hygiene,944.5,mg,3,4,Diarrhea,0.0,ug/kg,3
+pig,meat,Oxytocin,hormonal,Secondary bacterial infection,5.0,tablet,3,3,Diarrhea,0.0,ug/kg,0
+pig,meat,PGF2a,hormonal,Mycoplasma infection,49.93,g,3,7,Skin lesions,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Viral infection,696.02,mg,3,1,Reduced production,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Poor hygiene,10.41,g,1,14,Fever,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Protozoal infection,2.0,sachet,3,4,Diarrhea,0.0,ug/kg,2
+cattle,milk,PGF2a,hormonal,Protozoal infection,2.0,tablet,3,2,Lameness,0.0,ug/kg,1
+sheep,meat,Oxytocin,hormonal,Secondary bacterial infection,531.61,mg,1,10,Poor weight gain,0.0,ug/kg,2
+cattle,meat,GnRH,hormonal,Poor hygiene,561.1,mg,2,5,Skin lesions,0.0,ug/kg,1
+poultry,egg,Oxytocin,hormonal,Fungal infection,10.0,sachet,2,7,Reduced production,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Parasitic infestation,36.14,g,2,2,Wounds,0.0,ug/kg,3
+cattle,milk,PGF2a,hormonal,Protozoal infection,0.5,tablet,1,7,Drop in egg production,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Parasitic infestation,49.88,ml,2,5,Lameness,0.0,ug/kg,1
+cattle,milk,Oxytocin,hormonal,Nutritional deficiency,15.74,g,2,2,Skin lesions,0.0,ug/kg,1
+cattle,milk,Oxytocin,hormonal,Secondary bacterial infection,847.69,mg,1,5,Skin lesions,0.0,ug/kg,3
+pig,meat,PGF2a,hormonal,Mycoplasma infection,16.25,g,1,3,Skin lesions,0.0,ug/kg,1
+cattle,meat,Oxytocin,hormonal,Poor hygiene,11.74,ml,2,14,Fever,0.0,ug/kg,0
+goat,meat,PGF2a,hormonal,Secondary bacterial infection,10.0,tablet,2,1,Wounds,0.0,ug/kg,0
+cattle,meat,Oxytocin,hormonal,Nutritional deficiency,41.6,ml,3,14,Drop in egg production,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Parasitic infestation,10.0,tablet,2,5,Wounds,0.0,ug/kg,1
+cattle,milk,GnRH,hormonal,Contaminated feed/water,41.32,ml,2,1,Fever,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Protozoal infection,20.3,g,3,4,Respiratory distress,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Contaminated feed/water,26.51,ml,2,4,Cough,0.0,ug/kg,0
+pig,meat,PGF2a,hormonal,Parasitic infestation,31.87,g,2,2,Skin lesions,0.0,ug/kg,1
+goat,meat,Oxytocin,hormonal,Viral infection,702.03,mg,1,7,Lameness,0.0,ug/kg,3
+pig,meat,Oxytocin,hormonal,Nutritional deficiency,366.04,mg,1,4,Skin lesions,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Mycoplasma infection,45.35,g,3,5,Respiratory distress,0.0,ug/kg,2
+pig,meat,Oxytocin,hormonal,Secondary bacterial infection,537.02,mg,2,3,Lameness,0.0,ug/kg,0
+cattle,milk,PGF2a,hormonal,Viral infection,43.29,ml,2,10,Fever,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Viral infection,2.0,tablet,1,3,Poor weight gain,0.0,ug/kg,0
+goat,meat,Oxytocin,hormonal,Contaminated feed/water,1.52,g,2,3,Poor weight gain,0.0,ug/kg,2
+cattle,milk,Oxytocin,hormonal,Poor hygiene,291.62,mg,1,14,Drop in egg production,0.0,ug/kg,3
+pig,meat,Oxytocin,hormonal,Viral infection,400.16,mg,2,4,Skin lesions,0.0,ug/kg,3
+poultry,egg,Oxytocin,hormonal,Bacterial infection,3.66,litre,1,7,Reduced production,0.0,ug/kg,1
+pig,meat,PGF2a,hormonal,Protozoal infection,28.35,g,1,2,Skin lesions,0.0,ug/kg,1
+cattle,meat,PGF2a,hormonal,Fungal infection,15.14,g,2,3,Respiratory distress,0.0,ug/kg,2
+cattle,milk,Oxytocin,hormonal,Nutritional deficiency,9.33,g,2,7,Reduced production,0.0,ug/kg,1
+goat,meat,PGF2a,hormonal,Contaminated feed/water,692.2,mg,3,3,Lameness,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Nutritional deficiency,3.23,ml,3,5,Cough,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Nutritional deficiency,7.44,g,1,5,Respiratory distress,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Contaminated feed/water,33.07,ml,1,7,Reduced production,0.0,ug/kg,0
+pig,meat,PGF2a,hormonal,Contaminated feed/water,23.47,ml,1,5,Reduced production,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Protozoal infection,363.76,mg,3,10,Lameness,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Viral infection,852.85,mg,2,5,Wounds,0.0,ug/kg,1
+pig,meat,Oxytocin,hormonal,Contaminated feed/water,25.0,ml,1,2,Cough,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Viral infection,426.91,mg,2,5,Cough,0.0,ug/kg,3
+poultry,egg,Oxytocin,hormonal,Parasitic infestation,12.76,g,2,4,Reduced production,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Parasitic infestation,1.04,kg,2,5,Respiratory distress,0.0,ug/kg,0
+goat,meat,PGF2a,hormonal,Protozoal infection,181.09,mg,1,4,Drop in egg production,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Contaminated feed/water,6.0,g,1,3,Skin lesions,0.0,ug/kg,3
+cattle,meat,GnRH,hormonal,Contaminated feed/water,957.0,mg,3,7,Poor weight gain,0.0,ug/kg,2
+cattle,meat,Oxytocin,hormonal,Bacterial infection,26.68,ml,2,2,Diarrhea,0.0,ug/kg,2
+pig,meat,Oxytocin,hormonal,Parasitic infestation,0.36,kg,1,1,Lameness,0.0,ug/kg,1
+poultry,egg,Oxytocin,hormonal,Poor hygiene,2.0,sachet,3,3,Cough,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Poor hygiene,15.45,g,1,4,Lameness,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Viral infection,137.58,mg,1,4,Cough,0.0,ug/kg,2
+cattle,meat,PGF2a,hormonal,Contaminated feed/water,10.0,tablet,3,14,Skin lesions,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Parasitic infestation,21.88,g,1,10,Reduced production,0.0,ug/kg,1
+poultry,egg,Oxytocin,hormonal,Poor hygiene,10.0,sachet,1,1,Cough,0.0,ug/kg,3
+sheep,meat,PGF2a,hormonal,Viral infection,102.38,mg,1,5,Skin lesions,0.0,ug/kg,0
+pig,meat,Oxytocin,hormonal,Contaminated feed/water,1.53,kg,3,7,Respiratory distress,0.0,ug/kg,1
+poultry,egg,Oxytocin,hormonal,Bacterial infection,10.0,sachet,2,4,Wounds,0.0,ug/kg,1
+pig,meat,Oxytocin,hormonal,Mycoplasma infection,0.4,kg,3,4,Drop in egg production,0.0,ug/kg,2
+cattle,meat,GnRH,hormonal,Viral infection,567.13,mg,3,2,Respiratory distress,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Bacterial infection,27.43,ml,2,1,Diarrhea,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Poor hygiene,4.43,kg,1,2,Reduced production,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Parasitic infestation,1.67,g,2,4,Lameness,0.0,ug/kg,0
+goat,meat,Oxytocin,hormonal,Nutritional deficiency,704.23,mg,1,4,Cough,0.0,ug/kg,2
+pig,meat,PGF2a,hormonal,Bacterial infection,2.64,kg,1,4,Reduced production,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,1.0,sachet,1,14,Wounds,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Bacterial infection,3.95,kg,1,3,Diarrhea,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Viral infection,0.5,tablet,1,10,Cough,0.0,ug/kg,3
+cattle,milk,GnRH,hormonal,Mycoplasma infection,0.5,tablet,1,1,Drop in egg production,0.0,ug/kg,1
+pig,meat,Oxytocin,hormonal,Parasitic infestation,40.88,ml,2,7,Respiratory distress,0.0,ug/kg,3
+pig,meat,Oxytocin,hormonal,Secondary bacterial infection,117.45,mg,2,14,Wounds,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Nutritional deficiency,875.7,mg,1,1,Cough,0.0,ug/kg,0
+cattle,milk,PGF2a,hormonal,Viral infection,1.0,tablet,1,14,Cough,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,17.96,g,1,10,Fever,0.0,ug/kg,3
+goat,meat,Oxytocin,hormonal,Poor hygiene,2.0,tablet,2,14,Skin lesions,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,318.63,mg,3,7,Lameness,0.0,ug/kg,2
+poultry,meat,Oxytocin,hormonal,Contaminated feed/water,2.0,sachet,3,3,Wounds,0.0,ug/kg,2
+goat,meat,PGF2a,hormonal,Poor hygiene,761.08,mg,1,1,Poor weight gain,0.0,ug/kg,0
+goat,meat,PGF2a,hormonal,Contaminated feed/water,0.5,tablet,1,5,Reduced production,0.0,ug/kg,3
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,8.23,litre,1,14,Poor weight gain,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Parasitic infestation,17.56,ml,2,14,Lameness,0.0,ug/kg,1
+goat,meat,PGF2a,hormonal,Bacterial infection,26.29,ml,3,1,Fever,0.0,ug/kg,3
+pig,meat,PGF2a,hormonal,Secondary bacterial infection,0.59,kg,1,14,Respiratory distress,0.0,ug/kg,0
+goat,meat,PGF2a,hormonal,Secondary bacterial infection,706.18,mg,1,1,Wounds,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Bacterial infection,8.71,litre,1,3,Wounds,0.0,ug/kg,3
+cattle,meat,PGF2a,hormonal,Bacterial infection,2.88,ml,1,10,Fever,0.0,ug/kg,1
+cattle,meat,Oxytocin,hormonal,Contaminated feed/water,23.85,g,2,14,Lameness,0.0,ug/kg,1
+goat,meat,PGF2a,hormonal,Parasitic infestation,550.72,mg,1,7,Cough,0.0,ug/kg,1
+pig,meat,Oxytocin,hormonal,Fungal infection,1.6,kg,1,5,Cough,0.0,ug/kg,3
+cattle,meat,PGF2a,hormonal,Poor hygiene,827.22,mg,1,5,Reduced production,0.0,ug/kg,3
+sheep,meat,Oxytocin,hormonal,Protozoal infection,41.19,ml,2,7,Fever,0.0,ug/kg,0
+sheep,meat,PGF2a,hormonal,Mycoplasma infection,774.36,mg,3,4,Lameness,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Bacterial infection,0.57,kg,1,7,Drop in egg production,0.0,ug/kg,1
+sheep,meat,Oxytocin,hormonal,Bacterial infection,2.0,tablet,1,2,Diarrhea,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Fungal infection,1.21,kg,2,2,Diarrhea,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Parasitic infestation,1.0,tablet,2,10,Respiratory distress,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Contaminated feed/water,4.95,kg,3,2,Lameness,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Protozoal infection,24.72,g,2,5,Wounds,0.0,ug/kg,3
+poultry,egg,Oxytocin,hormonal,Mycoplasma infection,49.11,g,1,7,Diarrhea,0.0,ug/kg,0
+sheep,meat,Oxytocin,hormonal,Nutritional deficiency,881.71,mg,2,14,Wounds,0.0,ug/kg,3
+cattle,milk,Oxytocin,hormonal,Nutritional deficiency,860.05,mg,1,1,Wounds,0.0,ug/kg,0
+pig,meat,Oxytocin,hormonal,Bacterial infection,12.88,g,2,1,Cough,0.0,ug/kg,2
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,18.36,ml,3,4,Reduced production,0.0,ug/kg,2
+sheep,meat,Oxytocin,hormonal,Protozoal infection,25.68,ml,2,4,Fever,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Mycoplasma infection,1.35,litre,2,2,Cough,0.0,ug/kg,1
+goat,meat,PGF2a,hormonal,Parasitic infestation,970.61,mg,1,10,Poor weight gain,0.0,ug/kg,2
+poultry,meat,Oxytocin,hormonal,Protozoal infection,5.0,sachet,1,10,Poor weight gain,0.0,ug/kg,3
+sheep,meat,PGF2a,hormonal,Parasitic infestation,32.24,g,2,14,Cough,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Fungal infection,2.0,tablet,1,2,Cough,0.0,ug/kg,0
+goat,meat,Oxytocin,hormonal,Secondary bacterial infection,422.13,mg,1,4,Lameness,0.0,ug/kg,2
+poultry,egg,Oxytocin,hormonal,Nutritional deficiency,2.7,kg,2,14,Lameness,0.0,ug/kg,0
+poultry,egg,Oxytocin,hormonal,Nutritional deficiency,2.0,sachet,3,7,Lameness,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Fungal infection,7.95,ml,2,5,Cough,0.0,ug/kg,2
+cattle,milk,GnRH,hormonal,Bacterial infection,37.34,ml,2,4,Fever,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Secondary bacterial infection,49.87,g,3,5,Fever,0.0,ug/kg,2
+goat,meat,Oxytocin,hormonal,Fungal infection,17.78,ml,2,5,Wounds,0.0,ug/kg,0
+poultry,meat,Oxytocin,hormonal,Parasitic infestation,19.83,g,1,2,Fever,0.0,ug/kg,1
+poultry,meat,Oxytocin,hormonal,Contaminated feed/water,0.68,litre,2,1,Fever,0.0,ug/kg,1
+sheep,meat,PGF2a,hormonal,Nutritional deficiency,47.61,g,2,10,Skin lesions,0.0,ug/kg,2
+poultry,meat,Oxytocin,hormonal,Contaminated feed/water,5.0,sachet,1,3,Drop in egg production,0.0,ug/kg,0
+poultry,egg,Diclazuril,anticoccidial,Mycoplasma infection,5.0,sachet,1,5,Drop in egg production,53.55,ug/kg,14
+poultry,meat,Toltrazuril,anticoccidial,Mycoplasma infection,2.0,sachet,3,10,Skin lesions,45.9,ug/kg,9
+poultry,meat,Diclazuril,anticoccidial,Mycoplasma infection,3.68,kg,1,1,Fever,49.67,ug/kg,2
+poultry,meat,Toltrazuril,anticoccidial,Nutritional deficiency,31.28,g,3,2,Diarrhea,54.05,ug/kg,14
+poultry,egg,Amprolium,anticoccidial,Nutritional deficiency,4.81,kg,1,7,Diarrhea,10.66,ug/kg,6
+poultry,egg,Toltrazuril,anticoccidial,Fungal infection,27.06,g,2,1,Diarrhea,48.57,ug/kg,14
+poultry,egg,Amprolium,anticoccidial,Bacterial infection,5.0,sachet,3,1,Wounds,9.61,ug/kg,13
+poultry,egg,Diclazuril,anticoccidial,Poor hygiene,4.6,kg,2,2,Fever,50.24,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Viral infection,1.6,kg,1,5,Lameness,47.58,ug/kg,2
+poultry,meat,Diclazuril,anticoccidial,Fungal infection,0.45,litre,1,2,Skin lesions,45.99,ug/kg,1
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,3.69,kg,1,2,Cough,10.94,ug/kg,12
+poultry,egg,Diclazuril,anticoccidial,Poor hygiene,5.0,sachet,2,5,Lameness,45.89,ug/kg,2
+poultry,meat,Diclazuril,anticoccidial,Viral infection,5.0,sachet,1,7,Drop in egg production,46.14,ug/kg,2
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,4.93,litre,3,5,Reduced production,45.19,ug/kg,3
+poultry,meat,Toltrazuril,anticoccidial,Bacterial infection,4.01,kg,2,2,Reduced production,54.88,ug/kg,5
+poultry,meat,Diclazuril,anticoccidial,Parasitic infestation,19.21,g,2,3,Skin lesions,52.06,ug/kg,4
+poultry,meat,Toltrazuril,anticoccidial,Mycoplasma infection,1.16,kg,1,5,Poor weight gain,46.36,ug/kg,1
+poultry,egg,Amprolium,anticoccidial,Bacterial infection,1.29,kg,1,10,Drop in egg production,10.64,ug/kg,12
+poultry,egg,Diclazuril,anticoccidial,Parasitic infestation,3.87,g,3,1,Fever,52.09,ug/kg,1
+poultry,meat,Toltrazuril,anticoccidial,Poor hygiene,0.13,litre,3,7,Skin lesions,52.96,ug/kg,7
+poultry,egg,Toltrazuril,anticoccidial,Protozoal infection,3.51,g,1,5,Wounds,45.06,ug/kg,11
+poultry,meat,Amprolium,anticoccidial,Viral infection,0.26,g,1,4,Reduced production,10.7,ug/kg,3
+poultry,egg,Amprolium,anticoccidial,Contaminated feed/water,1.57,g,2,7,Cough,9.56,ug/kg,9
+poultry,meat,Amprolium,anticoccidial,Bacterial infection,4.19,litre,3,5,Lameness,10.02,ug/kg,12
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,36.48,g,3,1,Drop in egg production,46.29,ug/kg,5
+poultry,egg,Diclazuril,anticoccidial,Poor hygiene,3.94,litre,1,5,Wounds,51.66,ug/kg,11
+poultry,egg,Diclazuril,anticoccidial,Mycoplasma infection,6.78,litre,2,4,Skin lesions,52.09,ug/kg,13
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,5.0,sachet,1,14,Fever,9.41,ug/kg,9
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,35.89,g,2,4,Wounds,49.68,ug/kg,8
+poultry,meat,Amprolium,anticoccidial,Bacterial infection,14.95,g,1,10,Fever,9.08,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Bacterial infection,4.02,litre,3,3,Poor weight gain,51.27,ug/kg,11
+poultry,egg,Amprolium,anticoccidial,Contaminated feed/water,2.0,sachet,1,4,Fever,9.28,ug/kg,2
+poultry,egg,Amprolium,anticoccidial,Viral infection,0.77,kg,2,7,Diarrhea,10.69,ug/kg,7
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,2.16,kg,2,14,Reduced production,9.25,ug/kg,12
+poultry,meat,Toltrazuril,anticoccidial,Bacterial infection,39.1,g,2,2,Wounds,46.88,ug/kg,5
+poultry,meat,Toltrazuril,anticoccidial,Parasitic infestation,17.17,g,3,10,Respiratory distress,54.8,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,9.76,litre,2,5,Respiratory distress,9.6,ug/kg,3
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,5.88,litre,1,5,Drop in egg production,46.27,ug/kg,11
+poultry,meat,Diclazuril,anticoccidial,Protozoal infection,0.4,kg,3,10,Reduced production,50.92,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Poor hygiene,43.87,g,2,10,Cough,9.26,ug/kg,1
+poultry,meat,Toltrazuril,anticoccidial,Poor hygiene,0.51,kg,1,3,Respiratory distress,49.19,ug/kg,6
+poultry,egg,Diclazuril,anticoccidial,Mycoplasma infection,8.24,litre,1,14,Fever,53.07,ug/kg,3
+poultry,meat,Amprolium,anticoccidial,Nutritional deficiency,20.64,g,1,14,Respiratory distress,10.91,ug/kg,13
+poultry,egg,Amprolium,anticoccidial,Poor hygiene,6.61,litre,1,3,Diarrhea,9.12,ug/kg,4
+poultry,meat,Amprolium,anticoccidial,Viral infection,9.83,litre,1,10,Lameness,10.4,ug/kg,8
+poultry,meat,Diclazuril,anticoccidial,Mycoplasma infection,4.52,kg,1,7,Lameness,48.4,ug/kg,8
+poultry,egg,Toltrazuril,anticoccidial,Mycoplasma infection,1.0,sachet,1,4,Lameness,54.4,ug/kg,8
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,1.0,sachet,1,2,Poor weight gain,52.9,ug/kg,2
+poultry,meat,Amprolium,anticoccidial,Nutritional deficiency,10.0,sachet,1,7,Reduced production,10.74,ug/kg,9
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,34.3,g,1,14,Wounds,10.98,ug/kg,13
+poultry,egg,Amprolium,anticoccidial,Secondary bacterial infection,47.11,g,2,7,Skin lesions,9.05,ug/kg,2
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,21.61,g,3,5,Fever,50.88,ug/kg,1
+poultry,meat,Amprolium,anticoccidial,Contaminated feed/water,3.02,g,2,4,Respiratory distress,10.95,ug/kg,14
+poultry,meat,Diclazuril,anticoccidial,Viral infection,10.0,sachet,3,5,Lameness,54.75,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Fungal infection,8.66,g,1,3,Wounds,10.03,ug/kg,7
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,8.28,litre,2,2,Fever,10.13,ug/kg,6
+poultry,egg,Amprolium,anticoccidial,Secondary bacterial infection,16.32,g,1,7,Respiratory distress,9.63,ug/kg,13
+poultry,meat,Amprolium,anticoccidial,Parasitic infestation,39.43,g,2,14,Cough,10.72,ug/kg,10
+poultry,meat,Diclazuril,anticoccidial,Bacterial infection,0.67,kg,3,10,Diarrhea,50.38,ug/kg,4
+poultry,meat,Diclazuril,anticoccidial,Viral infection,4.39,kg,1,4,Diarrhea,47.04,ug/kg,4
+poultry,meat,Toltrazuril,anticoccidial,Protozoal infection,35.22,g,3,5,Lameness,51.59,ug/kg,14
+poultry,meat,Toltrazuril,anticoccidial,Nutritional deficiency,0.58,litre,1,1,Cough,45.9,ug/kg,13
+poultry,egg,Amprolium,anticoccidial,Nutritional deficiency,1.0,sachet,2,7,Reduced production,9.46,ug/kg,11
+poultry,egg,Diclazuril,anticoccidial,Viral infection,4.96,litre,2,4,Poor weight gain,48.6,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,43.63,g,1,7,Lameness,48.27,ug/kg,14
+poultry,egg,Toltrazuril,anticoccidial,Fungal infection,1.0,sachet,1,14,Reduced production,54.58,ug/kg,2
+poultry,egg,Diclazuril,anticoccidial,Protozoal infection,7.92,litre,2,14,Respiratory distress,53.15,ug/kg,2
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,5.0,sachet,2,5,Fever,51.96,ug/kg,1
+poultry,meat,Toltrazuril,anticoccidial,Viral infection,2.0,sachet,2,7,Poor weight gain,50.95,ug/kg,5
+poultry,meat,Toltrazuril,anticoccidial,Mycoplasma infection,9.0,litre,2,1,Wounds,54.88,ug/kg,2
+poultry,egg,Toltrazuril,anticoccidial,Protozoal infection,2.47,litre,3,4,Cough,49.48,ug/kg,7
+poultry,egg,Amprolium,anticoccidial,Mycoplasma infection,5.0,sachet,3,10,Wounds,9.18,ug/kg,11
+poultry,egg,Toltrazuril,anticoccidial,Viral infection,5.0,sachet,3,3,Drop in egg production,53.83,ug/kg,6
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,8.04,litre,1,14,Cough,9.84,ug/kg,7
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,1.28,kg,1,3,Wounds,51.27,ug/kg,12
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,2.0,sachet,1,4,Wounds,10.83,ug/kg,2
+poultry,meat,Toltrazuril,anticoccidial,Bacterial infection,41.35,g,1,5,Skin lesions,46.9,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Bacterial infection,1.52,kg,2,1,Lameness,52.31,ug/kg,14
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,2.29,litre,1,10,Skin lesions,48.83,ug/kg,12
+poultry,egg,Toltrazuril,anticoccidial,Bacterial infection,2.09,litre,1,7,Wounds,45.37,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Nutritional deficiency,4.02,litre,1,1,Diarrhea,53.89,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Bacterial infection,1.49,kg,2,3,Wounds,50.1,ug/kg,9
+poultry,egg,Toltrazuril,anticoccidial,Secondary bacterial infection,3.61,kg,3,10,Drop in egg production,52.95,ug/kg,10
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,4.72,kg,1,4,Diarrhea,45.39,ug/kg,7
+poultry,meat,Amprolium,anticoccidial,Fungal infection,10.0,sachet,2,1,Respiratory distress,9.01,ug/kg,13
+poultry,meat,Diclazuril,anticoccidial,Parasitic infestation,3.52,kg,1,2,Cough,46.3,ug/kg,11
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,19.34,g,1,3,Skin lesions,49.16,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Mycoplasma infection,3.17,kg,1,7,Wounds,45.54,ug/kg,8
+poultry,meat,Toltrazuril,anticoccidial,Viral infection,3.69,kg,1,10,Diarrhea,46.41,ug/kg,7
+poultry,egg,Toltrazuril,anticoccidial,Contaminated feed/water,10.0,sachet,3,10,Fever,47.28,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Contaminated feed/water,2.75,litre,1,10,Fever,47.55,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Fungal infection,10.0,sachet,2,3,Respiratory distress,9.31,ug/kg,14
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,3.32,litre,1,4,Reduced production,50.59,ug/kg,7
+poultry,egg,Toltrazuril,anticoccidial,Fungal infection,8.72,g,2,1,Wounds,51.15,ug/kg,13
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,10.0,sachet,1,10,Diarrhea,9.01,ug/kg,1
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,1.0,sachet,3,3,Wounds,51.47,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Poor hygiene,8.88,g,3,7,Lameness,10.73,ug/kg,3
+poultry,meat,Amprolium,anticoccidial,Nutritional deficiency,22.2,g,1,4,Respiratory distress,9.54,ug/kg,6
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,9.89,litre,3,14,Skin lesions,47.45,ug/kg,14
+poultry,egg,Amprolium,anticoccidial,Fungal infection,0.3,kg,2,7,Poor weight gain,10.33,ug/kg,12
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,4.56,kg,2,10,Fever,10.0,ug/kg,7
+poultry,egg,Amprolium,anticoccidial,Fungal infection,4.24,kg,2,10,Poor weight gain,9.7,ug/kg,12
+poultry,egg,Diclazuril,anticoccidial,Viral infection,3.16,kg,2,5,Respiratory distress,47.59,ug/kg,13
+poultry,egg,Diclazuril,anticoccidial,Nutritional deficiency,1.0,sachet,2,10,Diarrhea,50.8,ug/kg,7
+poultry,egg,Amprolium,anticoccidial,Viral infection,34.37,g,1,4,Fever,10.29,ug/kg,8
+poultry,meat,Toltrazuril,anticoccidial,Bacterial infection,2.0,sachet,1,3,Cough,52.18,ug/kg,10
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,10.0,sachet,1,14,Fever,52.37,ug/kg,6
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,1.61,litre,1,7,Poor weight gain,10.48,ug/kg,3
+poultry,meat,Toltrazuril,anticoccidial,Secondary bacterial infection,4.74,kg,2,2,Diarrhea,47.85,ug/kg,4
+poultry,egg,Diclazuril,anticoccidial,Poor hygiene,39.31,g,1,2,Respiratory distress,49.1,ug/kg,7
+poultry,meat,Amprolium,anticoccidial,Secondary bacterial infection,26.23,g,2,14,Respiratory distress,10.95,ug/kg,7
+poultry,egg,Toltrazuril,anticoccidial,Viral infection,4.8,kg,2,5,Fever,47.54,ug/kg,11
+poultry,meat,Toltrazuril,anticoccidial,Secondary bacterial infection,1.28,litre,1,1,Drop in egg production,54.6,ug/kg,12
+poultry,meat,Diclazuril,anticoccidial,Poor hygiene,10.0,sachet,2,3,Cough,51.89,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Mycoplasma infection,2.08,kg,1,1,Reduced production,49.15,ug/kg,6
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,5.0,sachet,2,4,Lameness,49.37,ug/kg,13
+poultry,meat,Diclazuril,anticoccidial,Protozoal infection,2.15,litre,1,7,Wounds,49.51,ug/kg,10
+poultry,egg,Diclazuril,anticoccidial,Contaminated feed/water,1.0,sachet,1,3,Fever,52.35,ug/kg,3
+poultry,meat,Toltrazuril,anticoccidial,Mycoplasma infection,8.15,litre,1,1,Fever,46.78,ug/kg,4
+poultry,meat,Amprolium,anticoccidial,Secondary bacterial infection,5.9,litre,2,4,Skin lesions,10.18,ug/kg,7
+poultry,egg,Diclazuril,anticoccidial,Parasitic infestation,2.0,sachet,2,14,Cough,52.97,ug/kg,13
+poultry,meat,Diclazuril,anticoccidial,Viral infection,3.78,litre,2,3,Skin lesions,50.18,ug/kg,4
+poultry,meat,Toltrazuril,anticoccidial,Poor hygiene,9.34,litre,2,14,Reduced production,47.04,ug/kg,13
+poultry,egg,Diclazuril,anticoccidial,Parasitic infestation,0.75,litre,3,5,Respiratory distress,46.74,ug/kg,11
+poultry,egg,Amprolium,anticoccidial,Viral infection,2.11,kg,2,3,Diarrhea,9.49,ug/kg,6
+poultry,meat,Amprolium,anticoccidial,Parasitic infestation,1.23,kg,1,2,Lameness,10.21,ug/kg,13
+poultry,meat,Diclazuril,anticoccidial,Mycoplasma infection,1.0,sachet,2,14,Poor weight gain,52.31,ug/kg,11
+poultry,meat,Toltrazuril,anticoccidial,Fungal infection,0.31,litre,3,1,Reduced production,54.21,ug/kg,10
+poultry,egg,Diclazuril,anticoccidial,Fungal infection,1.64,litre,3,7,Respiratory distress,49.87,ug/kg,1
+poultry,egg,Amprolium,anticoccidial,Nutritional deficiency,27.3,g,1,5,Cough,9.61,ug/kg,4
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,2.67,litre,2,3,Wounds,9.52,ug/kg,14
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,9.12,litre,3,7,Fever,54.02,ug/kg,2
+poultry,meat,Amprolium,anticoccidial,Parasitic infestation,0.17,litre,2,14,Respiratory distress,10.6,ug/kg,12
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,5.0,sachet,2,2,Lameness,9.02,ug/kg,1
+poultry,egg,Diclazuril,anticoccidial,Fungal infection,28.65,g,3,4,Respiratory distress,49.64,ug/kg,14
+poultry,meat,Amprolium,anticoccidial,Secondary bacterial infection,35.13,g,3,2,Wounds,10.8,ug/kg,2
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,1.0,sachet,2,5,Drop in egg production,53.44,ug/kg,10
+poultry,egg,Diclazuril,anticoccidial,Nutritional deficiency,4.69,kg,1,3,Lameness,54.34,ug/kg,14
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,2.07,litre,3,1,Lameness,53.27,ug/kg,13
+poultry,meat,Amprolium,anticoccidial,Viral infection,10.0,sachet,1,10,Poor weight gain,9.61,ug/kg,10
+poultry,egg,Diclazuril,anticoccidial,Poor hygiene,0.5,litre,2,7,Fever,47.29,ug/kg,9
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,1.17,kg,2,1,Skin lesions,45.01,ug/kg,12
+poultry,egg,Toltrazuril,anticoccidial,Protozoal infection,10.0,sachet,1,3,Poor weight gain,50.72,ug/kg,12
+poultry,meat,Toltrazuril,anticoccidial,Mycoplasma infection,5.74,litre,2,4,Drop in egg production,53.94,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Bacterial infection,9.34,litre,1,4,Poor weight gain,51.5,ug/kg,14
+poultry,meat,Amprolium,anticoccidial,Bacterial infection,5.48,litre,1,14,Skin lesions,9.36,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,30.21,g,1,7,Cough,10.61,ug/kg,2
+poultry,meat,Toltrazuril,anticoccidial,Nutritional deficiency,15.25,g,2,14,Drop in egg production,53.93,ug/kg,8
+poultry,egg,Diclazuril,anticoccidial,Bacterial infection,8.63,litre,3,5,Diarrhea,53.68,ug/kg,3
+poultry,egg,Toltrazuril,anticoccidial,Parasitic infestation,2.66,kg,3,7,Cough,54.8,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Viral infection,1.66,litre,2,7,Reduced production,10.17,ug/kg,13
+poultry,egg,Diclazuril,anticoccidial,Bacterial infection,3.09,litre,1,2,Lameness,52.7,ug/kg,5
+poultry,egg,Diclazuril,anticoccidial,Nutritional deficiency,2.21,kg,3,7,Reduced production,46.68,ug/kg,6
+poultry,meat,Toltrazuril,anticoccidial,Protozoal infection,6.95,litre,1,4,Reduced production,46.6,ug/kg,5
+poultry,egg,Amprolium,anticoccidial,Fungal infection,6.49,litre,3,1,Fever,10.39,ug/kg,5
+poultry,egg,Diclazuril,anticoccidial,Mycoplasma infection,1.64,kg,3,3,Lameness,45.84,ug/kg,5
+poultry,egg,Amprolium,anticoccidial,Viral infection,8.3,litre,1,5,Skin lesions,9.29,ug/kg,9
+poultry,egg,Amprolium,anticoccidial,Mycoplasma infection,1.0,sachet,3,2,Reduced production,10.88,ug/kg,9
+poultry,meat,Amprolium,anticoccidial,Bacterial infection,43.14,g,1,7,Respiratory distress,10.57,ug/kg,3
+poultry,egg,Amprolium,anticoccidial,Viral infection,3.13,kg,2,10,Fever,9.73,ug/kg,2
+poultry,egg,Toltrazuril,anticoccidial,Secondary bacterial infection,1.0,sachet,2,14,Lameness,45.14,ug/kg,4
+poultry,egg,Amprolium,anticoccidial,Bacterial infection,10.0,sachet,1,2,Wounds,10.32,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,2.0,sachet,1,4,Poor weight gain,49.72,ug/kg,7
+poultry,egg,Diclazuril,anticoccidial,Nutritional deficiency,1.0,sachet,2,2,Lameness,49.59,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Fungal infection,6.41,litre,3,2,Skin lesions,54.44,ug/kg,3
+poultry,meat,Toltrazuril,anticoccidial,Poor hygiene,1.0,kg,1,14,Respiratory distress,54.64,ug/kg,6
+poultry,meat,Toltrazuril,anticoccidial,Parasitic infestation,2.59,kg,2,2,Poor weight gain,51.54,ug/kg,8
+poultry,egg,Toltrazuril,anticoccidial,Protozoal infection,17.85,g,2,14,Wounds,48.44,ug/kg,3
+poultry,meat,Amprolium,anticoccidial,Viral infection,1.0,sachet,2,1,Diarrhea,9.88,ug/kg,12
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,6.09,litre,1,3,Diarrhea,45.19,ug/kg,4
+poultry,egg,Amprolium,anticoccidial,Secondary bacterial infection,9.67,litre,2,7,Reduced production,9.36,ug/kg,2
+poultry,egg,Diclazuril,anticoccidial,Protozoal infection,3.52,kg,3,7,Drop in egg production,54.09,ug/kg,10
+poultry,egg,Amprolium,anticoccidial,Secondary bacterial infection,5.5,g,2,4,Poor weight gain,9.03,ug/kg,13
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,3.24,kg,3,14,Reduced production,49.03,ug/kg,10
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,5.0,sachet,2,2,Drop in egg production,49.78,ug/kg,8
+poultry,egg,Diclazuril,anticoccidial,Contaminated feed/water,10.0,sachet,2,2,Diarrhea,53.77,ug/kg,6
+poultry,meat,Toltrazuril,anticoccidial,Nutritional deficiency,3.39,litre,1,14,Skin lesions,53.07,ug/kg,13
+poultry,meat,Diclazuril,anticoccidial,Viral infection,2.0,sachet,2,10,Respiratory distress,49.18,ug/kg,5
+poultry,meat,Diclazuril,anticoccidial,Fungal infection,3.16,kg,1,10,Reduced production,49.97,ug/kg,5
+poultry,meat,Amprolium,anticoccidial,Poor hygiene,3.01,litre,2,2,Diarrhea,9.7,ug/kg,9
+poultry,egg,Diclazuril,anticoccidial,Poor hygiene,7.31,litre,1,2,Skin lesions,53.67,ug/kg,9
+poultry,egg,Diclazuril,anticoccidial,Viral infection,3.23,kg,1,5,Drop in egg production,48.13,ug/kg,1
+poultry,egg,Amprolium,anticoccidial,Bacterial infection,0.75,kg,1,10,Wounds,10.61,ug/kg,1
+poultry,egg,Diclazuril,anticoccidial,Nutritional deficiency,10.0,sachet,2,1,Wounds,46.22,ug/kg,3
+poultry,meat,Diclazuril,anticoccidial,Nutritional deficiency,3.16,g,2,7,Fever,49.95,ug/kg,10
+poultry,egg,Toltrazuril,anticoccidial,Viral infection,18.79,g,2,4,Diarrhea,53.0,ug/kg,2
+poultry,meat,Amprolium,anticoccidial,Fungal infection,1.81,kg,1,7,Lameness,10.47,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Contaminated feed/water,1.0,sachet,1,1,Reduced production,54.41,ug/kg,6
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,0.37,kg,2,5,Lameness,10.99,ug/kg,1
+poultry,meat,Amprolium,anticoccidial,Viral infection,2.0,sachet,1,1,Poor weight gain,10.49,ug/kg,11
+poultry,meat,Toltrazuril,anticoccidial,Poor hygiene,1.93,g,2,5,Skin lesions,49.7,ug/kg,8
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,3.35,kg,3,4,Poor weight gain,49.21,ug/kg,10
+poultry,egg,Diclazuril,anticoccidial,Bacterial infection,1.0,sachet,1,10,Respiratory distress,53.26,ug/kg,10
+poultry,egg,Diclazuril,anticoccidial,Parasitic infestation,10.0,sachet,2,1,Skin lesions,47.4,ug/kg,12
+poultry,egg,Toltrazuril,anticoccidial,Protozoal infection,20.98,g,2,3,Cough,54.65,ug/kg,7
+poultry,egg,Amprolium,anticoccidial,Bacterial infection,34.0,g,3,5,Skin lesions,10.69,ug/kg,6
+poultry,meat,Amprolium,anticoccidial,Fungal infection,48.6,g,1,5,Reduced production,9.91,ug/kg,9
+poultry,meat,Amprolium,anticoccidial,Fungal infection,7.88,litre,2,4,Wounds,9.85,ug/kg,1
+poultry,egg,Diclazuril,anticoccidial,Bacterial infection,3.83,kg,1,2,Skin lesions,45.3,ug/kg,1
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,1.02,kg,1,7,Drop in egg production,9.35,ug/kg,12
+poultry,meat,Amprolium,anticoccidial,Bacterial infection,1.99,kg,2,1,Fever,9.77,ug/kg,3
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,18.12,g,1,10,Drop in egg production,48.34,ug/kg,7
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,1.32,kg,2,14,Lameness,47.58,ug/kg,8
+poultry,meat,Toltrazuril,anticoccidial,Protozoal infection,5.0,sachet,3,5,Reduced production,52.32,ug/kg,4
+poultry,meat,Diclazuril,anticoccidial,Contaminated feed/water,3.14,kg,1,7,Wounds,53.2,ug/kg,13
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,5.57,litre,2,5,Lameness,45.32,ug/kg,3
+poultry,meat,Amprolium,anticoccidial,Mycoplasma infection,2.23,litre,1,1,Fever,10.75,ug/kg,12
+poultry,meat,Diclazuril,anticoccidial,Protozoal infection,10.0,sachet,1,5,Diarrhea,46.23,ug/kg,1
+poultry,meat,Diclazuril,anticoccidial,Contaminated feed/water,3.94,litre,2,10,Respiratory distress,48.58,ug/kg,11
+poultry,meat,Toltrazuril,anticoccidial,Parasitic infestation,5.0,sachet,1,10,Drop in egg production,54.08,ug/kg,12
+poultry,meat,Amprolium,anticoccidial,Fungal infection,1.0,sachet,1,3,Skin lesions,10.85,ug/kg,5
+poultry,meat,Toltrazuril,anticoccidial,Parasitic infestation,4.99,kg,2,4,Drop in egg production,46.14,ug/kg,9
+poultry,egg,Amprolium,anticoccidial,Mycoplasma infection,6.01,litre,3,3,Skin lesions,9.62,ug/kg,4
+poultry,egg,Diclazuril,anticoccidial,Parasitic infestation,49.7,g,1,4,Lameness,53.06,ug/kg,14
+poultry,meat,Amprolium,anticoccidial,Secondary bacterial infection,10.0,sachet,1,5,Fever,9.86,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Fungal infection,25.58,g,1,5,Drop in egg production,10.36,ug/kg,13
+poultry,meat,Toltrazuril,anticoccidial,Mycoplasma infection,6.88,litre,2,10,Lameness,48.58,ug/kg,14
+poultry,meat,Diclazuril,anticoccidial,Fungal infection,10.0,sachet,2,10,Reduced production,52.17,ug/kg,13
+poultry,meat,Toltrazuril,anticoccidial,Protozoal infection,2.22,kg,1,10,Fever,48.38,ug/kg,8
+poultry,meat,Amprolium,anticoccidial,Bacterial infection,9.19,litre,3,3,Skin lesions,9.5,ug/kg,9
+poultry,egg,Amprolium,anticoccidial,Viral infection,2.18,litre,1,1,Lameness,10.43,ug/kg,11
+poultry,meat,Toltrazuril,anticoccidial,Protozoal infection,2.0,sachet,2,2,Wounds,53.46,ug/kg,1
+poultry,meat,Amprolium,anticoccidial,Poor hygiene,7.57,litre,2,14,Lameness,10.94,ug/kg,5
+poultry,meat,Diclazuril,anticoccidial,Nutritional deficiency,47.33,g,3,3,Drop in egg production,48.25,ug/kg,7
+poultry,meat,Toltrazuril,anticoccidial,Secondary bacterial infection,35.47,g,3,10,Wounds,51.36,ug/kg,11
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,45.51,g,2,4,Drop in egg production,54.81,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Secondary bacterial infection,3.65,kg,3,5,Poor weight gain,54.44,ug/kg,4
+poultry,meat,Toltrazuril,anticoccidial,Contaminated feed/water,1.0,sachet,3,10,Drop in egg production,51.96,ug/kg,8
+poultry,meat,Diclazuril,anticoccidial,Poor hygiene,6.62,litre,2,1,Skin lesions,52.23,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Nutritional deficiency,10.0,sachet,3,5,Cough,49.03,ug/kg,3
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,0.35,kg,3,3,Cough,53.45,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Protozoal infection,2.02,kg,1,14,Diarrhea,10.09,ug/kg,7
+poultry,egg,Diclazuril,anticoccidial,Secondary bacterial infection,2.0,sachet,2,1,Skin lesions,46.57,ug/kg,4
+poultry,meat,Amprolium,anticoccidial,Secondary bacterial infection,6.58,litre,1,10,Respiratory distress,10.72,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Mycoplasma infection,1.0,sachet,1,4,Poor weight gain,48.01,ug/kg,12
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,3.15,kg,2,10,Drop in egg production,54.74,ug/kg,9
+poultry,egg,Diclazuril,anticoccidial,Parasitic infestation,2.39,kg,2,10,Drop in egg production,53.51,ug/kg,4
+poultry,egg,Toltrazuril,anticoccidial,Nutritional deficiency,40.61,g,2,7,Poor weight gain,48.39,ug/kg,12
+poultry,egg,Diclazuril,anticoccidial,Protozoal infection,1.0,sachet,2,2,Wounds,52.35,ug/kg,9
+poultry,egg,Toltrazuril,anticoccidial,Mycoplasma infection,1.14,kg,1,4,Lameness,54.3,ug/kg,10
+poultry,meat,Amprolium,anticoccidial,Viral infection,9.14,g,1,5,Poor weight gain,9.44,ug/kg,13
+poultry,egg,Toltrazuril,anticoccidial,Poor hygiene,6.56,g,1,5,Diarrhea,50.34,ug/kg,5
+poultry,egg,Diclazuril,anticoccidial,Fungal infection,1.0,sachet,3,10,Diarrhea,51.68,ug/kg,7
+poultry,meat,Toltrazuril,anticoccidial,Bacterial infection,31.3,g,1,7,Cough,49.24,ug/kg,4
+poultry,egg,Amprolium,anticoccidial,Parasitic infestation,1.5,kg,2,14,Drop in egg production,10.6,ug/kg,7
+poultry,meat,Diclazuril,anticoccidial,Viral infection,0.27,kg,2,1,Poor weight gain,53.74,ug/kg,6
+poultry,meat,Toltrazuril,anticoccidial,Viral infection,2.79,kg,1,4,Wounds,46.53,ug/kg,3
+poultry,egg,Amprolium,anticoccidial,Mycoplasma infection,10.3,g,2,3,Drop in egg production,10.37,ug/kg,6
+poultry,egg,Amprolium,anticoccidial,Protozoal infection,1.36,kg,3,5,Poor weight gain,10.31,ug/kg,4
+poultry,meat,Toltrazuril,anticoccidial,Nutritional deficiency,10.87,g,3,4,Fever,50.52,ug/kg,9

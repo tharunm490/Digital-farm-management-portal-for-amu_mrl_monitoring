@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 
 const { User, Farmer } = require("../models/User");
+const Veterinarian = require("../models/Veterinarian");
 const { authMiddleware } = require("../middleware/auth");
 
 // ======================================================
@@ -11,7 +12,7 @@ const { authMiddleware } = require("../middleware/auth");
 // ======================================================
 router.post("/register", async (req, res) => {
   try {
-    const { email, password, full_name, role, phone, address, state, district } = req.body;
+    const { email, password, full_name, role, phone, address, state, district, license_number } = req.body;
 
     const existing = await User.findByEmail(email);
     if (existing) {
@@ -30,6 +31,14 @@ router.post("/register", async (req, res) => {
         user_id: userId,
         phone,
         address,
+        state,
+        district
+      });
+    } else if (role === "veterinarian") {
+      await Veterinarian.create({
+        user_id: userId,
+        license_number,
+        phone,
         state,
         district
       });
@@ -61,9 +70,12 @@ router.post("/login", (req, res, next) => {
     if (!user) return res.status(401).json({ error: info.message || "Invalid credentials" });
 
     try {
-      const userData = user.role === "farmer"
-        ? await User.getUserWithFarmerDetails(user.user_id)
-        : user;
+      let userData = user;
+      if (user.role === "farmer") {
+        userData = await User.getUserWithFarmerDetails(user.user_id);
+      } else if (user.role === "veterinarian") {
+        userData = await User.getUserWithVeterinarianDetails(user.user_id);
+      }
 
       const token = jwt.sign(
         {

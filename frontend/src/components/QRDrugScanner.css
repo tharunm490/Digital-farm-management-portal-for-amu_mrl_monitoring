@@ -1,0 +1,523 @@
+/* QR DRUG SCANNER STYLES */
+
+.qr-scanner-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.scanner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+.scanner-card {
+  position: relative;
+  z-index: 1001;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.scanner-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.btn-close:hover {
+  transform: scale(1.1);
+}
+
+/* Mode Toggle */
+.mode-toggle {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  background: #f5f7ff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.toggle-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Camera Section */
+.camera-section {
+  padding: 20px;
+}
+
+.camera-placeholder {
+  background: #f5f7ff;
+  border: 2px dashed #667eea;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.camera-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.camera-placeholder p {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.btn-start {
+  margin-top: 15px;
+  padding: 10px 25px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.btn-start:hover {
+  background: #5568d3;
+}
+
+.camera-container {
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scanner-video {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.scan-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.scan-frame {
+  width: 250px;
+  height: 250px;
+  border: 3px solid #00ff00;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 255, 0, 0.8);
+  }
+}
+
+.scan-hint {
+  position: absolute;
+  bottom: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.btn-stop {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.btn-stop:hover {
+  background: #c82333;
+}
+
+.camera-error {
+  color: #dc3545;
+  text-align: center;
+  padding: 20px;
+  background: #f8d7da;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+/* Manual Section */
+.manual-section {
+  padding: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.input-group input {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-group input::placeholder {
+  color: #999;
+}
+
+.btn-verify {
+  width: 100%;
+  padding: 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-verify:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.btn-verify:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.error-message,
+.alert {
+  padding: 12px 15px;
+  margin: 15px 20px 0 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-icon {
+  font-size: 18px;
+}
+
+/* Scan Result */
+.scan-result {
+  padding: 20px;
+  border-radius: 0 0 16px 16px;
+}
+
+.scan-result.success {
+  background: #f0f8f0;
+  border-top: 2px solid #28a745;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.result-icon {
+  font-size: 32px;
+}
+
+.result-header h3 {
+  margin: 0;
+  color: #155724;
+  font-size: 18px;
+}
+
+/* Drug Details */
+.drug-details {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #d4edda;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row label {
+  font-weight: 600;
+  color: #666;
+  font-size: 13px;
+}
+
+.detail-row span {
+  color: #333;
+  font-size: 13px;
+}
+
+/* MRL Info */
+.mrl-info {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #d4edda;
+}
+
+.mrl-info h4 {
+  margin: 0 0 12px 0;
+  color: #155724;
+  font-size: 14px;
+}
+
+.mrl-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.mrl-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.mrl-value {
+  color: #333;
+}
+
+/* Criticality Badge */
+.criticality-badge {
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.criticality-badge.critically {
+  background: #ffe5e5;
+  color: #d32f2f;
+}
+
+.criticality-badge.highly {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.criticality-badge.important {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+/* Result Actions */
+.result-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-use {
+  padding: 10px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.3s ease;
+}
+
+.btn-use:hover {
+  background: #218838;
+}
+
+.btn-scan-again {
+  padding: 10px;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.3s ease;
+}
+
+.btn-scan-again:hover {
+  background: #138496;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state p {
+  margin: 0;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .scanner-card {
+    width: 95%;
+    max-width: 100%;
+  }
+
+  .scanner-video {
+    height: 300px;
+  }
+
+  .scan-frame {
+    width: 180px;
+    height: 180px;
+  }
+
+  .result-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -40,7 +40,7 @@ const BatchManagement = () => {
     return [];
   };
 
-  const currentFarm = farms.find(f => f.farm_id == farm_id);
+  const currentFarm = Array.isArray(farms) ? farms.find(f => f.farm_id == farm_id) : null;
 
   useEffect(() => {
     fetchEntities();
@@ -57,8 +57,9 @@ const BatchManagement = () => {
     try {
       setLoading(true);
       const response = await api.get('/entities');
-      setEntities(response.data);
-      setFilteredEntities(farm_id ? response.data.filter(e => e.farm_id == farm_id) : response.data);
+      const entitiesData = response.data?.data || response.data || [];
+      setEntities(entitiesData);
+      setFilteredEntities(farm_id ? entitiesData.filter(e => e.farm_id == farm_id) : entitiesData);
       setError('');
     } catch (err) {
       console.error('Fetch entities error:', err);
@@ -71,9 +72,11 @@ const BatchManagement = () => {
   const fetchFarms = async () => {
     try {
       const response = await api.get('/farms');
-      setFarms(response.data);
+      const farmsData = response.data?.data || response.data || [];
+      setFarms(Array.isArray(farmsData) ? farmsData : []);
     } catch (err) {
       console.error('Fetch farms error:', err);
+      setFarms([]); // Set empty array on error
     }
   };
 
@@ -203,7 +206,7 @@ const BatchManagement = () => {
                         className="form-control"
                       >
                         <option value="">Select Farm</option>
-                        {farms.map((farm) => (
+                        {Array.isArray(farms) && farms.map((farm) => (
                           <option key={farm.farm_id} value={farm.farm_id}>
                             {farm.farm_name}
                           </option>

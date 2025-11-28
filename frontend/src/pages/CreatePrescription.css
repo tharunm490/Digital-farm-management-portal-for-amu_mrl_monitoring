@@ -1,0 +1,401 @@
+/* CREATE PRESCRIPTION STYLES */
+
+.create-prescription {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.rx-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.rx-header-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+}
+
+.rx-header-section h1 {
+  margin: 0 0 10px 0;
+  font-size: 28px;
+}
+
+.rx-header-section p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.prescription-form {
+  padding: 30px;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 30px;
+}
+
+.form-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: #dc3545;
+}
+
+.error-text {
+  display: block;
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #dc3545;
+}
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+/* Drug Search */
+.drug-search {
+  position: relative;
+}
+
+.drug-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.drug-option {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.drug-option:last-child {
+  border-bottom: none;
+}
+
+.drug-option:hover {
+  background: #f5f7ff;
+}
+
+.drug-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.drug-info {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.criticality {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.criticality[data-level="critically_important"] {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.criticality[data-level="highly_important"] {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.criticality[data-level="important"] {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.banned {
+  background: #dc3545;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Drug Info Card */
+.drug-info-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.drug-info-card h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.drug-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.drug-details p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.drug-details strong {
+  color: #333;
+}
+
+.drug-details .warning {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* MRL Information */
+.mrl-info {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+.mrl-info h5 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.mrl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.mrl-item {
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.mrl-item p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.mrl-item strong {
+  color: #333;
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+/* Alternatives Section */
+.alternatives-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+.show-alternatives-btn {
+  background: #e7f3ff;
+  border: 1px solid #667eea;
+  color: #667eea;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.show-alternatives-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+.alternatives-list {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.alternative-item {
+  background: white;
+  border: 2px solid #28a745;
+  border-radius: 6px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.alternative-item:hover {
+  background: #f0f8f0;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+}
+
+.alt-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.alt-badge {
+  display: inline-block;
+  background: #28a745;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #dee2e6;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.btn.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn.btn-primary:hover:not(:disabled) {
+  background: #5568d3;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn.btn-secondary {
+  background: #e9ecef;
+  color: #333;
+}
+
+.btn.btn-secondary:hover {
+  background: #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rx-container {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .prescription-form {
+    padding: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}

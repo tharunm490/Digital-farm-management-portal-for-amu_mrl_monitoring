@@ -25,9 +25,11 @@ function QRGenerator() {
   const fetchEntities = async () => {
     try {
       const response = await api.get('/entities');
-      setEntities(response.data);
+      const entitiesData = response.data?.data || response.data || [];
+      setEntities(Array.isArray(entitiesData) ? entitiesData : []);
     } catch (err) {
       console.error('Failed to fetch entities:', err);
+      setEntities([]); // Set empty array on error
     }
   };
 
@@ -66,7 +68,7 @@ function QRGenerator() {
       <Navigation />
       <div className="qr-container">
         <h1>QR Code Generator</h1>
-        
+
         <div className="qr-form">
           <div className="form-group">
             <label>Select Animal/Batch:</label>
@@ -78,7 +80,7 @@ function QRGenerator() {
               <option value="">-- Select Entity --</option>
               {entities.map(entity => (
                 <option key={entity.entity_id} value={entity.entity_id}>
-                  {entity.entity_type === 'animal' ? entity.tag_id : entity.batch_name} 
+                  {entity.entity_type === 'animal' ? entity.tag_id : entity.batch_name}
                   ({entity.species}) - {entity.farm_name}
                 </option>
               ))}
@@ -96,8 +98,8 @@ function QRGenerator() {
             />
           </div>
 
-          <button 
-            onClick={() => generateQR()} 
+          <button
+            onClick={() => generateQR()}
             disabled={loading || !entityId}
             className="btn-primary"
           >
@@ -114,7 +116,7 @@ function QRGenerator() {
         {qrData && (
           <div className="qr-result">
             <h2>QR Code Generated Successfully</h2>
-            
+
             <div className="qr-details">
               <div className="detail-row">
                 <span className="label">Entity ID:</span>
@@ -151,9 +153,9 @@ function QRGenerator() {
             </div>
 
             <div className="qr-image-container">
-              <img 
-                src={qrData.qr_code} 
-                alt="QR Code" 
+              <img
+                src={qrData.qr_code}
+                alt="QR Code"
                 className="qr-image"
               />
             </div>
@@ -162,7 +164,7 @@ function QRGenerator() {
               <button onClick={downloadQR} className="btn-primary">
                 Download QR Code
               </button>
-              <button 
+              <button
                 onClick={() => {
                   if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(qrData.verification_url)
@@ -194,10 +196,10 @@ function QRGenerator() {
 
             <div className="verification-url">
               <label>Verification URL:</label>
-              <input 
-                type="text" 
-                value={qrData.verification_url} 
-                readOnly 
+              <input
+                type="text"
+                value={qrData.verification_url}
+                readOnly
                 className="form-control"
               />
             </div>

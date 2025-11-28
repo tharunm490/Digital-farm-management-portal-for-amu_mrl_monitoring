@@ -19,7 +19,7 @@ class Notification {
     }
 
     const query = `
-      INSERT INTO notification_history (
+      INSERT INTO notifications (
         user_id, type, subtype, message, entity_id, treatment_id, amu_id, vacc_id
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
@@ -41,7 +41,7 @@ class Notification {
   // Get notifications for a user
   static async getByUser(user_id, limit = 50) {
     const query = `
-      SELECT * FROM notification_history
+      SELECT * FROM notifications
       WHERE user_id = ?
       ORDER BY created_at DESC
       LIMIT ?
@@ -59,14 +59,14 @@ class Notification {
 
     if (subtype) {
       query = `
-        SELECT * FROM notification_history
+        SELECT * FROM notifications
         WHERE user_id = ? AND type = ? AND subtype = ?
         ORDER BY created_at DESC
       `;
       params = [user_id, type, subtype];
     } else {
       query = `
-        SELECT * FROM notification_history
+        SELECT * FROM notifications
         WHERE user_id = ? AND type = ?
         ORDER BY created_at DESC
       `;
@@ -83,7 +83,7 @@ class Notification {
   // Get unread notifications
   static async getUnread(user_id) {
     const query = `
-      SELECT * FROM notification_history
+      SELECT * FROM notifications
       WHERE user_id = ? AND is_read = FALSE
       ORDER BY created_at DESC
     `;
@@ -94,7 +94,7 @@ class Notification {
   // Mark as read
   static async markAsRead(notification_id, user_id) {
     const query = `
-      UPDATE notification_history
+      UPDATE notifications
       SET is_read = TRUE
       WHERE notification_id = ? AND user_id = ?
     `;

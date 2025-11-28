@@ -9,6 +9,18 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect to role-specific dashboards
+  React.useEffect(() => {
+    if (user) {
+      if (user.role === 'veterinarian') {
+        navigate('/vet/dashboard');
+      } else if (user.role === 'authority') {
+        navigate('/authority/dashboard');
+      }
+      // Farmers stay on this dashboard
+    }
+  }, [user, navigate]);
+
   return (
     <div className="dashboard-container">
       <Navigation />

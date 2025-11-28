@@ -35,16 +35,56 @@ router.post('/predict', authMiddleware, (req, res) => {
   }
 });
 
+// GET /api/amu - Get all AMU records for logged-in farmer
+// GET /api/amu - Get AMU records (filtered by role)
+router.get('/', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role === 'farmer') {
+      const { Farmer } = require('../models/User');
+      const farmer = await Farmer.getByUserId(req.user.user_id);
+
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+
+      const amuRecords = await AMU.getByFarmer(farmer.farmer_id);
+      res.json(amuRecords);
+    } else if (req.user.role === 'authority' || req.user.role === 'veterinarian') {
+      // Authority and Vets can see all records
+      // Note: You might want to filter Vets to only their assigned farms in the future
+      const db = require('../config/database');
+      const query = `
+        SELECT a.*, 
+               f.farm_name, 
+               e.tag_id, e.batch_name, e.entity_type,
+               u.display_name as farmer_name
+        FROM amu_records a
+        JOIN farms f ON a.farm_id = f.farm_id
+        JOIN animals_or_batches e ON a.entity_id = e.entity_id
+        JOIN users u ON a.user_id = u.user_id
+        ORDER BY a.created_at DESC
+      `;
+      const [amuRecords] = await db.execute(query);
+      res.json(amuRecords);
+    } else {
+      res.status(403).json({ error: 'Access denied' });
+    }
+  } catch (error) {
+    console.error('Error fetching AMU records:', error);
+    res.status(500).json({ error: 'Failed to fetch AMU records' });
+  }
+});
+
 // GET /api/amu/:batch_id - Fetch AMU records by batch_id
 router.get('/:batch_id', authMiddleware, async (req, res) => {
   try {
     const { batch_id } = req.params;
     const amuRecords = await AMU.getByBatchId(batch_id);
-    
+
     if (!amuRecords || amuRecords.length === 0) {
       return res.status(404).json({ error: 'No AMU records found for this batch' });
     }
-    
+
     res.json(amuRecords);
   } catch (error) {
     console.error('Error fetching AMU records:', error);
@@ -81,17 +121,17 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     const today = new Date();
     const endDate = new Date(req.body.end_date);
     const daysSinceLastDose = Math.floor((today - endDate) / (1000 * 60 * 60 * 24));
-    
+
     // Override withdrawal_period_days for vaccine and vitamin categories
     let effectiveWithdrawalDays = parseInt(req.body.withdrawal_period_days);
     if (req.body.category_type === 'vaccine' || req.body.category_type === 'vitamin') {
       effectiveWithdrawalDays = 0;
     }
-    
+
     const withdrawalFinishDate = new Date(endDate);
     withdrawalFinishDate.setDate(withdrawalFinishDate.getDate() + effectiveWithdrawalDays);
     const daysFromWithdrawal = Math.floor((today - withdrawalFinishDate) / (1000 * 60 * 60 * 24));
-    
+
     const cumulativeDose = req.body.dose_mg_per_kg * req.body.frequency_per_day * req.body.duration_days;
 
     // Calculate tissue predictions if matrix is meat
@@ -130,7 +170,7 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
         message = tissuePrediction.message;
       }
     }
-    
+
     const amuData = {
       ...req.body,
       user_id: req.user.user_id,
@@ -146,7 +186,7 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
       worst_tissue: worstTissue,
       risk_percent: riskPercent
     };
-    
+
     const amuId = await AMU.create(amuData);
 
     // Insert tissue results if available
