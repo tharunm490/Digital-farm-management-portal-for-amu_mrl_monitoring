@@ -89,7 +89,7 @@ router.get('/district-heatmap', async (req, res) => {
     }
 
     query += ` GROUP BY f.farm_id, fr.district, fr.state
-              ORDER BY avg_risk_score DESC NULLS LAST`;
+              ORDER BY (avg_risk_score IS NULL), avg_risk_score DESC`;
 
     const [results] = await db.execute(query, params);
 
@@ -250,7 +250,7 @@ router.get('/risk-farms', async (req, res) => {
 
     query += ` AND (fm.risk_score >= ? OR fm.risk_score IS NULL)
               GROUP BY f.farm_id
-              ORDER BY fm.risk_score DESC NULLS LAST
+              ORDER BY (fm.risk_score IS NULL), fm.risk_score DESC
               LIMIT ?`;
     params.push(min_risk_score, limit);
 
@@ -502,17 +502,17 @@ router.get('/farm/:farm_id/blockchain-stats', async (req, res) => {
 router.get('/geo', async (req, res) => {
   try {
     const { level = 'state', from, to, selectedState } = req.query;
-    
+
     // Validate level
     if (!['state', 'district', 'taluk'].includes(level)) {
       return res.status(400).json({ success: false, message: 'Invalid level. Use state, district, or taluk.' });
     }
 
     // Build aggregation query
-    let groupByField = level === 'state' ? 'fr.state' 
-                      : level === 'district' ? 'fr.district' 
-                      : 'fr.taluk';
-    
+    let groupByField = level === 'state' ? 'fr.state'
+      : level === 'district' ? 'fr.district, fr.state'
+        : 'fr.taluk, fr.district, fr.state';
+
     let whereClause = '1=1';
     const params = [];
 
@@ -537,7 +537,6 @@ router.get('/geo', async (req, res) => {
       SELECT 
         ${level === 'state' ? 'fr.state as region_name' : level === 'district' ? 'fr.district as region_name' : 'fr.taluk as region_name'},
         fr.state,
-        fr.district,
         COUNT(DISTINCT f.farm_id) as farm_count,
         COUNT(DISTINCT e.entity_id) as entity_count,
         COUNT(DISTINCT amu.amu_id) as treatment_count,
@@ -545,8 +544,8 @@ router.get('/geo', async (req, res) => {
         SUM(CASE WHEN amu.risk_category = 'safe' THEN 1 ELSE 0 END) as safe_count,
         SUM(CASE WHEN amu.risk_category = 'borderline' THEN 1 ELSE 0 END) as borderline_count,
         SUM(CASE WHEN amu.risk_category = 'unsafe' THEN 1 ELSE 0 END) as unsafe_count,
-        ROUND(AVG(CASE WHEN mrl.mrl_percentage IS NOT NULL THEN mrl.mrl_percentage ELSE 0 END), 2) as avg_mrl_percentage,
-        SUM(CASE WHEN mrl.mrl_percentage > 100 THEN 1 ELSE 0 END) as mrl_violations,
+        ROUND(AVG(CASE WHEN mrl.risk_percent IS NOT NULL THEN mrl.risk_percent ELSE 0 END), 2) as avg_mrl_percentage,
+        SUM(CASE WHEN mrl.risk_percent > 100 THEN 1 ELSE 0 END) as mrl_violations,
         ROUND(AVG(CASE WHEN fm.risk_score IS NOT NULL THEN fm.risk_score ELSE 0 END), 2) as avg_risk_score
       FROM farms f
       LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id
@@ -570,7 +569,7 @@ router.get('/geo', async (req, res) => {
         SUM(CASE WHEN amu.risk_category = 'unsafe' THEN 1 ELSE 0 END) as unsafe_count,
         SUM(CASE WHEN amu.risk_category = 'borderline' THEN 1 ELSE 0 END) as borderline_count,
         SUM(CASE WHEN amu.risk_category = 'safe' THEN 1 ELSE 0 END) as safe_count,
-        ROUND(AVG(CASE WHEN mrl.mrl_percentage IS NOT NULL THEN mrl.mrl_percentage ELSE 0 END), 2) as avg_mrl_percentage
+        ROUND(AVG(CASE WHEN mrl.risk_percent IS NOT NULL THEN mrl.risk_percent ELSE 0 END), 2) as avg_mrl_percentage
       FROM farms f
       LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id
       LEFT JOIN animals_or_batches e ON f.farm_id = e.farm_id

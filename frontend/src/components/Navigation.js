@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navigation.css';
 import './Navigation.overrides.css';
+import Notifications from './Notifications';
 
 const Navigation = () => {
   const { user, logout } = useAuth();
@@ -191,6 +192,7 @@ const Navigation = () => {
         </ul>
 
         <div className="nav-user-info">
+          <Notifications />
           <span className="user-name">{user.full_name || user.username}</span>
           <span className="user-role">{user.role}</span>
         </div>

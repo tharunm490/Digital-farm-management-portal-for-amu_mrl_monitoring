@@ -9,7 +9,7 @@ router.use(authMiddleware, authorityOnly);
 // GET all entities for authority dashboard
 router.get('/entities', async (req, res) => {
   try {
-    const { page = 1, limit = 10, search, species, district, state } = req.query;
+    const { page = 1, limit = 10, search, species } = req.query;
     const offset = (page - 1) * limit;
 
     let query = `
@@ -21,16 +21,11 @@ router.get('/entities', async (req, res) => {
         e.species,
         e.matrix,
         f.farm_name,
-        fr.district,
-        fr.state,
-        u.display_name as farmer_name,
         COUNT(DISTINCT tr.treatment_id) as treatment_count,
         COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) as unsafe_treatments,
         MAX(tr.created_at) as last_treatment_date
       FROM animals_or_batches e
       JOIN farms f ON e.farm_id = f.farm_id
-      JOIN farmers fr ON f.farmer_id = fr.farmer_id
-      JOIN users u ON fr.user_id = u.user_id
       LEFT JOIN treatment_records tr ON e.entity_id = tr.entity_id
       LEFT JOIN amu_records amu ON tr.treatment_id = amu.treatment_id
       WHERE 1=1
@@ -48,17 +43,7 @@ router.get('/entities', async (req, res) => {
       params.push(species);
     }
 
-    if (district) {
-      query += ` AND fr.district = ?`;
-      params.push(district);
-    }
-
-    if (state) {
-      query += ` AND fr.state = ?`;
-      params.push(state);
-    }
-
-    query += ` GROUP BY e.entity_id ORDER BY last_treatment_date DESC LIMIT ? OFFSET ?`;
+    query += ` GROUP BY e.entity_id, e.entity_type, e.tag_id, e.batch_name, e.species, e.matrix, f.farm_name ORDER BY last_treatment_date DESC LIMIT ? OFFSET ?`;
     params.push(parseInt(limit), parseInt(offset));
 
     const [entities] = await db.execute(query, params);
@@ -68,7 +53,6 @@ router.get('/entities', async (req, res) => {
       SELECT COUNT(DISTINCT e.entity_id) as total
       FROM animals_or_batches e
       JOIN farms f ON e.farm_id = f.farm_id
-      JOIN farmers fr ON f.farmer_id = fr.farmer_id
       WHERE 1=1
     `;
 
@@ -80,14 +64,6 @@ router.get('/entities', async (req, res) => {
     if (species) {
       countQuery += ` AND e.species = ?`;
       countParams.push(species);
-    }
-    if (district) {
-      countQuery += ` AND fr.district = ?`;
-      countParams.push(district);
-    }
-    if (state) {
-      countQuery += ` AND fr.state = ?`;
-      countParams.push(state);
     }
 
     const [countResult] = await db.execute(countQuery, countParams);
@@ -105,7 +81,9 @@ router.get('/entities', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching entities for authority:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch entities' });
+    console.error('SQL Error Message:', error.sqlMessage);
+    console.error('SQL State:', error.sqlState);
+    res.status(500).json({ success: false, message: 'Failed to fetch entities', error: error.sqlMessage || error.message });
   }
 });
 
@@ -212,43 +190,81 @@ router.get('/trends', async (req, res) => {
 // GET geographic distribution (maps data)
 router.get('/maps', async (req, res) => {
   try {
-    const { level = 'district', state } = req.query;
+    const { level = 'district' } = req.query;
 
-    let groupBy = level === 'state' ? 'fr.state' : 'fr.district';
-    let whereClause = '1=1';
-    const params = [];
+    let mapsQuery;
 
-    if (level === 'district' && state) {
-      whereClause += ' AND fr.state = ?';
-      params.push(state);
+    if (level === 'state') {
+      // Group by state
+      mapsQuery = `
+        SELECT 
+          fr.state as region,
+          fr.state,
+          NULL as district,
+          COUNT(DISTINCT f.farm_id) as farm_count,
+          COUNT(DISTINCT e.entity_id) as entity_count,
+          COUNT(DISTINCT tr.treatment_id) as treatment_count,
+          COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) as unsafe_count,
+          ROUND(AVG(CASE 
+            WHEN amu.risk_category = 'unsafe' THEN 100
+            WHEN amu.risk_category = 'borderline' THEN 50
+            ELSE 0
+          END), 2) as avg_risk_score,
+          CASE 
+            WHEN COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) > 10 THEN 'high'
+            WHEN COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) > 5 THEN 'medium'
+            ELSE 'low'
+          END as risk_level,
+          AVG(f.latitude) as avg_latitude,
+          AVG(f.longitude) as avg_longitude
+        FROM farms f
+        JOIN farmers fr ON f.farmer_id = fr.farmer_id
+        LEFT JOIN animals_or_batches e ON f.farm_id = e.farm_id
+        LEFT JOIN treatment_records tr ON e.entity_id = tr.entity_id
+        LEFT JOIN amu_records amu ON tr.treatment_id = amu.treatment_id
+        WHERE fr.state IS NOT NULL
+        GROUP BY fr.state
+        HAVING farm_count > 0
+        ORDER BY unsafe_count DESC, treatment_count DESC
+        LIMIT 50
+      `;
+    } else {
+      // Group by district (state + district combination)
+      mapsQuery = `
+        SELECT 
+          CONCAT(fr.state, ' - ', fr.district) as region,
+          fr.state,
+          fr.district,
+          COUNT(DISTINCT f.farm_id) as farm_count,
+          COUNT(DISTINCT e.entity_id) as entity_count,
+          COUNT(DISTINCT tr.treatment_id) as treatment_count,
+          COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) as unsafe_count,
+          ROUND(AVG(CASE 
+            WHEN amu.risk_category = 'unsafe' THEN 100
+            WHEN amu.risk_category = 'borderline' THEN 50
+            ELSE 0
+          END), 2) as avg_risk_score,
+          CASE 
+            WHEN COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) > 10 THEN 'high'
+            WHEN COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) > 5 THEN 'medium'
+            ELSE 'low'
+          END as risk_level,
+          AVG(f.latitude) as avg_latitude,
+          AVG(f.longitude) as avg_longitude
+        FROM farms f
+        JOIN farmers fr ON f.farmer_id = fr.farmer_id
+        LEFT JOIN animals_or_batches e ON f.farm_id = e.farm_id
+        LEFT JOIN treatment_records tr ON e.entity_id = tr.entity_id
+        LEFT JOIN amu_records amu ON tr.treatment_id = amu.treatment_id
+        WHERE fr.state IS NOT NULL AND fr.district IS NOT NULL
+        GROUP BY fr.state, fr.district
+        HAVING farm_count > 0
+        ORDER BY unsafe_count DESC, treatment_count DESC
+        LIMIT 50
+      `;
     }
 
-    const mapsQuery = `
-      SELECT 
-        ${level === 'state' ? 'fr.state as region' : 'fr.district as region'},
-        fr.state,
-        COUNT(DISTINCT f.farm_id) as farm_count,
-        COUNT(DISTINCT e.entity_id) as entity_count,
-        COUNT(DISTINCT tr.treatment_id) as treatment_count,
-        COUNT(DISTINCT CASE WHEN amu.risk_category = 'unsafe' THEN amu.amu_id END) as unsafe_count,
-        ROUND(AVG(CASE WHEN fm.risk_score IS NOT NULL THEN fm.risk_score ELSE 0 END), 2) as avg_risk_score,
-        CASE 
-          WHEN AVG(CASE WHEN fm.risk_score IS NOT NULL THEN fm.risk_score ELSE 0 END) >= 70 THEN 'high'
-          WHEN AVG(CASE WHEN fm.risk_score IS NOT NULL THEN fm.risk_score ELSE 0 END) >= 40 THEN 'medium'
-          ELSE 'low'
-        END as risk_level
-      FROM farms f
-      JOIN farmers fr ON f.farmer_id = fr.farmer_id
-      LEFT JOIN animals_or_batches e ON f.farm_id = e.farm_id
-      LEFT JOIN treatment_records tr ON e.entity_id = tr.entity_id
-      LEFT JOIN amu_records amu ON tr.treatment_id = amu.treatment_id
-      LEFT JOIN farm_amu_metrics fm ON f.farm_id = fm.farm_id
-      WHERE ${whereClause}
-      GROUP BY ${groupBy}
-      ORDER BY avg_risk_score DESC
-    `;
-
-    const [maps] = await db.execute(mapsQuery, params);
+    const [maps] = await db.execute(mapsQuery);
 
     res.json({
       success: true,
@@ -257,7 +273,8 @@ router.get('/maps', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching maps data:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch maps data' });
+    console.error('SQL Error Message:', error.sqlMessage);
+    res.status(500).json({ success: false, message: 'Failed to fetch maps data', error: error.sqlMessage || error.message });
   }
 });
 
@@ -265,6 +282,17 @@ router.get('/maps', async (req, res) => {
 router.get('/high-risk-farms', async (req, res) => {
   try {
     const { limit = 10, state, district } = req.query;
+
+    // Check if farm_amu_metrics table exists
+    const [tables] = await db.execute("SHOW TABLES LIKE 'farm_amu_metrics'");
+
+    if (tables.length === 0) {
+      // Table doesn't exist, return empty array
+      return res.json({
+        success: true,
+        data: []
+      });
+    }
 
     let whereClause = '1=1';
     const params = [];
@@ -286,7 +314,6 @@ router.get('/high-risk-farms', async (req, res) => {
         u.display_name as farmer_name,
         fr.district,
         fr.state,
-        fr.phone,
         fm.risk_score,
         fm.risk_level,
         fm.unsafe_records,
@@ -313,6 +340,46 @@ router.get('/high-risk-farms', async (req, res) => {
   } catch (error) {
     console.error('Error fetching high-risk farms:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch high-risk farms' });
+  }
+});
+
+// GET global audit trail
+router.get('/audit-trail', async (req, res) => {
+  try {
+    const { limit = 20 } = req.query;
+
+    // Check if blockchain_log table exists
+    const [tables] = await db.execute("SHOW TABLES LIKE 'blockchain_log'");
+
+    if (tables.length === 0) {
+      // Table doesn't exist, return empty array
+      return res.json({
+        success: true,
+        data: []
+      });
+    }
+
+    const query = `
+      SELECT 
+        bl.*,
+        f.farm_name,
+        u.display_name as user_name
+      FROM blockchain_log bl
+      LEFT JOIN farms f ON bl.farm_id = f.farm_id
+      LEFT JOIN users u ON bl.user_id = u.user_id
+      ORDER BY bl.created_at DESC
+      LIMIT ?
+    `;
+
+    const [logs] = await db.execute(query, [parseInt(limit)]);
+
+    res.json({
+      success: true,
+      data: logs
+    });
+  } catch (error) {
+    console.error('Error fetching global audit trail:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch audit trail' });
   }
 });
 

@@ -45,7 +45,7 @@ router.post("/register", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { user_id: userId, email, role: role || "farmer" },
+      { user_id: userId, email, role: role || "farmer", display_name: full_name },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
@@ -81,7 +81,8 @@ router.post("/login", (req, res, next) => {
         {
           user_id: user.user_id,
           email: user.email,
-          role: user.role
+          role: user.role,
+          display_name: user.display_name
         },
         process.env.JWT_SECRET,
         { expiresIn: "24h" }
@@ -147,7 +148,19 @@ router.get(
 // ======================================================
 router.get("/me", authMiddleware, async (req, res) => {
   try {
-    const user = await User.getUserWithFarmerDetails(req.user.user_id);
+    let user;
+    if (req.user.role === 'farmer') {
+      user = await User.getUserWithFarmerDetails(req.user.user_id);
+    } else if (req.user.role === 'veterinarian') {
+      user = await User.getUserWithVeterinarianDetails(req.user.user_id);
+    } else {
+      user = await User.findById(req.user.user_id);
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     res.json(user);
   } catch (err) {
     console.error("User fetch error:", err);
@@ -160,7 +173,7 @@ router.get("/me", authMiddleware, async (req, res) => {
 // ======================================================
 router.put("/profile", authMiddleware, async (req, res) => {
   try {
-    const { full_name, phone, address, state, district } = req.body;
+    const { full_name, phone, address, state, district, license_number } = req.body;
 
     await User.update(req.user.user_id, {
       display_name: full_name
@@ -185,9 +198,37 @@ router.put("/profile", authMiddleware, async (req, res) => {
           district
         });
       }
+    } else if (req.user.role === "veterinarian") {
+      const vet = await Veterinarian.getByUserId(req.user.user_id);
+
+      if (vet) {
+        await Veterinarian.update(req.user.user_id, {
+          phone,
+          state,
+          district,
+          license_number
+        });
+      } else {
+        await Veterinarian.create({
+          user_id: req.user.user_id,
+          phone,
+          state,
+          district,
+          license_number
+        });
+      }
     }
 
-    const updated = await User.getUserWithFarmerDetails(req.user.user_id);
+    // Fetch updated user data
+    let updated;
+    if (req.user.role === 'farmer') {
+      updated = await User.getUserWithFarmerDetails(req.user.user_id);
+    } else if (req.user.role === 'veterinarian') {
+      updated = await User.getUserWithVeterinarianDetails(req.user.user_id);
+    } else {
+      updated = await User.findById(req.user.user_id);
+    }
+
     res.json(updated);
 
   } catch (err) {

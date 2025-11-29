@@ -10,7 +10,7 @@ const NotificationService = require('../services/NotificationService');
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const { status, farm_id, vet_id, limit = 50, offset = 0 } = req.query;
-    const userId = req.user.id;
+    const userId = req.user.user_id; // Fixed: use user_id instead of id
     const userRole = req.user.role;
 
     let query = `
@@ -67,7 +67,8 @@ router.get('/', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching prescriptions:', error);
-    res.status(500).json({ success: false, message: 'Error fetching prescriptions' });
+    console.error('SQL Error:', error.sqlMessage);
+    res.status(500).json({ success: false, message: 'Error fetching prescriptions', error: error.sqlMessage || error.message });
   }
 });
 

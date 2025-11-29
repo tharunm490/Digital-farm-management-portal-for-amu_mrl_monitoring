@@ -30,14 +30,14 @@ const VetDashboard = () => {
       setLoading(true);
 
       // Fetch assigned farms
-      const farmsResponse = await api.get('/api/farms', {
+      const farmsResponse = await api.get('/farms', {
         params: { vet_id: user?.user_id }
       });
       const farmsData = farmsResponse.data?.data || farmsResponse.data || [];
       setFarms(Array.isArray(farmsData) ? farmsData : []);
 
       // Fetch pending prescriptions
-      const prescResponse = await api.get('/api/prescriptions', {
+      const prescResponse = await api.get('/prescriptions', {
         params: { vet_id: user?.user_id, status: 'draft' }
       });
       const prescData = prescResponse.data?.data || prescResponse.data || [];
@@ -246,7 +246,7 @@ const VetDashboard = () => {
 
   async function handleApprovePrescription(prescriptionId) {
     try {
-      await api.put(`/api/prescriptions/${prescriptionId}/approve`);
+      await api.put(`/prescriptions/${prescriptionId}/approve`);
       fetchVetData();
     } catch (error) {
       console.error('Error approving prescription:', error);

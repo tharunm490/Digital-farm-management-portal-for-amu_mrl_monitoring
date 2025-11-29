@@ -35,7 +35,7 @@ const AddFarm = () => {
 
   const initializeMap = () => {
     const defaultCenter = { lat: 20.5937, lng: 78.9629 }; // India center
-    
+
     mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
       center: defaultCenter,
       zoom: 5,
@@ -54,7 +54,7 @@ const AddFarm = () => {
     if (markerRef.current) {
       markerRef.current.setMap(null);
     }
-    
+
     markerRef.current = new window.google.maps.Marker({
       position: { lat, lng },
       map: mapInstanceRef.current,
@@ -71,7 +71,7 @@ const AddFarm = () => {
     try {
       const response = await geocoder.geocode({ location: { lat, lng } });
       const address = response.results[0]?.formatted_address || '';
-      
+
       setFormData({
         ...formData,
         latitude: lat.toFixed(6),
@@ -105,7 +105,7 @@ const AddFarm = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       alert('Farm added successfully!');
       navigate('/farms');
     } catch (err) {
@@ -120,10 +120,10 @@ const AddFarm = () => {
       alert('Please wait for the map to load...');
       return;
     }
-    
+
     setGettingLocation(true);
     setError('');
-    
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -134,7 +134,7 @@ const AddFarm = () => {
         },
         (error) => {
           let errorMessage = 'Unable to get location';
-          switch(error.code) {
+          switch (error.code) {
             case error.PERMISSION_DENIED:
               errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
               break;
@@ -173,7 +173,7 @@ const AddFarm = () => {
 
         <div className="farm-content">
           {error && <div className="error-message">{error}</div>}
-          
+
           <div className="content-grid">
             <div className="form-section">
               <form onSubmit={handleSubmit}>
@@ -200,7 +200,6 @@ const AddFarm = () => {
                       onChange={handleChange}
                       required
                       placeholder="e.g., 12.9716"
-                      readOnly
                     />
                   </div>
 
@@ -214,7 +213,6 @@ const AddFarm = () => {
                       onChange={handleChange}
                       required
                       placeholder="e.g., 77.5946"
-                      readOnly
                     />
                   </div>
                 </div>
@@ -231,9 +229,9 @@ const AddFarm = () => {
                   </div>
                 )}
 
-                <button 
-                  type="button" 
-                  onClick={getCurrentLocation} 
+                <button
+                  type="button"
+                  onClick={getCurrentLocation}
                   className="btn-location"
                   disabled={gettingLocation || !mapLoaded}
                 >

@@ -21,6 +21,7 @@ const VetTreatmentRecording = () => {
   const [formData, setFormData] = useState({
     entity_id: '',
     medicine: '',
+    medication_type: 'Antibiotic',
     dosage: '',
     dose_unit: 'ml',
     frequency_per_day: '',
@@ -67,7 +68,7 @@ const VetTreatmentRecording = () => {
   const fetchAssignedFarms = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/vet-treatments/assigned-farms/withdrawals');
+      const response = await api.get('/vet-treatments/assigned-farms/withdrawals');
       const farmsData = response.data?.data || response.data || [];
       setFarms(Array.isArray(farmsData) ? farmsData : []);
       if (farmId && farmsData) {
@@ -84,7 +85,7 @@ const VetTreatmentRecording = () => {
 
   const fetchEntities = async (fId) => {
     try {
-      const response = await api.get(`/api/vet-treatments/farm/${fId}/entities`);
+      const response = await api.get(`/vet-treatments/farm/${fId}/entities`);
       const entitiesData = response.data?.data || response.data || [];
       setEntities(Array.isArray(entitiesData) ? entitiesData : []);
     } catch (err) {
@@ -96,7 +97,7 @@ const VetTreatmentRecording = () => {
 
   const fetchTreatmentHistory = async (entityId) => {
     try {
-      const response = await api.get(`/api/vet-treatments/entity/${entityId}/history`);
+      const response = await api.get(`/vet-treatments/entity/${entityId}/history`);
       const historyData = response.data?.data || response.data || [];
       setTreatmentHistory(Array.isArray(historyData) ? historyData : []);
     } catch (err) {
@@ -126,7 +127,7 @@ const VetTreatmentRecording = () => {
     try {
       setSubmitting(true);
       const response = await api.post(
-        `/api/vet-treatments/farm/${selectedFarm}/record`,
+        `/vet-treatments/farm/${selectedFarm}/record`,
         formData
       );
 
@@ -248,6 +249,25 @@ const VetTreatmentRecording = () => {
                       placeholder="e.g., Amoxicillin"
                       required
                     />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Medication Type *</label>
+                    <select
+                      name="medication_type"
+                      value={formData.medication_type}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="Antibiotic">Antibiotic</option>
+                      <option value="Antiparasitic">Antiparasitic</option>
+                      <option value="Anti Inflammatory">Anti Inflammatory</option>
+                      <option value="NSAID">NSAID</option>
+                      <option value="Hormonal">Hormonal</option>
+                      <option value="Anticoccidial">Anticoccidial</option>
+                      <option value="Vaccine">Vaccine</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
 
                   <div className="form-group">

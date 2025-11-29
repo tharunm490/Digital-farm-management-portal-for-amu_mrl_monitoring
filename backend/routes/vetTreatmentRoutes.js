@@ -36,33 +36,29 @@ router.use(authMiddleware, veterinarianOnly);
 // Get assigned farms with withdrawal data
 router.get('/assigned-farms/withdrawals', async (req, res) => {
   try {
+    console.log('Vet Assigned Farms Request. User:', req.user);
     const query = `
       SELECT DISTINCT 
         f.farm_id, 
         f.farm_name, 
-        f.farmer_name,
-        f.location,
+        u.display_name as farmer_name,
         COUNT(DISTINCT ab.entity_id) as animal_count,
         SUM(CASE WHEN ar.safe_date > NOW() THEN 1 ELSE 0 END) as active_withdrawals,
         SUM(CASE WHEN ar.safe_date IS NULL THEN 1 ELSE 0 END) as animals_treated
       FROM farms f
+      JOIN users u ON f.farmer_id = u.user_id
       JOIN animals_or_batches ab ON f.farm_id = ab.farm_id
       LEFT JOIN amu_records ar ON ab.entity_id = ar.entity_id
       WHERE f.vet_id = ?
-      GROUP BY f.farm_id, f.farm_name, f.farmer_name, f.location
+      GROUP BY f.farm_id, f.farm_name, u.display_name
       ORDER BY f.farm_name
     `;
-    
-    db.query(query, [req.user.user_id], (err, results) => {
-      if (err) {
-        console.error('Error fetching assigned farms:', err);
-        return res.status(500).json({ error: 'Failed to fetch farms' });
-      }
-      res.json(results || []);
-    });
+
+    const [results] = await db.query(query, [req.user.user_id]);
+    res.json(results || []);
   } catch (error) {
     console.error('Get assigned farms error:', error);
-    res.status(500).json({ error: 'Failed to fetch assigned farms' });
+    res.status(500).json({ error: 'Failed to fetch assigned farms', details: error.message, sqlMessage: error.sqlMessage });
   }
 });
 
@@ -71,40 +67,35 @@ router.get('/farm/:farmId/withdrawals', async (req, res) => {
   try {
     // Verify vet is assigned to this farm
     const farmQuery = 'SELECT * FROM farms WHERE farm_id = ? AND vet_id = ?';
-    db.query(farmQuery, [req.params.farmId, req.user.user_id], async (err, farmResults) => {
-      if (err || !farmResults || farmResults.length === 0) {
-        return res.status(403).json({ error: 'Access denied' });
-      }
+    const [farmResults] = await db.query(farmQuery, [req.params.farmId, req.user.user_id]);
 
-      const query = `
-        SELECT 
-          ab.entity_id,
-          ab.tag_id,
-          ab.batch_name,
-          ab.species,
-          ar.amu_id,
-          ar.medicine,
-          ar.dosage,
-          ar.dose_unit,
-          ar.application_date,
-          ar.withdrawal_period_days,
-          ar.safe_date,
-          ar.status,
-          DATEDIFF(ar.safe_date, NOW()) as days_until_safe
-        FROM animals_or_batches ab
-        LEFT JOIN amu_records ar ON ab.entity_id = ar.entity_id
-        WHERE ab.farm_id = ?
-        ORDER BY ab.tag_id, ar.application_date DESC
-      `;
-      
-      db.query(query, [req.params.farmId], (err, results) => {
-        if (err) {
-          console.error('Error fetching farm withdrawals:', err);
-          return res.status(500).json({ error: 'Failed to fetch withdrawal data' });
-        }
-        res.json(results || []);
-      });
-    });
+    if (!farmResults || farmResults.length === 0) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const query = `
+      SELECT 
+        ab.entity_id,
+        ab.tag_id,
+        ab.batch_name,
+        ab.species,
+        ar.amu_id,
+        ar.medicine,
+        ar.dosage,
+        ar.dose_unit,
+        ar.application_date,
+        ar.withdrawal_period_days,
+        ar.safe_date,
+        ar.status,
+        DATEDIFF(ar.safe_date, NOW()) as days_until_safe
+      FROM animals_or_batches ab
+      LEFT JOIN amu_records ar ON ab.entity_id = ar.entity_id
+      WHERE ab.farm_id = ?
+      ORDER BY ab.tag_id, ar.application_date DESC
+    `;
+
+    const [results] = await db.query(query, [req.params.farmId]);
+    res.json(results || []);
   } catch (error) {
     console.error('Get farm withdrawals error:', error);
     res.status(500).json({ error: 'Failed to fetch withdrawal data' });
@@ -116,120 +107,84 @@ router.post('/farm/:farmId/record', async (req, res) => {
   try {
     // Verify vet is assigned to this farm
     const farmQuery = 'SELECT * FROM farms WHERE farm_id = ? AND vet_id = ?';
-    db.query(farmQuery, [req.params.farmId, req.user.user_id], async (err, farmResults) => {
-      if (err || !farmResults || farmResults.length === 0) {
-        return res.status(403).json({ error: 'Access denied - farm not assigned' });
-      }
+    const [farmResults] = await db.query(farmQuery, [req.params.farmId, req.user.user_id]);
 
-      const {
+    if (!farmResults || farmResults.length === 0) {
+      return res.status(403).json({ error: 'Access denied - farm not assigned' });
+    }
+
+    const {
+      entity_id,
+      medicine,
+      medication_type,
+      dosage,
+      dose_unit,
+      frequency_per_day,
+      duration_days,
+      route,
+      reason,
+      diagnosis,
+      application_date,
+      withdrawal_period_days,
+      is_vaccine,
+      vaccine_interval_days,
+      vaccine_total_months
+    } = req.body;
+
+    // Validate required fields
+    if (!entity_id || !medicine || !dosage || !application_date || (!is_vaccine && !medication_type)) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Verify entity belongs to this farm
+    const entityQuery = 'SELECT * FROM animals_or_batches WHERE entity_id = ? AND farm_id = ?';
+    const [entityResults] = await db.query(entityQuery, [entity_id, req.params.farmId]);
+
+    if (!entityResults || entityResults.length === 0) {
+      return res.status(403).json({ error: 'Entity not found on this farm' });
+    }
+
+    const entity = entityResults[0];
+
+    try {
+      // Create treatment record
+      const treatmentData = {
         entity_id,
+        user_id: req.user.user_id, // Added user_id
         medicine,
+        medication_type,
         dosage,
+        dose_amount: dosage, // Map dosage to dose_amount
         dose_unit,
         frequency_per_day,
         duration_days,
         route,
         reason,
+        cause: reason, // Use reason as cause if not provided
         diagnosis,
-        application_date,
-        withdrawal_period_days,
-        is_vaccine,
-        vaccine_interval_days,
-        vaccine_total_months
-      } = req.body;
+        start_date: application_date, // Map application_date to start_date
+        end_date: application_date, // Default end_date to start_date
+        vet_id: req.user.user_id,
+        vet_name: req.user.display_name,
+        is_vaccine: is_vaccine || false,
+        vaccine_interval_days: vaccine_interval_days ? parseInt(vaccine_interval_days) : null,
+        vaccine_total_months: vaccine_total_months ? parseInt(vaccine_total_months) : null,
+      };
 
-      // Validate required fields
-      if (!entity_id || !medicine || !dosage || !application_date) {
-        return res.status(400).json({ error: 'Missing required fields' });
-      }
+      console.log('Creating treatment record...');
+      const treatment = await Treatment.create(treatmentData);
+      console.log('Treatment record created:', treatment.treatment_id);
 
-      // Verify entity belongs to this farm
-      const entityQuery = 'SELECT * FROM animals_or_batches WHERE entity_id = ? AND farm_id = ?';
-      db.query(entityQuery, [entity_id, req.params.farmId], async (err, entityResults) => {
-        if (err || !entityResults || entityResults.length === 0) {
-          return res.status(403).json({ error: 'Entity not found on this farm' });
-        }
-
-        const entity = entityResults[0];
-
-        try {
-          // Create treatment record
-          const treatmentData = {
-            entity_id,
-            medicine,
-            dosage,
-            dose_unit,
-            frequency_per_day,
-            duration_days,
-            route,
-            reason,
-            diagnosis,
-            vet_id: req.user.user_id,
-            vet_name: req.user.display_name,
-            is_vaccine: is_vaccine || false,
-            vaccine_interval_days,
-            vaccine_total_months
-          };
-
-          const treatment = await Treatment.create(treatmentData);
-
-          // If not a vaccine, create AMU record
-          if (!is_vaccine) {
-            const appDateInt = dateToInt(application_date);
-            const safeDate = calculateSafeDate(application_date, withdrawal_period_days || 0);
-
-            const amuData = {
-              entity_id,
-              vet_id: req.user.user_id,
-              vet_name: req.user.display_name,
-              medicine,
-              active_ingredient: medicine,
-              dosage,
-              dose_unit,
-              frequency_per_day,
-              duration_days,
-              route,
-              application_date: appDateInt,
-              withdrawal_period_days: withdrawal_period_days || 0,
-              safe_date: safeDate,
-              species: entity.species,
-              status: 'Safe'
-            };
-
-            // Predict tissue-wise MRL status
-            const tissuePrediction = await predictTissueMrl(
-              medicine,
-              entity.species,
-              dosage,
-              withdrawal_period_days || 0
-            );
-
-            if (tissuePrediction) {
-              amuData.tissue_prediction = JSON.stringify(tissuePrediction);
-              // Set overall status based on tissue predictions
-              const hasSafe = Object.values(tissuePrediction).some(t => t.status === 'Safe');
-              const hasUnsafe = Object.values(tissuePrediction).some(t => t.status === 'Unsafe');
-              if (hasUnsafe) {
-                amuData.status = 'Unsafe';
-              } else if (!hasSafe) {
-                amuData.status = 'Borderline';
-              }
-            }
-
-            await AMU.create(amuData);
-          }
-
-          res.status(201).json({
-            treatment_id: treatment.treatment_id,
-            message: 'Treatment recorded successfully',
-            treatment
-          });
-        } catch (error) {
-          console.error('Error creating treatment:', error);
-          res.status(500).json({ error: 'Failed to record treatment' });
-        }
+      res.status(201).json({
+        treatment_id: treatment.treatment_id,
+        message: 'Treatment recorded successfully',
+        treatment
       });
-    });
+    } catch (error) {
+      console.error('Error creating treatment:', error);
+      require('fs').writeFileSync('error_log.txt', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      res.status(500).json({ error: 'Failed to record treatment' });
+    }
   } catch (error) {
     console.error('Record treatment error:', error);
     res.status(500).json({ error: 'Failed to record treatment' });
@@ -241,32 +196,25 @@ router.get('/farm/:farmId/entities', async (req, res) => {
   try {
     // Verify vet is assigned to this farm
     const farmQuery = 'SELECT * FROM farms WHERE farm_id = ? AND vet_id = ?';
-    db.query(farmQuery, [req.params.farmId, req.user.user_id], (err, farmResults) => {
-      if (err || !farmResults || farmResults.length === 0) {
-        return res.status(403).json({ error: 'Access denied' });
-      }
+    const [farmResults] = await db.query(farmQuery, [req.params.farmId, req.user.user_id]);
 
-      const query = `
-        SELECT 
-          entity_id,
-          tag_id,
-          batch_name,
-          species,
-          age_months,
-          weight_kg
-        FROM animals_or_batches
-        WHERE farm_id = ?
-        ORDER BY tag_id
-      `;
+    if (!farmResults || farmResults.length === 0) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
 
-      db.query(query, [req.params.farmId], (err, results) => {
-        if (err) {
-          console.error('Error fetching entities:', err);
-          return res.status(500).json({ error: 'Failed to fetch entities' });
-        }
-        res.json(results || []);
-      });
-    });
+    const query = `
+      SELECT 
+        entity_id,
+        tag_id,
+        batch_name,
+        species
+      FROM animals_or_batches
+      WHERE farm_id = ?
+      ORDER BY tag_id
+    `;
+
+    const [results] = await db.query(query, [req.params.farmId]);
+    res.json(results || []);
   } catch (error) {
     console.error('Get entities error:', error);
     res.status(500).json({ error: 'Failed to fetch entities' });
@@ -299,13 +247,8 @@ router.get('/entity/:entityId/history', async (req, res) => {
       LIMIT 20
     `;
 
-    db.query(query, [req.params.entityId], (err, results) => {
-      if (err) {
-        console.error('Error fetching treatment history:', err);
-        return res.status(500).json({ error: 'Failed to fetch history' });
-      }
-      res.json(results || []);
-    });
+    const [results] = await db.query(query, [req.params.entityId]);
+    res.json(results || []);
   } catch (error) {
     console.error('Get entity history error:', error);
     res.status(500).json({ error: 'Failed to fetch treatment history' });
@@ -337,13 +280,8 @@ router.get('/upcoming/safe-dates', async (req, res) => {
       ORDER BY ar.safe_date ASC
     `;
 
-    db.query(query, [req.user.user_id], (err, results) => {
-      if (err) {
-        console.error('Error fetching upcoming dates:', err);
-        return res.status(500).json({ error: 'Failed to fetch upcoming dates' });
-      }
-      res.json(results || []);
-    });
+    const [results] = await db.query(query, [req.user.user_id]);
+    res.json(results || []);
   } catch (error) {
     console.error('Get upcoming safe dates error:', error);
     res.status(500).json({ error: 'Failed to fetch upcoming dates' });

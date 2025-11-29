@@ -1,0 +1,17 @@
+{
+  "body": {
+    "entity_id": 22,
+    "medicine": "Quick Test Med",
+    "medication_type": "Antibiotic",
+    "dosage": "15",
+    "dose_unit": "ml",
+    "frequency_per_day": "1",
+    "duration_days": "3",
+    "route": "IM",
+    "diagnosis": "Test",
+    "application_date": "2025-11-28",
+    "is_vaccine": false,
+    "vaccine_interval_days": "",
+    "vaccine_total_months": ""
+  }
+}

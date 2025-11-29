@@ -12,6 +12,148 @@ const path = require('path');
 // Load dosage data
 const dosageData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dosage_reference_full_extended_with_mrl.json'), 'utf8'));
 
+// GET /api/verify/hash/:hash - Verify by QR Hash
+router.get('/hash/:hash', async (req, res) => {
+  try {
+    const { hash } = req.params;
+    console.log('Verifying QR Hash:', hash);
+
+    // Find entity_id from hash
+    const [qrRecords] = await db.execute('SELECT entity_id FROM qr_records WHERE qr_hash = ?', [hash]);
+
+    if (qrRecords.length === 0) {
+      return res.status(404).json({ error: 'Invalid QR Code' });
+    }
+
+    const entity_id = qrRecords[0].entity_id;
+    console.log('Hash resolved to Entity ID:', entity_id);
+
+    // Redirect to the entity verification logic (or reuse it)
+    // Since we are in the same router, we can just call the logic or redirect
+    // But for cleaner code, let's extract the logic or just re-implement the call internally
+    // Re-implementing the core logic here for simplicity as extracting would require refactoring the whole file
+
+    // Fetch entity details
+    const entity = await Entity.getById(entity_id);
+    if (!entity) return res.status(404).json({ error: 'Entity not found' });
+
+    // Fetch treatments
+    const treatments = await Treatment.getByEntity(entity_id);
+
+    // Fetch AMU records
+    let amuRecords = [];
+    try {
+      amuRecords = await AMU.getByEntity(entity_id);
+    } catch (error) {
+      console.warn('AMU records not available:', error.message);
+    }
+
+    // Fetch MRL data
+    let mrlData = null;
+    try {
+      mrlData = await MRL.getBySpeciesAndMatrix(entity.species, entity.matrix);
+    } catch (error) {
+      console.warn('MRL data not available:', error.message);
+    }
+
+    // Logic for withdrawal calculation (Same as below)
+    const latestTreatment = treatments && treatments.length > 0 ? treatments[0] : null;
+    const latestAMU = amuRecords && amuRecords.length > 0 ? amuRecords[0] : null;
+
+    let withdrawalStatus = null;
+    let withdrawalFinishDate = null;
+    let daysFromWithdrawal = null;
+    let mrlPass = false;
+    let withdrawalDate = null;
+    let safeDate = null;
+    let daysRemaining = null;
+
+    if (latestAMU && latestAMU.end_date && latestAMU.predicted_withdrawal_days) {
+      withdrawalDate = new Date(latestAMU.end_date);
+      const withdrawalPeriodDays = latestAMU.predicted_withdrawal_days;
+      safeDate = new Date(withdrawalDate.getTime() + (withdrawalPeriodDays * 24 * 60 * 60 * 1000));
+      withdrawalFinishDate = safeDate;
+    } else if (latestTreatment && latestTreatment.withdrawal_end_date) {
+      withdrawalFinishDate = new Date(latestTreatment.withdrawal_end_date);
+    }
+
+    if (withdrawalFinishDate) {
+      const today = new Date();
+      const timeDiff = withdrawalFinishDate - today;
+      daysFromWithdrawal = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+      daysRemaining = daysFromWithdrawal;
+      mrlPass = daysFromWithdrawal <= 0;
+      withdrawalStatus = mrlPass ? 'PASS' : 'FAIL';
+    }
+
+    // Prepare response
+    const response = {
+      entity_details: {
+        entity_id: entity.entity_id,
+        entity_type: entity.entity_type,
+        tag_id: entity.tag_id,
+        batch_name: entity.batch_name,
+        species: entity.species,
+        breed: entity.breed,
+        matrix: entity.matrix,
+        farm_name: entity.farm_name,
+        animal_count: entity.animal_count,
+        weight_kg: entity.weight_kg,
+        age_months: entity.age_months
+      },
+      treatment_records: treatments.map(treatment => {
+        const amu = amuRecords.find(a => a.treatment_id === treatment.treatment_id);
+        return {
+          treatment_id: treatment.treatment_id,
+          active_ingredient: treatment.active_ingredient || treatment.medicine,
+          dose_mg_per_kg: treatment.dose_mg_per_kg,
+          dose_amount: treatment.dose_amount || amu?.dose_amount,
+          dose_unit: treatment.dose_unit || amu?.dose_unit,
+          route: treatment.route,
+          frequency_per_day: treatment.frequency_per_day,
+          duration_days: treatment.duration_days,
+          start_date: treatment.start_date,
+          end_date: treatment.end_date,
+          withdrawal_period_days: treatment.withdrawal_period_days || amu?.predicted_withdrawal_days,
+          withdrawal_end_date: treatment.withdrawal_end_date,
+          safe_date: amu?.safe_date,
+          predicted_mrl: amu?.predicted_mrl,
+          overdosage: amu?.overdosage,
+          risk_category: amu?.risk_category,
+          mrl_status: amu?.risk_category,
+          medication_type: treatment.medication_type,
+          reason: treatment.reason,
+          cause: treatment.cause,
+          vet_id: treatment.vet_id,
+          vet_name: treatment.vet_name
+        };
+      }),
+      amu_records: amuRecords || [],
+      mrl_limits: mrlData || null,
+      withdrawal_info: {
+        withdrawal_date: withdrawalDate ? withdrawalDate.toISOString().split('T')[0] : null,
+        withdrawal_period_days: latestAMU ? latestAMU.predicted_withdrawal_days : null,
+        withdrawal_finish_date: withdrawalFinishDate ? withdrawalFinishDate.toISOString().split('T')[0] : null,
+        safe_date: safeDate ? safeDate.toISOString().split('T')[0] : null,
+        days_remaining: daysRemaining,
+        days_from_withdrawal: daysFromWithdrawal,
+        status: withdrawalStatus,
+        mrl_pass: mrlPass
+      },
+      tamper_proof: {
+        verified: true,
+        message: 'Record verified successfully via Secure QR'
+      }
+    };
+
+    res.json(response);
+
+  } catch (error) {
+    console.error('Error verifying QR hash:', error);
+    res.status(500).json({ error: 'Failed to verify QR code', details: error.message });
+  }
+});
+
 // GET /api/verify/:entity_id - Complete entity verification data (Public - no auth required for QR scanning)
 router.get('/:entity_id', async (req, res) => {
   try {
@@ -158,11 +300,11 @@ router.get('/:entity_id', async (req, res) => {
       const combinedRecordsHtml = response.treatment_records && response.treatment_records.length > 0 ? `
         <div style="display: flex; flex-direction: column; gap: 20px;">
           ${response.treatment_records.map(record => {
-            const medicineData = dosageData[record.species]?.[record.medication_type]?.[record.medicine];
-            const safeMax = medicineData?.recommended_doses?.safe?.max || 0;
-            const overdosageAlert = record.overdosage ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">OVERDOSAGE GIVEN RED ALERT</div>' : '';
-            const unsafeAlert = record.mrl_status === 'unsafe' ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">UNSAFE MRL RED ALERT</div>' : '';
-            return `
+        const medicineData = dosageData[record.species]?.[record.medication_type]?.[record.medicine];
+        const safeMax = medicineData?.recommended_doses?.safe?.max || 0;
+        const overdosageAlert = record.overdosage ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">OVERDOSAGE GIVEN RED ALERT</div>' : '';
+        const unsafeAlert = record.mrl_status === 'unsafe' ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">UNSAFE MRL RED ALERT</div>' : '';
+        return `
             <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f7fafc;">
               <h3 style="margin: 0 0 15px 0; color: #2d3748;">${record.active_ingredient || record.medicine}${record.safe_date && new Date(record.safe_date) <= new Date() ? ' <span style="color: green; font-size: 0.8em;">(SAFE)</span>' : ''}</h3>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
@@ -187,7 +329,7 @@ router.get('/:entity_id', async (req, res) => {
               ${unsafeAlert}
             </div>
             `;
-          }).join('')}
+      }).join('')}
         </div>
       ` : `<div style="color:#888;font-size:1.05rem;padding:18px;text-align:center;">No treatment or AMU records found.</div>`;
 

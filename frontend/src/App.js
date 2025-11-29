@@ -23,22 +23,23 @@ import VetWithdrawalAlerts from './pages/VetWithdrawalAlerts';
 import ProcessorPortal from './pages/ProcessorPortal';
 import AuthorityAnalytics from './pages/AuthorityAnalytics';
 import AuthorityDashboard from './pages/AuthorityDashboard';
+import QRVerification from './pages/QRVerification';
 import './App.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
   }
-  
+
   return user ? children : <Navigate to="/login" />;
 };
 
 function AppRoutes() {
   const { user } = useAuth();
-  
+
   return (
     <Routes>
       <Route path="/" element={<Homepage />} />
@@ -46,6 +47,7 @@ function AppRoutes() {
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/role-selection" element={<RoleSelection />} />
+      <Route path="/verify/:hash" element={<QRVerification />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><FarmerNotifications /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

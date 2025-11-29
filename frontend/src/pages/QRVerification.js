@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { verifyAPI } from '../services/api';
 import './QRVerification.css';
 
 function QRVerification() {
+  const { hash } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const entityIdFromUrl = queryParams.get('entity_id');
@@ -13,15 +14,17 @@ function QRVerification() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (entityIdFromUrl) {
-      verifyEntity(entityIdFromUrl);
+    if (hash) {
+      verifyEntity(hash, true);
+    } else if (entityIdFromUrl) {
+      verifyEntity(entityIdFromUrl, false);
     }
-  }, [entityIdFromUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hash, entityIdFromUrl]);
 
-  const verifyEntity = async (id = entityId) => {
-    if (!id) {
+  const verifyEntity = async (identifier, isHash = false) => {
+    if (!identifier) {
       setError('Please enter an entity ID');
       return;
     }
@@ -29,10 +32,13 @@ function QRVerification() {
     try {
       setLoading(true);
       setError(null);
-      const response = await verifyAPI.verifyBatch(id);
+      const response = isHash
+        ? await verifyAPI.verifyQR(identifier)
+        : await verifyAPI.verifyBatch(identifier);
+
       setVerificationData(response.data);
     } catch (err) {
-      setError('Failed to verify entity. Entity may not exist.');
+      setError('Failed to verify. Record may not exist.');
       console.error(err);
       setVerificationData(null);
     } finally {
@@ -113,8 +119,8 @@ function QRVerification() {
                 {verificationData.withdrawal_info?.status === 'PASS'
                   ? 'This product is safe for consumption'
                   : verificationData.withdrawal_info?.status === 'FAIL'
-                  ? 'This product has not completed withdrawal period'
-                  : 'No treatment records found'}
+                    ? 'This product has not completed withdrawal period'
+                    : 'No treatment records found'}
               </p>
             </div>
           </div>
@@ -134,8 +140,8 @@ function QRVerification() {
               <div className="detail-item">
                 <span className="label">Identifier:</span>
                 <span className="value">
-                  {verificationData.entity_details.entity_type === 'animal' 
-                    ? verificationData.entity_details.tag_id 
+                  {verificationData.entity_details.entity_type === 'animal'
+                    ? verificationData.entity_details.tag_id
                     : verificationData.entity_details.batch_name}
                 </span>
               </div>
@@ -177,7 +183,7 @@ function QRVerification() {
               <div className="amu-records">
                 {verificationData.treatment_records.map((record, index) =>
                   <div key={index} className="amu-card">
-                    <h3>{record.active_ingredient} {record.safe_date && new Date(record.safe_date) <= new Date() && <span style={{color: 'green', fontSize: '0.8em'}}>(SAFE)</span>}</h3>
+                    <h3>{record.active_ingredient} {record.safe_date && new Date(record.safe_date) <= new Date() && <span style={{ color: 'green', fontSize: '0.8em' }}>(SAFE)</span>}</h3>
                     <div className="amu-details">
                       {record.dose_amount && (
                         <div className="amu-item">
@@ -280,13 +286,13 @@ function QRVerification() {
                 <div className="withdrawal-item">
                   <span className="label">Days Remaining:</span>
                   <span className={`value ${verificationData.withdrawal_info.days_remaining <= 0 ? 'positive' : 'negative'}`}>
-                    {verificationData.withdrawal_info.days_remaining > 0 
-                      ? `${verificationData.withdrawal_info.days_remaining} days remaining` 
+                    {verificationData.withdrawal_info.days_remaining > 0
+                      ? `${verificationData.withdrawal_info.days_remaining} days remaining`
                       : verificationData.withdrawal_info.days_remaining === 0
-                      ? 'Ready today'
-                      : verificationData.withdrawal_info.days_remaining < 0
-                      ? `Safe since ${Math.abs(verificationData.withdrawal_info.days_remaining)} days ago`
-                      : 'N/A'}
+                        ? 'Ready today'
+                        : verificationData.withdrawal_info.days_remaining < 0
+                          ? `Safe since ${Math.abs(verificationData.withdrawal_info.days_remaining)} days ago`
+                          : 'N/A'}
                   </span>
                 </div>
                 <div className="withdrawal-item">

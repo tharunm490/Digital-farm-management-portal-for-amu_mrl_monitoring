@@ -1,0 +1,353 @@
+--- Users ---
+[
+  {
+    "user_id": 1,
+    "email": "yashasbrbtech24@rvu.edu.in",
+    "display_name": "Yashas B R",
+    "role": "farmer"
+  },
+  {
+    "user_id": 2,
+    "email": "admin@gmail.com",
+    "display_name": "admin",
+    "role": "authority"
+  },
+  {
+    "user_id": 3,
+    "email": "farmer@gmail.com",
+    "display_name": "Yashas",
+    "role": "farmer"
+  },
+  {
+    "user_id": 4,
+    "email": "farmer@test.com",
+    "display_name": "Test Farmer",
+    "role": "farmer"
+  },
+  {
+    "user_id": 5,
+    "email": "vet@test.com",
+    "display_name": "Test Vet",
+    "role": "authority"
+  },
+  {
+    "user_id": 6,
+    "email": "realvet@test.com",
+    "display_name": "Real Vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 7,
+    "email": "authority@test.com",
+    "display_name": "Test Authority",
+    "role": "authority"
+  },
+  {
+    "user_id": 8,
+    "email": "newvet@test.com",
+    "display_name": "New Vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 9,
+    "email": "vet@gmail.com",
+    "display_name": "vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 10,
+    "email": "authority@gmail.com",
+    "display_name": "Test Authority",
+    "role": "authority"
+  },
+  {
+    "user_id": 11,
+    "email": "admin1764312788477@test.com",
+    "display_name": null,
+    "role": "authority"
+  },
+  {
+    "user_id": 12,
+    "email": "authority_test@test.com",
+    "display_name": "Authority Test",
+    "role": "authority"
+  },
+  {
+    "user_id": 13,
+    "email": "testvet@example.com",
+    "display_name": "Test Vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 14,
+    "email": "newvet2@test.com",
+    "display_name": "New Vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 15,
+    "email": "admin2@gmail.com",
+    "display_name": "admin",
+    "role": "authority"
+  },
+  {
+    "user_id": 16,
+    "email": "vet2@gmail.com",
+    "display_name": "vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 17,
+    "email": "testps@example.com",
+    "display_name": "Test PS",
+    "role": "farmer"
+  },
+  {
+    "user_id": 18,
+    "email": "browser_farmer_v2@example.com",
+    "display_name": "Browser Farmer",
+    "role": "farmer"
+  },
+  {
+    "user_id": 19,
+    "email": "testvet_final@example.com",
+    "display_name": "Test Vet",
+    "role": "veterinarian"
+  },
+  {
+    "user_id": 20,
+    "email": "testauthority_final@example.com",
+    "display_name": "Test Authority",
+    "role": "authority"
+  },
+  {
+    "user_id": 21,
+    "email": "test_1764344990918@example.com",
+    "display_name": "Test Farmer",
+    "role": "farmer"
+  },
+  {
+    "user_id": 22,
+    "email": "farmer_test_1764345246857@example.com",
+    "display_name": "Test Farmer Dashboard",
+    "role": "farmer"
+  },
+  {
+    "user_id": 23,
+    "email": "browser_test_farmer@example.com",
+    "display_name": "Browser Test Farmer",
+    "role": "farmer"
+  },
+  {
+    "user_id": 24,
+    "email": "browser_test_vet@example.com",
+    "display_name": "Browser Test Vet",
+    "role": "veterinarian"
+  }
+]
+--- Farms ---
+[
+  {
+    "farm_id": 1,
+    "farm_name": "My farm",
+    "farmer_id": 1,
+    "vet_id": 19
+  },
+  {
+    "farm_id": 2,
+    "farm_name": "Myfarm",
+    "farmer_id": 2,
+    "vet_id": null
+  },
+  {
+    "farm_id": 3,
+    "farm_name": "Test farm",
+    "farmer_id": 1,
+    "vet_id": null
+  },
+  {
+    "farm_id": 4,
+    "farm_name": "Verification Test Farm",
+    "farmer_id": 3,
+    "vet_id": null
+  },
+  {
+    "farm_id": 5,
+    "farm_name": "Verification Test Farm",
+    "farmer_id": 3,
+    "vet_id": null
+  },
+  {
+    "farm_id": 6,
+    "farm_name": "Verification Test Farm",
+    "farmer_id": 3,
+    "vet_id": null
+  },
+  {
+    "farm_id": 7,
+    "farm_name": "Test Farm",
+    "farmer_id": 3,
+    "vet_id": null
+  },
+  {
+    "farm_id": 8,
+    "farm_name": "Test Farm",
+    "farmer_id": 6,
+    "vet_id": null
+  },
+  {
+    "farm_id": 9,
+    "farm_name": "Green Valley Farm",
+    "farmer_id": 7,
+    "vet_id": null
+  },
+  {
+    "farm_id": 10,
+    "farm_name": "Browser Test Farm",
+    "farmer_id": 8,
+    "vet_id": null
+  },
+  {
+    "farm_id": 11,
+    "farm_name": "Browser Test Farm",
+    "farmer_id": 8,
+    "vet_id": null
+  },
+  {
+    "farm_id": 12,
+    "farm_name": "Browser Test Farm",
+    "farmer_id": 8,
+    "vet_id": null
+  },
+  {
+    "farm_id": 13,
+    "farm_name": "Browser Test Farm",
+    "farmer_id": 8,
+    "vet_id": null
+  },
+  {
+    "farm_id": 14,
+    "farm_name": "Browser Test Farm",
+    "farmer_id": 8,
+    "vet_id": null
+  },
+  {
+    "farm_id": 15,
+    "farm_name": "Browser Test Farm",
+    "farmer_id": 8,
+    "vet_id": null
+  }
+]
+--- Animals ---
+[
+  {
+    "entity_id": 1,
+    "farm_id": 1,
+    "tag_id": "C135"
+  },
+  {
+    "entity_id": 2,
+    "farm_id": 2,
+    "tag_id": "C954"
+  },
+  {
+    "entity_id": 3,
+    "farm_id": 3,
+    "tag_id": "COW001"
+  },
+  {
+    "entity_id": 4,
+    "farm_id": 7,
+    "tag_id": "COW-1764311792151"
+  },
+  {
+    "entity_id": 5,
+    "farm_id": 7,
+    "tag_id": "COW-1764311830728"
+  },
+  {
+    "entity_id": 6,
+    "farm_id": 7,
+    "tag_id": "COW-1764311860932"
+  },
+  {
+    "entity_id": 7,
+    "farm_id": 7,
+    "tag_id": "COW-1764313305420-0"
+  },
+  {
+    "entity_id": 8,
+    "farm_id": 7,
+    "tag_id": "COW-1764313344849-0"
+  },
+  {
+    "entity_id": 9,
+    "farm_id": 7,
+    "tag_id": "CHICK-1764313345046-1"
+  },
+  {
+    "entity_id": 10,
+    "farm_id": 7,
+    "tag_id": "COW-1764313376452-0"
+  },
+  {
+    "entity_id": 11,
+    "farm_id": 7,
+    "tag_id": "CHICK-1764313376597-1"
+  },
+  {
+    "entity_id": 12,
+    "farm_id": 7,
+    "tag_id": "PIG-1764313376676-2"
+  },
+  {
+    "entity_id": 13,
+    "farm_id": 7,
+    "tag_id": "COW-1764313424381-0"
+  },
+  {
+    "entity_id": 14,
+    "farm_id": 7,
+    "tag_id": "CHICK-1764313424685-1"
+  },
+  {
+    "entity_id": 15,
+    "farm_id": 7,
+    "tag_id": "PIG-1764313424884-2"
+  },
+  {
+    "entity_id": 16,
+    "farm_id": 7,
+    "tag_id": "COW-1764313482184-0"
+  },
+  {
+    "entity_id": 17,
+    "farm_id": 7,
+    "tag_id": "CHICK-1764313482478-1"
+  },
+  {
+    "entity_id": 18,
+    "farm_id": 7,
+    "tag_id": "PIG-1764313482596-2"
+  },
+  {
+    "entity_id": 19,
+    "farm_id": 7,
+    "tag_id": "SHEEP-1764313482629-3"
+  },
+  {
+    "entity_id": 20,
+    "farm_id": 7,
+    "tag_id": "GOAT-1764313482742-4"
+  },
+  {
+    "entity_id": 21,
+    "farm_id": 8,
+    "tag_id": "TAG-1764344991189"
+  },
+  {
+    "entity_id": 22,
+    "farm_id": 15,
+    "tag_id": "BROWSER-COW-1764346095035"
+  }
+]

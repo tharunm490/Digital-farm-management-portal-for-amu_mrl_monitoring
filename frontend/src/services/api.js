@@ -67,6 +67,7 @@ export const vaccinationAPI = {
 // Verification API
 export const verifyAPI = {
   verifyBatch: (batch_id) => api.get(`/verify/${batch_id}`),
+  verifyQR: (hash) => api.get(`/verify/hash/${hash}`),
 };
 
 // Prediction API

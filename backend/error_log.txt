@@ -1,0 +1,4 @@
+{
+  "stack": "Error: vaccine_interval_days must be a positive integer\n    at Treatment.create (C:\\Users\\Yashas BR\\OneDrive\\Desktop\\SIH\\Digital-farm-management-portal-for-amu_mrl_monitoring\\backend\\models\\Treatment.js:221:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async C:\\Users\\Yashas BR\\OneDrive\\Desktop\\SIH\\Digital-farm-management-portal-for-amu_mrl_monitoring\\backend\\routes\\vetTreatmentRoutes.js:176:25",
+  "message": "vaccine_interval_days must be a positive integer"
+}

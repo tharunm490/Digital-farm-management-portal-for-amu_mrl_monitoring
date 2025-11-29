@@ -36,12 +36,12 @@ const VetWithdrawalAlerts = () => {
       setError('');
 
       // Fetch assigned farms with withdrawal data
-      const farmsRes = await api.get('/api/vet-treatments/assigned-farms/withdrawals');
+      const farmsRes = await api.get('/vet-treatments/assigned-farms/withdrawals');
       const farmsData = farmsRes.data?.data || farmsRes.data || [];
       setFarms(Array.isArray(farmsData) ? farmsData : []);
 
       // Fetch upcoming safe dates
-      const upcomingRes = await api.get('/api/vet-treatments/upcoming/safe-dates');
+      const upcomingRes = await api.get('/vet-treatments/upcoming/safe-dates');
       const upcomingData = upcomingRes.data?.data || upcomingRes.data || [];
       setUpcomingSafeDates(Array.isArray(upcomingData) ? upcomingData : []);
 
@@ -59,7 +59,7 @@ const VetWithdrawalAlerts = () => {
 
   const fetchFarmWithdrawals = async (farmId) => {
     try {
-      const response = await api.get(`/api/vet-treatments/farm/${farmId}/withdrawals`);
+      const response = await api.get(`/vet-treatments/farm/${farmId}/withdrawals`);
       const withdrawalData = response.data?.data || response.data || [];
       setWithdrawalData(Array.isArray(withdrawalData) ? withdrawalData : []);
     } catch (err) {

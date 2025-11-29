@@ -20,6 +20,10 @@ const AuthorityDashboard = () => {
     const [analytics, setAnalytics] = useState({});
     const [auditTrail, setAuditTrail] = useState([]);
     const [filters, setFilters] = useState({ state: '', district: '', taluk: '' });
+    const [trendsData, setTrendsData] = useState([]);
+    const [mapsData, setMapsData] = useState([]);
+    const [speciesData, setSpeciesData] = useState([]);
+    const [riskData, setRiskData] = useState([]);
 
     // Redirect if not authority
     useEffect(() => {
@@ -42,27 +46,112 @@ const AuthorityDashboard = () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 setError('No token found');
+                setLoading(false);
                 return;
             }
             const headers = { Authorization: `Bearer ${token}` };
 
-            // Fetch all farms
-            const farmsRes = await axios.get('/api/farms', { headers });
-            const farmsData = farmsRes.data?.data || farmsRes.data || [];
-            setFarms(Array.isArray(farmsData) ? farmsData : []);
+            // Fetch all farms - CRITICAL
+            try {
+                const farmsRes = await axios.get('/api/farms', { headers });
+                const farmsData = farmsRes.data?.data || farmsRes.data || [];
+                setFarms(Array.isArray(farmsData) ? farmsData : []);
+            } catch (e) {
+                console.error('Failed to fetch farms:', e);
+                setFarms([]);
+            }
 
-            // Fetch all prescriptions
-            const prescriptionsRes = await axios.get('/api/prescriptions', { headers });
-            const prescriptionsData = prescriptionsRes.data?.data || prescriptionsRes.data || [];
-            setPrescriptions(Array.isArray(prescriptionsData) ? prescriptionsData : []);
+            // Fetch all prescriptions (skip if table doesn't exist)
+            try {
+                const prescriptionsRes = await axios.get('/api/prescriptions', { headers });
+                const prescriptionsData = prescriptionsRes.data?.data || prescriptionsRes.data || [];
+                setPrescriptions(Array.isArray(prescriptionsData) ? prescriptionsData : []);
+            } catch (e) {
+                console.log('Prescriptions not available');
+                setPrescriptions([]);
+            }
 
             // Fetch analytics
-            const analyticsRes = await axios.get('/api/authority/dashboard-stats', { headers });
-            setAnalytics(analyticsRes.data?.data || analyticsRes.data || {});
+            try {
+                const analyticsRes = await axios.get('/api/authority/dashboard-stats', { headers });
+                setAnalytics(analyticsRes.data?.data || analyticsRes.data || {});
+            } catch (e) {
+                console.error('Failed to fetch analytics:', e);
+                setAnalytics({});
+            }
+
+            // Fetch trends data
+            try {
+                const trendsRes = await axios.get('/api/authority/trends', { headers });
+                setTrendsData(trendsRes.data?.data || []);
+            } catch (e) {
+                console.log('Trends not available');
+                setTrendsData([]);
+            }
+
+            // Fetch maps data
+            try {
+                const mapsRes = await axios.get('/api/authority/maps', { headers });
+                setMapsData(mapsRes.data?.data || []);
+            } catch (e) {
+                console.log('Maps not available');
+                setMapsData([]);
+            }
+
+            // Fetch species distribution from entities
+            try {
+                const entitiesRes = await axios.get('/api/authority/entities?limit=1000', { headers });
+                const entities = entitiesRes.data?.data || [];
+
+                // Calculate species distribution
+                const speciesCount = {};
+                entities.forEach(e => {
+                    if (e.species) {
+                        speciesCount[e.species] = (speciesCount[e.species] || 0) + 1;
+                    }
+                });
+
+                const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+                const speciesArray = Object.entries(speciesCount).map(([name, value], index) => ({
+                    name: name.charAt(0).toUpperCase() + name.slice(1),
+                    value,
+                    fill: colors[index % colors.length]
+                }));
+                setSpeciesData(speciesArray);
+            } catch (e) {
+                console.log('Species data not available');
+                setSpeciesData([]);
+            }
+
+            // Calculate risk distribution from analytics
+            try {
+                const analyticsRes = await axios.get('/api/authority/dashboard-stats', { headers });
+                if (analyticsRes.data?.data) {
+                    const stats = analyticsRes.data.data;
+                    const riskArray = [
+                        { category: 'Safe', count: (stats.total_treatments || 0) - (stats.unsafe_treatments || 0) - (stats.borderline_treatments || 0), fill: '#10b981' },
+                        { category: 'Borderline', count: stats.borderline_treatments || 0, fill: '#f59e0b' },
+                        { category: 'Unsafe', count: stats.unsafe_treatments || 0, fill: '#ef4444' }
+                    ];
+                    setRiskData(riskArray.filter(r => r.count > 0));
+                }
+            } catch (e) {
+                console.log('Risk data not available');
+                setRiskData([]);
+            }
+
+            // Fetch audit trail
+            try {
+                const auditRes = await axios.get('/api/authority/audit-trail', { headers });
+                setAuditTrail(auditRes.data?.data || auditRes.data || []);
+            } catch (e) {
+                console.log('Audit trail not available');
+                setAuditTrail([]);
+            }
 
         } catch (error) {
             console.error('Failed to fetch authority data:', error);
-            setError(error.message || 'Failed to fetch data');
+            // Don't set error state - let partial data show
         } finally {
             setLoading(false);
         }
@@ -158,28 +247,22 @@ const AuthorityDashboard = () => {
     );
 
     const renderAnalytics = () => {
-        // Sample trend data
-        const trendData = [
-            { month: 'Jan', treatments: 120, unsafe: 15, borderline: 25 },
-            { month: 'Feb', treatments: 135, unsafe: 18, borderline: 22 },
-            { month: 'Mar', treatments: 150, unsafe: 12, borderline: 28 },
-            { month: 'Apr', treatments: 140, unsafe: 20, borderline: 30 },
-            { month: 'May', treatments: 165, unsafe: 8, borderline: 35 },
-            { month: 'Jun', treatments: 180, unsafe: 25, borderline: 40 }
+        // Use real trend data from API
+        const trendData = trendsData.length > 0 ? trendsData.map(t => ({
+            month: t.period,
+            treatments: t.treatments || 0,
+            unsafe: t.unsafe_treatments || 0,
+            borderline: t.borderline_treatments || 0
+        })) : [];
+
+        // Use real species data from API
+        const displaySpeciesData = speciesData.length > 0 ? speciesData : [
+            { name: 'No Data', value: 1, fill: '#9ca3af' }
         ];
 
-        const speciesData = [
-            { name: 'Cattle', value: 45, fill: '#3b82f6' },
-            { name: 'Goat', value: 25, fill: '#10b981' },
-            { name: 'Sheep', value: 15, fill: '#f59e0b' },
-            { name: 'Poultry', value: 10, fill: '#ef4444' },
-            { name: 'Pig', value: 5, fill: '#8b5cf6' }
-        ];
-
-        const riskData = [
-            { category: 'Safe', count: 450, fill: '#10b981' },
-            { category: 'Borderline', count: 180, fill: '#f59e0b' },
-            { category: 'Unsafe', count: 98, fill: '#ef4444' }
+        // Use real risk data from state
+        const displayRiskData = riskData.length > 0 ? riskData : [
+            { category: 'No Data', count: 0, fill: '#9ca3af' }
         ];
 
         return (
@@ -221,18 +304,22 @@ const AuthorityDashboard = () => {
                 {/* Treatment Trends Chart */}
                 <div className="chart-container">
                     <h4>📈 Monthly Treatment Trends</h4>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={trendData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="treatments" stroke="#3b82f6" strokeWidth={3} name="Total Treatments" />
-                            <Line type="monotone" dataKey="unsafe" stroke="#ef4444" strokeWidth={2} name="Unsafe" />
-                            <Line type="monotone" dataKey="borderline" stroke="#f59e0b" strokeWidth={2} name="Borderline" />
-                        </LineChart>
-                    </ResponsiveContainer>
+                    {trendData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={trendData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Line type="monotone" dataKey="treatments" stroke="#3b82f6" strokeWidth={3} name="Total Treatments" />
+                                <Line type="monotone" dataKey="unsafe" stroke="#ef4444" strokeWidth={2} name="Unsafe" />
+                                <Line type="monotone" dataKey="borderline" stroke="#f59e0b" strokeWidth={2} name="Borderline" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <p style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>No trend data available yet</p>
+                    )}
                 </div>
 
                 {/* Charts Grid */}
@@ -242,14 +329,14 @@ const AuthorityDashboard = () => {
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
-                                    data={speciesData}
+                                    data={displaySpeciesData}
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={100}
                                     dataKey="value"
                                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                                 >
-                                    {speciesData.map((entry, index) => (
+                                    {displaySpeciesData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.fill} />
                                     ))}
                                 </Pie>
@@ -261,12 +348,16 @@ const AuthorityDashboard = () => {
                     <div className="chart-container">
                         <h4>⚠️ Risk Category Distribution</h4>
                         <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={riskData}>
+                            <BarChart data={displayRiskData}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="category" />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey="count" fill={(entry) => entry.fill} />
+                                <Bar dataKey="count">
+                                    {displayRiskData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                                    ))}
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -282,28 +373,32 @@ const AuthorityDashboard = () => {
                 <div className="report-card">
                     <h4>📊 AMU Usage Report</h4>
                     <p>Comprehensive antimicrobial usage across all farms</p>
-                    <button className="btn-primary">Generate Report</button>
+                    <button className="btn-primary" onClick={() => navigate('/authority/analytics')}>View Analytics</button>
                 </div>
                 <div className="report-card">
                     <h4>🗺️ Geographic Analysis</h4>
                     <p>Regional distribution of treatments and compliance</p>
-                    <button className="btn-primary">Generate Report</button>
+                    <button className="btn-primary" onClick={() => navigate('/authority/maps')}>View Heatmaps</button>
                 </div>
                 <div className="report-card">
                     <h4>⚠️ Compliance Report</h4>
                     <p>MRL violations and withdrawal period compliance</p>
-                    <button className="btn-primary">Generate Report</button>
+                    <button className="btn-primary" onClick={() => window.print()}>Print Report</button>
                 </div>
             </div>
         </div>
     );
 
     const renderMaps = () => {
-        const regionData = [
-            { region: 'Karnataka', farms: 45, treatments: 320, risk: 'Medium', riskScore: 65 },
-            { region: 'Tamil Nadu', farms: 38, treatments: 280, risk: 'Low', riskScore: 35 },
-            { region: 'Kerala', farms: 22, treatments: 150, risk: 'High', riskScore: 85 },
-            { region: 'Andhra Pradesh', farms: 31, treatments: 210, risk: 'Medium', riskScore: 55 }
+        // Use real maps data from API
+        const regionData = mapsData.length > 0 ? mapsData.map(m => ({
+            region: m.region,
+            farms: m.farm_count || 0,
+            treatments: m.treatment_count || 0,
+            risk: m.risk_level ? m.risk_level.charAt(0).toUpperCase() + m.risk_level.slice(1) : 'Low',
+            riskScore: m.avg_risk_score || 0
+        })) : [
+            { region: 'No Data', farms: 0, treatments: 0, risk: 'N/A', riskScore: 0 }
         ];
 
         return (
@@ -375,24 +470,26 @@ const AuthorityDashboard = () => {
         <div className="audit-section">
             <h3>🔗 Blockchain Audit Trail</h3>
             <div className="audit-list">
-                <div className="audit-item">
-                    <div className="audit-icon">🔗</div>
-                    <div className="audit-details">
-                        <h4>Treatment Record Added</h4>
-                        <p>Farm: Green Valley | Animal: COW001 | Medicine: Amoxicillin</p>
-                        <p className="audit-time">2 hours ago</p>
-                    </div>
-                    <div className="audit-hash">Hash: 0x1a2b3c...</div>
-                </div>
-                <div className="audit-item">
-                    <div className="audit-icon">🔗</div>
-                    <div className="audit-details">
-                        <h4>Prescription Approved</h4>
-                        <p>Vet: Dr. Smith | Farm: Sunny Acres | Status: Approved</p>
-                        <p className="audit-time">4 hours ago</p>
-                    </div>
-                    <div className="audit-hash">Hash: 0x4d5e6f...</div>
-                </div>
+                {auditTrail.length === 0 ? (
+                    <p>No audit logs found.</p>
+                ) : (
+                    auditTrail.map((log) => (
+                        <div key={log.log_id} className="audit-item">
+                            <div className="audit-icon">🔗</div>
+                            <div className="audit-details">
+                                <h4>{log.action.replace(/_/g, ' ').toUpperCase()}</h4>
+                                <p>
+                                    <strong>Farm:</strong> {log.farm_name || 'N/A'} |
+                                    <strong> User:</strong> {log.user_name || 'N/A'}
+                                </p>
+                                <p className="audit-time">{new Date(log.created_at).toLocaleString()}</p>
+                            </div>
+                            <div className="audit-hash" title={log.data_hash}>
+                                Hash: {log.data_hash.substring(0, 10)}...
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

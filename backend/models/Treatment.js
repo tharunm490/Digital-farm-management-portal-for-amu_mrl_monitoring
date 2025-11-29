@@ -128,6 +128,7 @@ class Treatment {
   }
   // Create new treatment record
   static async create(treatmentData) {
+    console.log('Treatment.create called with:', JSON.stringify(treatmentData));
     const {
       entity_id,
       user_id,
@@ -518,7 +519,7 @@ class Treatment {
       WHERE t.treatment_id = ?
     `;
     const [treatmentRows] = await db.execute(treatmentQuery, [treatmentId]);
-    
+
     if (treatmentRows.length === 0) {
       return null;
     }

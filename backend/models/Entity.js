@@ -19,17 +19,29 @@ class Entity {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-      // If entity_type is 'animal', batch_count should be 1
-      const finalBatchCount = entity_type === 'animal' ? 1 : (batch_count || null);
-      const [result] = await db.execute(query, [
-        farm_id,
-        entity_type,
-        species,
-        tag_id || null,
-        batch_name || null,
-        matrix,
-        finalBatchCount
-      ]);
+    // Robust handling of batch_count
+    let finalBatchCount = 1;
+    if (entity_type !== 'animal') {
+      finalBatchCount = (batch_count !== undefined && batch_count !== null) ? batch_count : 0;
+    }
+
+    // Robust handling of nullable fields
+    const finalTagId = (tag_id !== undefined && tag_id !== null) ? tag_id : null;
+    const finalBatchName = (batch_name !== undefined && batch_name !== null) ? batch_name : null;
+
+    console.log('Creating Entity with values:', {
+      farm_id, entity_type, species, finalTagId, finalBatchName, matrix, finalBatchCount
+    });
+
+    const [result] = await db.query(query, [
+      farm_id,
+      entity_type,
+      species,
+      finalTagId,
+      finalBatchName,
+      matrix,
+      finalBatchCount
+    ]);
 
     return result.insertId;
   }
@@ -98,13 +110,11 @@ class Entity {
     return rows;
   }
 
-  // ...existing code...
-
   // Get entity with treatment and AMU history
   static async getWithHistory(entityId) {
     const entityQuery = 'SELECT * FROM animals_or_batches WHERE entity_id = ?';
     const [entityRows] = await db.execute(entityQuery, [entityId]);
-    
+
     if (entityRows.length === 0) {
       return null;
     }

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Notification = require('../models/Notification');
+const NotificationService = require('../services/NotificationService');
 const { authMiddleware } = require('../middleware/auth');
 
 // Get all notifications for the authenticated user
@@ -11,74 +11,49 @@ router.get('/', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'User ID not found' });
     }
     const limit = parseInt(req.query.limit) || 50;
-    const notifications = await Notification.getByUser(user_id, limit);
-    res.json(notifications);
+    const offset = parseInt(req.query.offset) || 0;
+
+    const result = await NotificationService.getUserNotifications(user_id, limit, offset);
+    res.json(result);
   } catch (error) {
     console.error('Error fetching notifications:', error);
     res.status(500).json({ error: 'Failed to fetch notifications' });
   }
 });
 
-// Get notifications by type
-router.get('/type/:type', authMiddleware, async (req, res) => {
-  try {
-    const user_id = req.user.user_id || req.user.id;
-    const { type } = req.params;
-    console.log('Fetching notifications for user_id:', user_id, 'type:', type);
-    if (!user_id) {
-      return res.status(400).json({ error: 'User ID not found' });
-    }
-    let actualType = type;
-    let subtype = null;
-    if (type === 'mrl_alert') {
-      actualType = 'alert';
-      subtype = 'unsafe_mrl';
-    } else if (type === 'high_dosage') {
-      actualType = 'alert';
-      subtype = 'high_dosage';
-    } else if (type === 'overdosage') {
-      actualType = 'alert';
-      subtype = 'overdosage';
-    } else if (type !== 'vaccination') {
-      return res.status(400).json({ error: 'Invalid notification type' });
-    }
-    const limit = parseInt(req.query.limit) || 50;
-    const notifications = await Notification.getByType(user_id, actualType, subtype, limit);
-    res.json(notifications);
-  } catch (error) {
-    console.error('Error fetching notifications by type:', error);
-    res.status(500).json({ error: 'Failed to fetch notifications' });
-  }
-});
-
-// Get unread notifications (for now, all are unread)
-router.get('/unread', authMiddleware, async (req, res) => {
-  try {
-    const user_id = req.user.user_id || req.user.id;
-    if (!user_id) {
-      return res.status(400).json({ error: 'User ID not found' });
-    }
-    const notifications = await Notification.getUnread(user_id);
-    res.json(notifications);
-  } catch (error) {
-    console.error('Error fetching unread notifications:', error);
-    res.status(500).json({ error: 'Failed to fetch unread notifications' });
-  }
-});
-
-// Mark notification as read (placeholder)
+// Mark notification as read
 router.put('/:id/read', authMiddleware, async (req, res) => {
   try {
-    const user_id = req.user.user_id || req.user.id;
-    if (!user_id) {
-      return res.status(400).json({ error: 'User ID not found' });
-    }
     const { id } = req.params;
-    await Notification.markAsRead(id, user_id);
-    res.json({ message: 'Notification marked as read' });
+    await NotificationService.markAsRead(id);
+    res.json({ success: true, message: 'Notification marked as read' });
   } catch (error) {
     console.error('Error marking notification as read:', error);
     res.status(500).json({ error: 'Failed to mark notification as read' });
+  }
+});
+
+// Mark all as read
+router.put('/read-all', authMiddleware, async (req, res) => {
+  try {
+    const user_id = req.user.user_id || req.user.id;
+    await NotificationService.markAllAsRead(user_id);
+    res.json({ success: true, message: 'All notifications marked as read' });
+  } catch (error) {
+    console.error('Error marking all as read:', error);
+    res.status(500).json({ error: 'Failed to mark notifications as read' });
+  }
+});
+
+// Get notification stats
+router.get('/stats', authMiddleware, async (req, res) => {
+  try {
+    const user_id = req.user.user_id || req.user.id;
+    const stats = await NotificationService.getNotificationStats(user_id);
+    res.json({ success: true, data: stats });
+  } catch (error) {
+    console.error('Error fetching notification stats:', error);
+    res.status(500).json({ error: 'Failed to fetch notification stats' });
   }
 });
 

@@ -1,5 +1,5 @@
 // =========================================
-// LOAD ENV VARIABLES
+// LOAD ENV VARIABLES - Force Restart
 // =========================================
 require('dotenv').config();
 
@@ -108,6 +108,7 @@ app.use('/api/predict', require('./routes/predictRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/authority', require('./routes/authorityRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/prescriptions', require('./routes/prescriptionRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT
