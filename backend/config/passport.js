@@ -73,7 +73,16 @@ module.exports = function(passport) {
   passport.deserializeUser(async (id, done) => {
     try {
       const [users] = await db.query('SELECT * FROM users WHERE user_id = ?', [id]);
-      done(null, users[0]);
+      const user = users[0];
+      
+      // Ensure user has a role (for backward compatibility)
+      if (!user.role) {
+        user.role = 'farmer';
+        // Update the database
+        await db.query('UPDATE users SET role = ? WHERE user_id = ?', ['farmer', user.user_id]);
+      }
+      
+      done(null, user);
     } catch (err) {
       done(err);
     }

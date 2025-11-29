@@ -1,16 +1,18 @@
-/* Mobile overrides: make mobile nav inline and dropdowns expand in flow to avoid overlapping page content */
+/* Mobile overrides: ensure full-screen overlay works properly */
 @media (max-width:768px) {
   .nav-menu {
-    position: static !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-    transition: max-height 0.28s ease !important;
-    box-shadow: none !important;
-    width: 100% !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1001 !important;
   }
 
   .nav-menu.active {
-    max-height: 1000px !important;
+    transform: translateX(0) !important;
   }
 
   .dropdown-menu {
@@ -19,12 +21,13 @@
     visibility: visible !important;
     transform: none !important;
     box-shadow: none !important;
-    background: transparent !important;
+    background: rgba(255, 255, 255, 0.05) !important;
     padding: 0 !important;
     margin: 0 !important;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.25s ease;
+    transition: max-height 0.3s ease;
+    width: 100% !important;
   }
 
   .dropdown-menu.show {
@@ -33,12 +36,25 @@
 
   .dropdown-item {
     color: rgba(255,255,255,0.95) !important;
-    padding: 0.4rem 1rem !important;
+    padding: 0.875rem 2rem !important;
     background: transparent !important;
+    min-height: 48px !important;
+    align-items: center !important;
   }
 
   .dropdown-item:hover {
-    background: rgba(255,255,255,0.03) !important;
+    background: rgba(255,255,255,0.1) !important;
     color: white !important;
+  }
+
+  .mobile-backdrop {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+  }
+
+  .mobile-backdrop.active {
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 }

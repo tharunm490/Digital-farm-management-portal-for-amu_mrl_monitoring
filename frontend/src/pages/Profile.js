@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import Navigation from '../components/Navigation';
 import api from '../services/api';
 import { getAllStates, getDistrictsByState } from '../data/statesDistricts';
+import indiaData from '../data/indiaLocations';
 import './Profile.css';
 
 const Profile = () => {
@@ -17,11 +18,18 @@ const Profile = () => {
     phone: '',
     address: '',
     state: '',
-    district: ''
+    district: '',
+    taluk: '',
+    vet_name: '',
+    license_number: '',
+    role: ''
   });
 
   const states = getAllStates();
   const districts = formData.state ? getDistrictsByState(formData.state) : [];
+  const taluks = formData.state && formData.district && indiaData[formData.state] && indiaData[formData.state][formData.district] 
+    ? indiaData[formData.state][formData.district] 
+    : [];
 
   // Format date as DD/MM/YYYY
   const formatDate = (date) => {
@@ -33,12 +41,16 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        full_name: user.full_name || '',
+        full_name: user.display_name || user.full_name || '',
         email: user.email || '',
         phone: user.phone || '',
         address: user.address || '',
         state: user.state || '',
-        district: user.district || ''
+        district: user.district || '',
+        taluk: user.taluk || '',
+        vet_name: user.vet_name || '',
+        license_number: user.license_number || '',
+        role: user.role || 'farmer'
       });
     }
   }, [user]);
@@ -47,7 +59,9 @@ const Profile = () => {
     const { name, value } = e.target;
     
     if (name === 'state') {
-      setFormData({ ...formData, state: value, district: '' });
+      setFormData({ ...formData, state: value, district: '', taluk: '' });
+    } else if (name === 'district') {
+      setFormData({ ...formData, district: value, taluk: '' });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -116,6 +130,20 @@ const Profile = () => {
             {editing ? (
               <form onSubmit={handleSubmit} className="profile-form">
                 <div className="form-group">
+                  <label>Role</label>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="farmer">Farmer</option>
+                    <option value="veterinarian">Veterinarian</option>
+                    <option value="authority">Authority</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
                   <label>Full Name</label>
                   <input
                     type="text"
@@ -137,7 +165,7 @@ const Profile = () => {
                   />
                 </div>
 
-                {user?.role === 'farmer' && (
+                {formData.role === 'farmer' && (
                   <>
                     <div className="form-group">
                       <label>Phone</label>
@@ -189,6 +217,106 @@ const Profile = () => {
                         </select>
                       </div>
                     </div>
+
+                    <div className="form-group">
+                      <label>Taluk</label>
+                      <select
+                        name="taluk"
+                        value={formData.taluk}
+                        onChange={handleChange}
+                        disabled={!formData.district}
+                      >
+                        <option value="">Select Taluk</option>
+                        {taluks.map(taluk => (
+                          <option key={taluk} value={taluk}>{taluk}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                {formData.role === 'veterinarian' && (
+                  <>
+                    <div className="form-group">
+                      <label>Veterinarian Name</label>
+                      <input
+                        type="text"
+                        name="vet_name"
+                        value={formData.vet_name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>License Number</label>
+                      <input
+                        type="text"
+                        name="license_number"
+                        value={formData.license_number}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Phone</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>State</label>
+                        <select
+                          name="state"
+                          value={formData.state}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select State</option>
+                          {states.map(state => (
+                            <option key={state} value={state}>{state}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label>District</label>
+                        <select
+                          name="district"
+                          value={formData.district}
+                          onChange={handleChange}
+                          required
+                          disabled={!formData.state}
+                        >
+                          <option value="">Select District</option>
+                          {districts.map(district => (
+                            <option key={district} value={district}>{district}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Taluk</label>
+                      <select
+                        name="taluk"
+                        value={formData.taluk}
+                        onChange={handleChange}
+                        required
+                        disabled={!formData.district}
+                      >
+                        <option value="">Select Taluk</option>
+                        {taluks.map(taluk => (
+                          <option key={taluk} value={taluk}>{taluk}</option>
+                        ))}
+                      </select>
+                    </div>
                   </>
                 )}
 
@@ -227,7 +355,39 @@ const Profile = () => {
                     <div className="detail-item">
                       <span className="detail-label">Location:</span>
                       <span className="detail-value">
-                        {user?.district && user?.state 
+                        {user?.taluk && user?.district && user?.state 
+                          ? `${user.taluk}, ${user.district}, ${user.state}` 
+                          : user?.district && user?.state 
+                          ? `${user.district}, ${user.state}` 
+                          : 'Not provided'}
+                      </span>
+                    </div>
+                  </>
+                )}
+
+                {user?.role === 'veterinarian' && (
+                  <>
+                    <div className="detail-item">
+                      <span className="detail-label">Veterinarian Name:</span>
+                      <span className="detail-value">{user?.vet_name || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">License Number:</span>
+                      <span className="detail-value">{user?.license_number || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Phone:</span>
+                      <span className="detail-value">{user?.phone || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Location:</span>
+                      <span className="detail-value">
+                        {user?.taluk && user?.district && user?.state 
+                          ? `${user.taluk}, ${user.district}, ${user.state}` 
+                          : user?.district && user?.state 
                           ? `${user.district}, ${user.state}` 
                           : 'Not provided'}
                       </span>

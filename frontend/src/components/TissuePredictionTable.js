@@ -36,12 +36,6 @@ const TissuePredictionTable = ({ tissueResults, matrix }) => {
             {getMatrixIcon(matrix)} {matrix?.toUpperCase() || 'UNKNOWN'}
           </span>
         </div>
-        <div className="overall-risk-summary">
-          <span className="worst-tissue">Worst Tissue: <strong>{tissueResults.worst_tissue}</strong></span>
-          <span className={`overall-risk-badge ${getRiskClass(tissueResults.overall_risk_category)}`}>
-            {getRiskIcon(tissueResults.overall_risk_category)} {tissueResults.overall_risk_category}
-          </span>
-        </div>
       </div>
       
       {tissueResults.message && (

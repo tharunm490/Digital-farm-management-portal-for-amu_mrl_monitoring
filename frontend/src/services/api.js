@@ -16,6 +16,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('Making API request to:', config.url);
     return config;
   },
   (error) => {
@@ -25,8 +26,12 @@ api.interceptors.request.use(
 
 // Response interceptor to handle auth errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('API response received for:', response.config.url, 'Status:', response.status);
+    return response;
+  },
   (error) => {
+    console.error('API request failed for:', error.config?.url, 'Error:', error.message);
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -47,6 +52,7 @@ export const batchAPI = {
 export const amuAPI = {
   getByBatchId: (batch_id) => api.get(`/amu/${batch_id}`),
   getByFarmer: (farmer_id) => api.get(`/amu/farmer/${farmer_id}`),
+  getByVet: (vet_id) => api.get(`/amu/vet/${vet_id}`),
   create: (data) => api.post('/amu', data),
 };
 
@@ -80,6 +86,12 @@ export const notificationAPI = {
   getByType: (type, limit = 50) => api.get(`/notifications/type/${type}?limit=${limit}`),
   getUnread: () => api.get('/notifications/unread'),
   markAsRead: (id) => api.put(`/notifications/${id}/read`),
+};
+
+// Vet Farm Mapping API
+export const vetFarmAPI = {
+  getVetForFarm: (farmId) => api.get(`/vet-farm-mapping/farm/${farmId}`),
+  debugVetAssignment: (farmId) => api.get(`/vet-farm-mapping/debug/${farmId}`),
 };
 
 export default api;

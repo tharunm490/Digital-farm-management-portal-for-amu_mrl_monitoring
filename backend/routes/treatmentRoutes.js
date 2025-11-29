@@ -4,7 +4,16 @@ const Treatment = require('../models/Treatment');
 const AMU = require('../models/AMU');
 const Entity = require('../models/Entity');
 const MRL = require('../models/MRL');
-const { authMiddleware, farmerOnly } = require('../middleware/auth');
+const db = require('../config/database');
+const { authMiddleware, farmerOnly, veterinarianOnly } = require('../middleware/auth');
+
+// Role-based middleware for farmers and vets
+const farmerOrVet = (req, res, next) => {
+  if (req.user.role !== 'farmer' && req.user.role !== 'veterinarian') {
+    return res.status(403).json({ error: 'Access denied. Farmers and veterinarians only.' });
+  }
+  next();
+};
 const { predictTissueMrl, checkOverdosage, calculateSafeDate } = require('../utils/amuTissueService');
 
 // Helper function to convert integer date (YYYYMMDD) to string date (YYYY-MM-DD)
@@ -18,19 +27,29 @@ function intToDate(intDate) {
   return `${year}-${month}-${day}`;
 }
 
-// All routes require authentication and farmer role
-router.use(authMiddleware, farmerOnly);
+// All routes require authentication
+router.use(authMiddleware);
 
-// Get all treatments for logged-in farmer
-router.get('/', async (req, res) => {
+// Get all treatments for logged-in user (filtered by role)
+router.get('/', farmerOrVet, async (req, res) => {
   try {
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      
+      const treatments = await Treatment.getByFarmer(farmer.farmer_id);
+      res.json(treatments);
+    } else if (req.user.role === 'veterinarian') {
+      const veterinarian = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      if (!veterinarian) {
+        return res.status(404).json({ error: 'Veterinarian profile not found' });
+      }
+      
+      const treatments = await Treatment.getByVet(veterinarian.vet_id);
+      res.json(treatments);
     }
-    
-    const treatments = await Treatment.getByFarmer(farmer.farmer_id);
-    res.json(treatments);
   } catch (error) {
     console.error('Get treatments error:', error);
     res.status(500).json({ error: 'Failed to fetch treatments' });
@@ -38,16 +57,28 @@ router.get('/', async (req, res) => {
 });
 
 // Get recent treatments (last 30 days by default)
-router.get('/recent', async (req, res) => {
+router.get('/recent', farmerOrVet, async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 30;
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
-    }
     
-    const treatments = await Treatment.getRecent(farmer.farmer_id, days);
-    res.json(treatments);
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      
+      const treatments = await Treatment.getRecent(farmer.farmer_id, days);
+      res.json(treatments);
+    } else if (req.user.role === 'veterinarian') {
+      // For vets, get recent treatments from their mapped farms
+      const veterinarian = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      if (!veterinarian) {
+        return res.status(404).json({ error: 'Veterinarian profile not found' });
+      }
+      
+      const treatments = await Treatment.getRecentByVet(veterinarian.vet_id, days);
+      res.json(treatments);
+    }
   } catch (error) {
     console.error('Get recent treatments error:', error);
     res.status(500).json({ error: 'Failed to fetch recent treatments' });
@@ -55,7 +86,7 @@ router.get('/recent', async (req, res) => {
 });
 
 // Get treatments for specific entity
-router.get('/entity/:entityId', async (req, res) => {
+router.get('/entity/:entityId', farmerOrVet, async (req, res) => {
   try {
     // Verify entity ownership
     const entity = await Entity.getById(req.params.entityId);
@@ -64,9 +95,19 @@ router.get('/entity/:entityId', async (req, res) => {
     }
     
     const farm = await require('../models/Farm').getById(entity.farm_id);
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    let hasAccess = false;
     
-    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      hasAccess = farmer && farm.farmer_id === farmer.farmer_id;
+    } else if (req.user.role === 'veterinarian') {
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetsByFarm(farm.farm_id);
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      hasAccess = vet && vetMapping.some(mapping => mapping.vet_id === vet.vet_id);
+    }
+    
+    if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -79,7 +120,7 @@ router.get('/entity/:entityId', async (req, res) => {
 });
 
 // Get single treatment with AMU records
-router.get('/:treatmentId', async (req, res) => {
+router.get('/:treatmentId', farmerOrVet, async (req, res) => {
   try {
     const treatment = await Treatment.getWithAMU(req.params.treatmentId);
     
@@ -90,9 +131,19 @@ router.get('/:treatmentId', async (req, res) => {
     // Verify ownership through entity
     const entity = await Entity.getById(treatment.entity_id);
     const farm = await require('../models/Farm').getById(entity.farm_id);
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    let hasAccess = false;
     
-    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      hasAccess = farmer && farm.farmer_id === farmer.farmer_id;
+    } else if (req.user.role === 'veterinarian') {
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetsByFarm(farm.farm_id);
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      hasAccess = vet && vetMapping.some(mapping => mapping.vet_id === vet.vet_id);
+    }
+    
+    if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -104,7 +155,7 @@ router.get('/:treatmentId', async (req, res) => {
 });
 
 // Create new treatment with optional AMU records
-router.post('/', async (req, res) => {
+router.post('/', farmerOrVet, async (req, res) => {
   try {
     const { 
       entity_id, 
@@ -125,7 +176,8 @@ router.post('/', async (req, res) => {
       vaccine_interval_days,
       vaccine_total_months,
       next_due_date,
-      vaccine_end_date
+      vaccine_end_date,
+      request_id // For vets approving requests
     } = req.body;
 
     // Validate required fields
@@ -139,23 +191,84 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'start_date is required' });
     }
 
-    // Verify entity exists and belongs to farmer
+    // Verify entity exists
     const entity = await Entity.getById(entity_id);
     if (!entity) {
       return res.status(404).json({ error: 'Entity not found' });
     }
     
     const farm = await require('../models/Farm').getById(entity.farm_id);
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+    if (!farm) {
+      return res.status(404).json({ error: 'Farm not found' });
+    }
+
+    // Check access based on role
+    let hasAccess = false;
+    let isVetCreating = false;
     
-    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+    if (req.user.role === 'farmer') {
+      // Farmers can access their own farms
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      hasAccess = farmer && farm.farmer_id === farmer.farmer_id;
+      
+      // Farmers can only add treatments for poultry directly
+      if (entity.species !== 'poultry') {
+        return res.status(403).json({ error: 'Farmers can only add treatments for poultry directly. For other species, please submit a treatment request.' });
+      }
+    } else if (req.user.role === 'veterinarian') {
+      // Vets can access mapped farms
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetsByFarm(farm.farm_id);
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      hasAccess = vet && vetMapping.some(mapping => mapping.vet_id === vet.vet_id);
+      isVetCreating = true;
+      
+      // For vets, require a treatment request
+      if (!request_id) {
+        return res.status(403).json({ error: 'Veterinarians can only create treatments from approved treatment requests.' });
+      }
+      
+      // For vets, check if there's an approved treatment request
+      if (request_id) {
+        const TreatmentRequest = require('../models/TreatmentRequest');
+        const request = await TreatmentRequest.getById(request_id);
+        if (!request || request.status !== 'approved' || request.vet_id !== vet.vet_id) {
+          return res.status(403).json({ error: 'Invalid or unapproved treatment request' });
+        }
+      }
+    }
+
+    if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Check minimum gap rule - no new treatment during withdrawal period
+    const newStartDate = intToDate(start_date);
+    const [existingTreatments] = await db.execute(`
+      SELECT a.safe_date FROM treatment_records t
+      JOIN amu_records a ON t.treatment_id = a.treatment_id
+      WHERE t.entity_id = ? AND a.safe_date IS NOT NULL AND a.safe_date > ?
+      ORDER BY a.safe_date DESC LIMIT 1
+    `, [entity_id, newStartDate]);
+
+    if (existingTreatments.length > 0) {
+      return res.status(400).json({ error: `Withdrawal period active. New treatment not allowed until ${existingTreatments[0].safe_date}.` });
+    }
+
+    // For vets, ensure vet_id and vet_name are provided
+    let finalVetId = vet_id;
+    let finalVetName = vet_name;
+    
+    if (isVetCreating) {
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      finalVetId = vet.vet_id;
+      finalVetName = vet.vet_name;
     }
 
     // Create treatment
     const treatmentId = await Treatment.create({
       entity_id,
-      user_id: req.user.user_id || req.user.id,
+      user_id: req.user.user_id,
       medication_type,
       medicine,
       dose_amount,
@@ -165,16 +278,34 @@ router.post('/', async (req, res) => {
       duration_days,
       start_date: intToDate(start_date),
       end_date: intToDate(end_date),
-      vet_id,
-      vet_name,
+      vet_id: finalVetId,
+      vet_name: finalVetName,
       reason,
       cause,
       vaccination_date: intToDate(vaccination_date),
       vaccine_interval_days,
       vaccine_total_months,
       next_due_date: intToDate(next_due_date),
-      vaccine_end_date: intToDate(vaccine_end_date)
+      vaccine_end_date: intToDate(vaccine_end_date),
+      status: isVetCreating ? 'approved' : 'pending' // Vets create approved treatments, farmers create pending
     });
+
+    // If this was from a treatment request, update the request status
+    if (request_id) {
+      const TreatmentRequest = require('../models/TreatmentRequest');
+      await TreatmentRequest.updateStatus(request_id, 'completed');
+      
+      // Notify farmer
+      const Notification = require('../models/Notification');
+      const farmerUser = await db.query('SELECT user_id FROM farmers WHERE farmer_id = ?', [farm.farmer_id]);
+      if (farmerUser[0] && farmerUser[0][0]) {
+        await Notification.create({
+          user_id: farmerUser[0][0].user_id,
+          type: 'alert',
+          message: `Treatment has been administered to ${entity.species} ${entity.tag_id || entity.batch_name}`
+        });
+      }
+    }
 
     const treatment = await Treatment.getById(treatmentId);
 

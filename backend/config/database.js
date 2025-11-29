@@ -1,8 +1,8 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const mysql = require('mysql2');
 
-// Create connection pool with Railway-optimized settings
-const pool = mysql.createPool({
+// Parse DATABASE_URL if available (Railway format)
+let dbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -12,11 +12,30 @@ const pool = mysql.createPool({
   connectionLimit: 2, // Reduced for Railway
   queueLimit: 0,
   connectTimeout: 20000, // 20 seconds
-  acquireTimeout: 20000, // Valid for pools
   // Additional Railway-specific options
   ssl: false, // Railway handles SSL internally
   timezone: '+00:00'
-});
+};
+
+if (process.env.DATABASE_URL) {
+  const url = new URL(process.env.DATABASE_URL);
+  dbConfig = {
+    host: url.hostname,
+    user: url.username,
+    password: url.password,
+    database: url.pathname.substring(1), // Remove leading /
+    port: url.port,
+    waitForConnections: true,
+    connectionLimit: 2,
+    queueLimit: 0,
+    connectTimeout: 20000,
+    ssl: false,
+    timezone: '+00:00'
+  };
+}
+
+// Create connection pool
+const pool = mysql.createPool(dbConfig);
 
 // Get promise-based connection
 const promisePool = pool.promise();

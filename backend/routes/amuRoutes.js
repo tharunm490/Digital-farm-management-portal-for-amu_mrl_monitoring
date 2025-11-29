@@ -53,8 +53,32 @@ router.get('/:batch_id', authMiddleware, async (req, res) => {
 });
 
 // GET /api/amu/entity/:entity_id - Get AMU records by entity
-router.get('/entity/:entity_id', authMiddleware, farmerOnly, async (req, res) => {
+router.get('/entity/:entity_id', authMiddleware, async (req, res) => {
   try {
+    // Check if user has access to this entity
+    const entity = await require('../models/Entity').getById(req.params.entity_id);
+    if (!entity) {
+      return res.status(404).json({ error: 'Entity not found' });
+    }
+    
+    const farm = await Farm.getById(entity.farm_id);
+    let hasAccess = false;
+    
+    if (req.user.role === 'farmer') {
+      const farmer = await Farmer.getByUserId(req.user.user_id);
+      hasAccess = farmer && farm.farmer_id === farmer.farmer_id;
+    } else if (req.user.role === 'veterinarian') {
+      const { Veterinarian } = require('../models/User');
+      const veterinarian = await Veterinarian.getByUserId(req.user.user_id);
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetsByFarm(farm.farm_id);
+      hasAccess = veterinarian && vetMapping.some(mapping => mapping.vet_id === veterinarian.vet_id);
+    }
+    
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     const amuRecords = await AMU.getByEntity(req.params.entity_id);
     res.json(amuRecords);
   } catch (error) {
@@ -67,6 +91,27 @@ router.get('/entity/:entity_id', authMiddleware, farmerOnly, async (req, res) =>
 router.get('/farmer/:farmer_id', authMiddleware, farmerOnly, async (req, res) => {
   try {
     const amuRecords = await AMU.getByFarmer(req.params.farmer_id);
+    res.json(amuRecords);
+  } catch (error) {
+    console.error('Error fetching AMU records:', error);
+    res.status(500).json({ error: 'Failed to fetch AMU records' });
+  }
+});
+
+// GET /api/amu/vet/:vet_id - Get AMU records by vet (mapped farms)
+router.get('/vet/:user_id', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'veterinarian') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
+    const { Veterinarian } = require('../models/User');
+    const veterinarian = await Veterinarian.getByUserId(req.params.user_id);
+    if (!veterinarian) {
+      return res.status(404).json({ error: 'Veterinarian profile not found' });
+    }
+
+    const amuRecords = await AMU.getByVet(veterinarian.vet_id);
     res.json(amuRecords);
   } catch (error) {
     console.error('Error fetching AMU records:', error);

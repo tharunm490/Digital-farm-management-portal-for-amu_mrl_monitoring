@@ -1,23 +1,37 @@
 const express = require('express');
 const router = express.Router();
 const Entity = require('../models/Entity');
-const { authMiddleware, farmerOnly } = require('../middleware/auth');
+const { authMiddleware, farmerOnly, veterinarianOnly } = require('../middleware/auth');
 
-// All routes require authentication and farmer role
-router.use(authMiddleware, farmerOnly);
+// All routes require authentication
+router.use(authMiddleware);
 
-// Get all entities for logged-in farmer
+// Get all entities (filtered by role)
 router.get('/', async (req, res) => {
   try {
-    const { Farmer } = require('../models/User');
-    const farmer = await Farmer.getByUserId(req.user.user_id);
-    
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
+    if (req.user.role === 'farmer') {
+      const { Farmer } = require('../models/User');
+      const farmer = await Farmer.getByUserId(req.user.user_id);
+      
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      
+      const entities = await Entity.getAllByFarmer(farmer.farmer_id);
+      res.json(entities);
+    } else if (req.user.role === 'veterinarian') {
+      const { Veterinarian } = require('../models/User');
+      const veterinarian = await Veterinarian.getByUserId(req.user.user_id);
+      
+      if (!veterinarian) {
+        return res.status(404).json({ error: 'Veterinarian profile not found' });
+      }
+      
+      const entities = await Entity.getAllByVet(veterinarian.vet_id);
+      res.json(entities);
+    } else {
+      res.json([]);
     }
-    
-    const entities = await Entity.getAllByFarmer(farmer.farmer_id);
-    res.json(entities);
   } catch (error) {
     console.error('Get entities error:', error);
     res.status(500).json({ error: 'Failed to fetch entities' });
@@ -74,8 +88,23 @@ router.get('/:entityId', async (req, res) => {
       return res.status(404).json({ error: 'Entity not found' });
     }
 
-    // Check ownership
-    if (entityData.entity.farmer_id !== req.user.farmer_id) {
+    // Check ownership based on role
+    const farm = await require('../models/Farm').getById(entityData.entity.farm_id);
+    let hasAccess = false;
+    
+    if (req.user.role === 'farmer') {
+      const { Farmer } = require('../models/User');
+      const farmer = await Farmer.getByUserId(req.user.user_id);
+      hasAccess = farmer && farm.farmer_id === farmer.farmer_id;
+    } else if (req.user.role === 'veterinarian') {
+      const { Veterinarian } = require('../models/User');
+      const veterinarian = await Veterinarian.getByUserId(req.user.user_id);
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetsByFarm(farm.farm_id);
+      hasAccess = veterinarian && vetMapping.some(mapping => mapping.vet_id === veterinarian.vet_id);
+    }
+
+    if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -87,7 +116,7 @@ router.get('/:entityId', async (req, res) => {
 });
 
 // Create new entity
-router.post('/', async (req, res) => {
+router.post('/', farmerOnly, async (req, res) => {
   try {
     const entityData = {
       ...req.body,
@@ -129,7 +158,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update entity
-router.put('/:entityId', async (req, res) => {
+router.put('/:entityId', farmerOnly, async (req, res) => {
   try {
     const entity = await Entity.getById(req.params.entityId);
     
@@ -138,7 +167,11 @@ router.put('/:entityId', async (req, res) => {
     }
 
     // Check ownership
-    if (entity.farmer_id !== req.user.farmer_id) {
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const { Farmer } = require('../models/User');
+    const farmer = await Farmer.getByUserId(req.user.user_id);
+    
+    if (!farmer || farm.farmer_id !== farmer.farmer_id) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -156,7 +189,7 @@ router.put('/:entityId', async (req, res) => {
 });
 
 // Delete entity
-router.delete('/:entityId', async (req, res) => {
+router.delete('/:entityId', farmerOnly, async (req, res) => {
   try {
     const entity = await Entity.getById(req.params.entityId);
     
@@ -165,7 +198,11 @@ router.delete('/:entityId', async (req, res) => {
     }
 
     // Check ownership
-    if (entity.farmer_id !== req.user.farmer_id) {
+    const farm = await require('../models/Farm').getById(entity.farm_id);
+    const { Farmer } = require('../models/User');
+    const farmer = await Farmer.getByUserId(req.user.user_id);
+    
+    if (!farmer || farm.farmer_id !== farmer.farmer_id) {
       return res.status(403).json({ error: 'Access denied' });
     }
 

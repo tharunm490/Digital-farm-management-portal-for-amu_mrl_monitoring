@@ -120,11 +120,12 @@ const Register = () => {
             <label>Role *</label>
             <select name="role" value={formData.role} onChange={handleChange} required>
               <option value="farmer">Farmer</option>
+              <option value="veterinarian">Veterinarian</option>
               <option value="authority">Authority</option>
             </select>
           </div>
           
-          {formData.role === 'farmer' && (
+          {(formData.role === 'farmer' || formData.role === 'veterinarian') && (
             <>
               <div className="form-group">
                 <label>Phone</label>

@@ -8,6 +8,7 @@ const FarmList = () => {
   const [farms, setFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [treatmentRequests, setTreatmentRequests] = useState({});
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -27,11 +28,39 @@ const FarmList = () => {
       });
       
       setFarms(response.data);
+      
+      // Fetch treatment requests for each farm
+      const requests = {};
+      for (const farm of response.data) {
+        try {
+          const requestResponse = await axios.get(
+            `${process.env.REACT_APP_API_URL || '/api'}/treatment-requests/farm/${farm.farm_id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          requests[farm.farm_id] = requestResponse.data;
+        } catch (err) {
+          console.error(`Failed to fetch treatment requests for farm ${farm.farm_id}:`, err);
+          requests[farm.farm_id] = [];
+        }
+      }
+      setTreatmentRequests(requests);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch farms');
     } finally {
       setLoading(false);
     }
+  };
+
+  const getTreatmentRequestStatus = (farmId) => {
+    const requests = treatmentRequests[farmId] || [];
+    if (requests.length === 0) return null;
+    
+    const pendingCount = requests.filter(r => r.status === 'pending').length;
+    const approvedCount = requests.filter(r => r.status === 'approved').length;
+    const completedCount = requests.filter(r => r.status === 'completed').length;
+    const rejectedCount = requests.filter(r => r.status === 'rejected').length;
+    
+    return { pendingCount, approvedCount, completedCount, rejectedCount, totalCount: requests.length };
   };
 
 
@@ -85,8 +114,25 @@ const FarmList = () => {
                 </div>
                 <div className="detail-row">
                   <span className="label">Batches:</span>
-                  <span className="value">{farm.batch_count || 0}</span>
+                  <span className="value">{farm.entity_count || 0}</span>
                 </div>
+                {(() => {
+                  const status = getTreatmentRequestStatus(farm.farm_id);
+                  return status ? (
+                    <div className="detail-row">
+                      <span className="label">Treatment Requests:</span>
+                      <span className="value">
+                        <span className="request-status">
+                          <span className="total-count">Total: {status.totalCount}</span>
+                          {status.pendingCount > 0 && <span className="status-pending">⏳ {status.pendingCount} Pending</span>}
+                          {status.approvedCount > 0 && <span className="status-approved">✅ {status.approvedCount} Approved</span>}
+                          {status.completedCount > 0 && <span className="status-completed">🏁 {status.completedCount} Completed</span>}
+                          {status.rejectedCount > 0 && <span className="status-rejected">❌ {status.rejectedCount} Rejected</span>}
+                        </span>
+                      </span>
+                    </div>
+                  ) : null;
+                })()}
               </div>
 
               <div className="farm-actions">

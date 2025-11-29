@@ -148,7 +148,8 @@ class Treatment {
       vaccine_total_months,
       next_due_date,
       vaccine_end_date,
-      vaccination_date
+      vaccination_date,
+      status // New status field
     } = treatmentData;
 
     // Map route names to database enum values
@@ -238,6 +239,17 @@ class Treatment {
       formattedEndDate = `${yyyy}-${mm}-${dd}`;
     }
 
+    // Calculate end_date if not provided
+    if (!formattedEndDate) {
+      if (duration_days && duration_days > 0) {
+        const start = new Date(formattedStartDate);
+        start.setDate(start.getDate() + duration_days - 1);
+        formattedEndDate = start.toISOString().split('T')[0];
+      } else {
+        formattedEndDate = formattedStartDate;
+      }
+    }
+
     // Calculate vaccine dates
     let final_next_due_date = next_due_date;
     let final_vaccine_end_date = vaccine_end_date;
@@ -258,9 +270,16 @@ class Treatment {
 
     const query = `
       INSERT INTO treatment_records
-      (entity_id, farm_id, user_id, species, medication_type, is_vaccine, vaccine_interval_days, vaccine_total_months, next_due_date, vaccine_end_date, vet_id, vet_name, reason, cause, medicine, start_date, end_date, route, dose_amount, dose_unit, frequency_per_day, duration_days)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (entity_id, farm_id, user_id, species, medication_type, is_vaccine, vaccine_interval_days, vaccine_total_months, next_due_date, vaccine_end_date, vet_id, vet_name, reason, cause, medicine, start_date, end_date, route, dose_amount, dose_unit, frequency_per_day, duration_days, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
+    // Determine status based on who is creating the treatment
+    let treatmentStatus = status || 'approved'; // Use provided status or default to approved
+    if (requiresVet && !vet_id && !status) {
+      // Farmer creating treatment for species that requires vet - should be pending
+      treatmentStatus = 'pending';
+    }
 
     const [result] = await db.execute(query, [
       entity_id,
@@ -273,7 +292,7 @@ class Treatment {
       final_is_vaccine ? (vaccine_total_months && !isNaN(parseInt(vaccine_total_months)) ? parseInt(vaccine_total_months) : null) : null,
       final_is_vaccine ? final_next_due_date : null,
       final_is_vaccine ? final_vaccine_end_date : null,
-      vet_id ? parseInt(vet_id) : null,
+      vet_id || null,
       vet_name || null,
       reason || null,
       cause || null,
@@ -284,7 +303,8 @@ class Treatment {
       dose_amount ? (isNaN(parseFloat(dose_amount)) ? null : parseFloat(dose_amount)) : null,
       dose_unit,
       frequency_per_day ? (isNaN(parseInt(frequency_per_day)) ? null : parseInt(frequency_per_day)) : null,
-      duration_days ? (isNaN(parseInt(duration_days)) ? null : parseInt(duration_days)) : null
+      duration_days ? (isNaN(parseInt(duration_days)) ? null : parseInt(duration_days)) : null,
+      treatmentStatus
     ]);
 
     const treatmentId = result.insertId;
@@ -402,6 +422,7 @@ class Treatment {
           notificationMessage = `Unsafe residual limit alert: Predicted Residual Limit ${finalPredictions.predicted_mrl} for ${medicine} in ${entity.species} (${entity.matrix}).`;
         }
 
+        // Notify farmer
         await Notification.create({
           user_id,
           type: 'alert',
@@ -411,6 +432,21 @@ class Treatment {
           treatment_id: treatmentId,
           amu_id: amuId
         });
+
+        // Notify veterinarian
+        const VetFarmMapping = require('./VetFarmMapping');
+        const vetMapping = await VetFarmMapping.getVetForFarm(entity.farm_id);
+        if (vetMapping) {
+          await Notification.create({
+            user_id: vetMapping.user_id,
+            type: 'alert',
+            subtype: notificationSubtype,
+            message: `Alert for farm ${entity.farm_name}: ${notificationMessage}`,
+            entity_id,
+            treatment_id: treatmentId,
+            amu_id: amuId
+          });
+        }
       }
     }
 
@@ -530,7 +566,22 @@ class Treatment {
     };
   }
 
-  // Get all treatments by farmer (through their entities)
+  // Get all treatments by vet (through mapped farms)
+  static async getByVet(vetId) {
+    const query = `
+      SELECT t.*, e.entity_type, e.tag_id, e.batch_name, e.species, f.farm_name
+      FROM treatment_records t
+      JOIN animals_or_batches e ON t.entity_id = e.entity_id
+      JOIN farms f ON t.farm_id = f.farm_id
+      JOIN vet_farm_mapping vfm ON f.farm_id = vfm.farm_id
+      WHERE vfm.vet_id = ? AND t.status = 'approved'
+      ORDER BY t.start_date DESC
+    `;
+    const [rows] = await db.execute(query, [vetId]);
+    return rows;
+  }
+
+  // Get all treatments by farmer (all treatments on their farms)
   static async getByFarmer(farmerId) {
     const query = `
       SELECT t.*, e.entity_type, e.tag_id, e.batch_name, e.species, f.farm_name
@@ -546,18 +597,20 @@ class Treatment {
 
   // ...existing code...
 
-  // Get recent treatments (last 30 days)
-  static async getRecent(farmerId, days = 30) {
+  // Get recent treatments by vet (last N days)
+  static async getRecentByVet(vet_id, days = 30) {
     const query = `
       SELECT t.*, e.entity_type, e.tag_id, e.batch_name, e.species, f.farm_name
       FROM treatment_records t
       JOIN animals_or_batches e ON t.entity_id = e.entity_id
       JOIN farms f ON t.farm_id = f.farm_id
-      WHERE f.farmer_id = ? 
+      JOIN vet_farm_mapping vfm ON f.farm_id = vfm.farm_id
+      WHERE vfm.vet_id = ? 
         AND t.start_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+        AND t.status = 'approved'
       ORDER BY t.start_date DESC
     `;
-    const [rows] = await db.execute(query, [farmerId, days]);
+    const [rows] = await db.execute(query, [vet_id, days]);
     return rows;
   }
 }

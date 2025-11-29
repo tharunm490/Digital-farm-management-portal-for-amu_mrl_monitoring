@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -16,21 +17,51 @@ import AuthCallback from './pages/AuthCallback';
 import RoleSelection from './pages/RoleSelection';
 import AMURecords from './pages/AMURecords';
 import FarmerNotifications from './pages/FarmerNotifications';
+import TreatmentRequestManagement from './pages/TreatmentRequestManagement';
+import AuthorityNavigation from './components/AuthorityNavigation';
+import AuthorityDashboard from './pages/authority/AuthorityDashboard';
+import AuthorityAMUAnalytics from './pages/authority/AuthorityAMUAnalytics';
+import AuthorityHeatMap from './pages/authority/AuthorityHeatMap';
+import AuthorityComplaints from './pages/authority/AuthorityComplaints';
+import AuthorityReports from './pages/authority/AuthorityReports';
+import AuthorityMapView from './pages/authority/AuthorityMapView';
+import AuthorityProfile from './pages/authority/AuthorityProfile';
+import AuthorityNotifications from './pages/authority/AuthorityNotifications';
 import './App.css';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-  
-  if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
-  }
-  
-  return user ? children : <Navigate to="/login" />;
+// Authority Routes Component
+const AuthorityRoutes = () => {
+  return (
+    <>
+      <AuthorityNavigation />
+      <Routes>
+        <Route path="/dashboard" element={<AuthorityDashboard />} />
+        <Route path="/amu-analytics" element={<AuthorityAMUAnalytics />} />
+        <Route path="/heat-map" element={<AuthorityHeatMap />} />
+        <Route path="/complaints" element={<AuthorityComplaints />} />
+        <Route path="/reports" element={<AuthorityReports />} />
+        <Route path="/map-view" element={<AuthorityMapView />} />
+        <Route path="/profile" element={<AuthorityProfile />} />
+        <Route path="/notifications" element={<AuthorityNotifications />} />
+        <Route path="/" element={<Navigate to="/authority/dashboard" />} />
+      </Routes>
+    </>
+  );
 };
 
 function AppRoutes() {
   const { user } = useAuth();
+  
+  // Redirect authority users to their dashboard
+  if (user && user.role === 'authority') {
+    return (
+      <Routes>
+        <Route path="/" element={<Navigate to="/authority/dashboard" />} />
+        <Route path="/authority/*" element={<AuthorityRoutes />} />
+        <Route path="*" element={<Navigate to="/authority/dashboard" />} />
+      </Routes>
+    );
+  }
   
   return (
     <Routes>
@@ -41,6 +72,7 @@ function AppRoutes() {
       <Route path="/role-selection" element={<RoleSelection />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><FarmerNotifications /></ProtectedRoute>} />
+      <Route path="/treatment-requests" element={<ProtectedRoute><TreatmentRequestManagement /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/farms" element={<ProtectedRoute><FarmList /></ProtectedRoute>} />
       <Route path="/add-farm" element={<ProtectedRoute><AddFarm /></ProtectedRoute>} />

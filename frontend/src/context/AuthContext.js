@@ -14,9 +14,12 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState('en');
 
   useEffect(() => {
     checkAuth();
+    const savedLanguage = localStorage.getItem('language') || 'en';
+    setLanguage(savedLanguage);
   }, []);
 
   const checkAuth = async () => {
@@ -71,6 +74,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const changeLanguage = (lang) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
+  };
+
   const value = {
     user,
     setUser,
@@ -78,7 +86,9 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    checkAuth
+    checkAuth,
+    language,
+    changeLanguage
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -30,4 +30,11 @@ const authorityOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { authMiddleware, farmerOnly, authorityOnly };
+const veterinarianOnly = (req, res, next) => {
+  if (req.user.role !== 'veterinarian') {
+    return res.status(403).json({ error: 'Access denied. Veterinarians only.' });
+  }
+  next();
+};
+
+module.exports = { authMiddleware, farmerOnly, authorityOnly, veterinarianOnly };

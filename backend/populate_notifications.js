@@ -26,7 +26,7 @@ async function populateNotifications() {
         subtype = 'unsafe_mrl';
         message = `Unsafe residual limit detected for ${amu.medicine} in ${amu.tag_id || amu.batch_name}. Risk category: ${amu.risk_category}`;
       } else {
-        subtype = 'high_dosage';
+        subtype = 'borderline';
         message = `Borderline condition detected for ${amu.medicine} in ${amu.tag_id || amu.batch_name}. Risk category: ${amu.risk_category}`;
       }
 

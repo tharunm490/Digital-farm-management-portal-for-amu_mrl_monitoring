@@ -79,7 +79,7 @@ function predictTissueMrl(species, category, medicine, doseAmount, doseUnit, dur
     return {
       tissues: results,
       worst_tissue: worstTissue,
-      overall_risk_category: "unsafe",
+      overall_risk_category: 'UNSAFE',
       predicted_mrl: predicted_mrl,
       predicted_withdrawal_days: predicted_withdrawal_days,
       safe_date: safe_date,
@@ -163,6 +163,18 @@ function predictTissueMrl(species, category, medicine, doseAmount, doseUnit, dur
         Math.ceil(baseWithdrawalDays + (totalDose * persistenceFactor))
       );
     }
+    // Build and return the prediction object for normal (non-overdose) cases
+    const safe_date = calculateSafeDate(endDate, withdrawalDays);
+    return {
+      tissues: results,
+      worst_tissue: worstTissue,
+      overall_risk_category: overall_risk_category || (results[worstTissue] && results[worstTissue].risk_category) || 'SAFE',
+      predicted_mrl: worstPredictedMrl,
+      predicted_withdrawal_days: withdrawalDays,
+      safe_date: safe_date,
+      overdosage: false,
+      message: message
+    };
   }
 }
 

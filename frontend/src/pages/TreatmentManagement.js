@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { commonMedicines } from '../data/medicines';
 import medicineMap from '../data/medicineMap';
-import api from '../services/api';
+import api, { vetFarmAPI } from '../services/api';
 import dosageReference from '../data/dosage_reference_full_extended_with_mrl.json';
 import './TreatmentManagement.css';
+import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const TreatmentManagement = () => {
   const [treatments, setTreatments] = useState([]);
@@ -13,6 +15,7 @@ const TreatmentManagement = () => {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [mrlData, setMrlData] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showRequestForm, setShowRequestForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   // dosageReference is imported
@@ -58,9 +61,19 @@ const TreatmentManagement = () => {
   const [showVaccinationSection, setShowVaccinationSection] = useState(false);
   const [selectedMedicineData, setSelectedMedicineData] = useState(null);
   const [amuRecords, setAmuRecords] = useState([]);
+  const [hasVetAssigned, setHasVetAssigned] = useState(null);
+  
+  const [requestDetails, setRequestDetails] = useState(null);
+  
+  const [requestFormData, setRequestFormData] = useState({
+    symptoms: ''
+  });
   
   const navigate = useNavigate();
   const { entity_id } = useParams();
+  const location = useLocation();
+  const { user } = useAuth();
+  const { t } = useTranslation();
 
   // Format date as DD/MM/YYYY
   const formatDate = (date) => {
@@ -84,13 +97,50 @@ const TreatmentManagement = () => {
     if (entity_id) {
       fetchTreatmentsByEntity(entity_id);
     }
+    // Check for request_id in query params
+    const searchParams = new URLSearchParams(location.search);
+    const requestId = searchParams.get('request_id');
+    if (requestId) {
+      fetchRequestDetails(requestId);
+    }
     // Dosage reference is imported
-  }, [entity_id]);
+
+    // Pre-fill vet info for veterinarians
+    if (user?.role === 'veterinarian') {
+      setFormData(prev => ({
+        ...prev,
+        vet_id: user.vet_id || '',
+        vet_name: user.vet_name || user.display_name || ''
+      }));
+    }
+  }, [entity_id, location.search, user]);
+
+  const fetchRequestDetails = async (requestId) => {
+    try {
+      const response = await api.get(`/treatment-requests/${requestId}`);
+      setRequestDetails(response.data);
+      // Pre-fill reason with symptoms
+      setFormData(prev => ({
+        ...prev,
+        reason: response.data.symptoms || ''
+      }));
+      // Load the entity/treatments/AMU records and open the add form for vets
+      if (response.data.entity_id) {
+        await fetchTreatmentsByEntity(response.data.entity_id);
+        // Ensure the add form is visible so vet can approve and treat using recommendations
+        setShowAddForm(true);
+      }
+    } catch (error) {
+      console.error('Error fetching request details:', error);
+    }
+  };
 
   const fetchEntities = async () => {
     try {
       const response = await api.get('/entities');
       setEntities(response.data);
+      // Reset vet assignment check when entities are refetched
+      setHasVetAssigned(null);
     } catch (err) {
       console.error('Failed to fetch entities:', err);
       setError('Failed to load entities');
@@ -100,15 +150,16 @@ const TreatmentManagement = () => {
   const fetchTreatmentsByEntity = async (id) => {
     try {
       setLoading(true);
-      const [treatmentsResponse, amuResponse] = await Promise.all([
+      const [treatmentsResponse, amuResponse, entityResponse] = await Promise.all([
         api.get(`/treatments/entity/${id}`),
-        api.get(`/amu/entity/${id}`)
+        api.get(`/amu/entity/${id}`),
+        api.get(`/entities/${id}`)
       ]);
       setTreatments(treatmentsResponse.data);
       setAmuRecords(amuResponse.data);
       
-      // Get entity details
-      const entity = entities.find(e => e.entity_id === parseInt(id));
+      // Use the entity data from the direct API call
+      const entity = entityResponse.data.entity || entityResponse.data;
       if (entity) {
         setSelectedEntity(entity);
         setFormData(prev => ({
@@ -221,7 +272,8 @@ const TreatmentManagement = () => {
         vaccine_interval_days: formData.vaccine_interval_days || null,
         vaccine_total_months: formData.vaccine_total_months || null,
         next_due_date: dateToInt(formData.next_due_date) || null,
-        vaccine_end_date: dateToInt(formData.vaccine_end_date) || null
+        vaccine_end_date: dateToInt(formData.vaccine_end_date) || null,
+        request_id: requestDetails ? requestDetails.request_id : null
       };
 
       await api.post('/treatments', submitData);
@@ -231,9 +283,47 @@ const TreatmentManagement = () => {
       if (entity_id) {
         fetchTreatmentsByEntity(entity_id);
       }
+
+      // If this was from a treatment request, mark the request as completed
+      if (requestDetails) {
+        try {
+          await api.put(`/treatment-requests/${requestDetails.request_id}/status`, { status: 'completed' });
+          alert('Treatment request has been completed!');
+        } catch (requestError) {
+          console.error('Failed to update request status:', requestError);
+          // Don't fail the whole operation if request update fails
+        }
+      }
     } catch (err) {
       console.error('Error adding treatment:', err);
       setError(err.response?.data?.error || 'Failed to add treatment');
+    }
+  };
+
+  const handleRequestSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!formData.entity_id) {
+      setError('Please select an animal or batch');
+      return;
+    }
+    if (!requestFormData.symptoms.trim()) {
+      setError('Please describe the symptoms');
+      return;
+    }
+
+    try {
+      await api.post('/treatment-requests', {
+        entity_id: formData.entity_id,
+        symptoms: requestFormData.symptoms.trim()
+      });
+      alert('Treatment request submitted successfully! A veterinarian will review and respond to your request.');
+      setShowRequestForm(false);
+      setRequestFormData({ symptoms: '' });
+    } catch (err) {
+      console.error('Error submitting treatment request:', err);
+      setError(err.response?.data?.error || 'Failed to submit treatment request');
     }
   };
 
@@ -270,6 +360,7 @@ const TreatmentManagement = () => {
     setShowManualCause(false);
     setManualReason('');
     setManualCause('');
+    setRequestFormData({ symptoms: '' });
   };
 
   const handleInputChange = (e) => {
@@ -455,6 +546,12 @@ const TreatmentManagement = () => {
         entity_id: entityId,
         species: entity.species
       }));
+      // Check vet assignment for the farm
+      checkVetAssignment(entity.farm_id);
+      // Reset form states when entity changes
+      setShowAddForm(false);
+      setShowRequestForm(false);
+      setRequestFormData({ symptoms: '' });
     }
   };
 
@@ -806,6 +903,32 @@ const TreatmentManagement = () => {
     }
   };
 
+  const checkVetAssignment = async (farmId) => {
+    try {
+      const response = await vetFarmAPI.getVetForFarm(farmId);
+      if (response.data.hasVet) {
+        setHasVetAssigned(true);
+      } else {
+        // Try to auto-assign a vet based on farm location
+        try {
+          const autoAssignResponse = await api.post(`/vet-farm-mapping/auto-assign/${farmId}`);
+          if (autoAssignResponse.data.success) {
+            setHasVetAssigned(true);
+          } else {
+            console.log('Auto-assignment failed:', autoAssignResponse.data.message);
+            setHasVetAssigned(false);
+          }
+        } catch (autoAssignError) {
+          console.error('Failed to auto-assign vet:', autoAssignError);
+          setHasVetAssigned(false);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to check vet assignment:', err);
+      setHasVetAssigned(false);
+    }
+  };
+
   const checkMRL = async (medicine, species) => {
     try {
       // This would typically call an API to get MRL data
@@ -842,19 +965,76 @@ const TreatmentManagement = () => {
             <h1>💊 Treatment Management</h1>
             <p className="header-subtitle">Manage medical treatments and monitor animal health</p>
           </div>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="btn-primary"
-          >
-            <span className="btn-icon">+</span>
-            {showAddForm ? 'Cancel' : 'Add Treatment'}
-          </button>
+          {!(user?.role === 'veterinarian' && !requestDetails) && (
+            <button
+              onClick={() => {
+                if (selectedEntity && !['chicken', 'poultry'].includes(selectedEntity.species.toLowerCase())) {
+                  setShowRequestForm(!showRequestForm);
+                  setShowAddForm(false); // Ensure add form is hidden
+                } else {
+                  setShowAddForm(!showAddForm);
+                  setShowRequestForm(false); // Ensure request form is hidden
+                }
+              }}
+              className="btn-primary"
+            >
+              <span className="btn-icon">+</span>
+              {selectedEntity && !['chicken', 'poultry'].includes(selectedEntity.species.toLowerCase()) 
+                ? (showRequestForm ? 'Cancel Request' : 'Request Treatment') 
+                : (showAddForm ? 'Cancel' : 'Add Treatment')
+              }
+            </button>
+          )}
         </div>
+
+        {requestDetails && (
+          <div className="alert alert-info">
+            <span className="alert-icon">📋</span>
+            Treating request from {requestDetails.farmer_name} for {requestDetails.species} - {requestDetails.tag_id || requestDetails.batch_name}
+          </div>
+        )}
+
+        {user?.role === 'veterinarian' && !requestDetails && (
+          <div className="alert alert-info">
+            <span className="alert-icon">ℹ️</span>
+            As a veterinarian, you can only add treatments from approved treatment requests. Please visit the Treatment Requests page to approve and treat animal requests.
+          </div>
+        )}
 
         {error && (
           <div className="alert alert-error">
             <span className="alert-icon">⚠️</span>
             {error}
+          </div>
+        )}
+
+        {selectedEntity && hasVetAssigned === false && !['chicken', 'poultry'].includes(selectedEntity.species.toLowerCase()) && (
+          <div className="alert alert-warning">
+            <span className="alert-icon">⚠️</span>
+            No veterinarian assigned to this farm. Please ensure your farmer profile includes location details (state, district, taluk) for automatic vet assignment.
+            <button 
+              onClick={async () => {
+                try {
+                  const debugResponse = await vetFarmAPI.debugVetAssignment(selectedEntity.farm_id);
+                  console.log('Vet Assignment Debug:', debugResponse.data);
+                  alert(`Debug Info:\nFarm Location: ${debugResponse.data.farm.location.state || 'N/A'}, ${debugResponse.data.farm.location.district || 'N/A'}, ${debugResponse.data.farm.location.taluk || 'N/A'}\nAvailable Vets: ${debugResponse.data.availableVets.length}\nCurrent Vet: ${debugResponse.data.currentVet ? debugResponse.data.currentVet.display_name : 'None'}`);
+                } catch (error) {
+                  console.error('Debug error:', error);
+                  alert('Failed to get debug info');
+                }
+              }}
+              className="debug-btn"
+              style={{ marginLeft: '10px', padding: '4px 8px', fontSize: '12px' }}
+            >
+              Debug
+            </button>
+          </div>
+        )}
+
+        {selectedEntity && !['chicken', 'poultry'].includes(selectedEntity.species.toLowerCase()) && (
+          <div className="alert alert-info">
+            <span className="alert-icon">ℹ️</span>
+            Farmers can only add treatments for poultry directly. For other species, please submit a treatment request.
           </div>
         )}
 
@@ -950,12 +1130,12 @@ const TreatmentManagement = () => {
                             const speciesData = dosageReference[speciesKey];
                             const availableCategories = Object.keys(speciesData || {});
                             
-                            return availableCategories.map(category => {
+                            return availableCategories.map((category, index) => {
                               const displayName = category.split('-').map(word => 
                                 word.charAt(0).toUpperCase() + word.slice(1)
                               ).join(' ');
                               return (
-                                <option key={category} value={category}>
+                                <option key={`category-${index}`} value={category}>
                                   {displayName}
                                 </option>
                               );
@@ -997,8 +1177,8 @@ const TreatmentManagement = () => {
                             
                             const availableMedicines = Object.keys(speciesData[formData.medication_type]);
                             
-                            return availableMedicines.map(medName => (
-                              <option key={medName} value={medName}>
+                            return availableMedicines.map((medName, index) => (
+                              <option key={`medicine-${index}`} value={medName}>
                                 {medName}
                               </option>
                             ));
@@ -1151,7 +1331,7 @@ const TreatmentManagement = () => {
                             <div className="suggestion-buttons">
                               {getDoseSuggestions().map((dose, index) => (
                                 <button
-                                  key={dose.value}
+                                  key={`dose-${index}`}
                                   type="button"
                                   className={`suggestion-btn ${dose.level}`}
                                   onClick={() => setFormData(prev => ({ 
@@ -1187,7 +1367,7 @@ const TreatmentManagement = () => {
                             <div className="suggestion-buttons">
                               {getUnitSuggestions().map((unit, index) => (
                                 <button
-                                  key={unit.value}
+                                  key={`unit-${index}`}
                                   type="button"
                                   className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
                                   onClick={() => setFormData(prev => ({ ...prev, dose_unit: unit.value }))}
@@ -1212,10 +1392,10 @@ const TreatmentManagement = () => {
                           className="form-control"
                         >
                           <option value="">Select Route</option>
-                          {getAllRouteOptions().map((route) => {
+                          {getAllRouteOptions().map((route, index) => {
                             const isRecommended = selectedMedicineData?.ui?.route_default === route;
                             return (
-                              <option key={route} value={route}>
+                              <option key={`route-${index}`} value={route}>
                                 {route === 'IM' ? 'Intramuscular (IM)' :
                                  route === 'IV' ? 'Intravenous (IV)' :
                                  route === 'SC' ? 'Subcutaneous (SC)' :
@@ -1229,11 +1409,11 @@ const TreatmentManagement = () => {
                           <div className="dose-suggestions">
                             <small>💡 Quick select routes:</small>
                             <div className="suggestion-buttons">
-                              {getAllRouteOptions().map((route) => {
+                              {getAllRouteOptions().map((route, index) => {
                                 const isRecommended = selectedMedicineData?.ui?.route_default === route;
                                 return (
                                   <button
-                                    key={route}
+                                    key={`route-btn-${index}`}
                                     type="button"
                                     className={`suggestion-btn ${isRecommended ? 'recommended' : ''}`}
                                     onClick={() => setFormData(prev => ({ ...prev, route }))}
@@ -1298,7 +1478,7 @@ const TreatmentManagement = () => {
                             <div className="suggestion-buttons">
                               {getFrequencySuggestions().map((freq, index) => (
                                 <button
-                                  key={freq.value}
+                                  key={`freq-${index}`}
                                   type="button"
                                   className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
                                   onClick={() => setFormData(prev => ({ ...prev, frequency_per_day: freq.value }))}
@@ -1356,7 +1536,7 @@ const TreatmentManagement = () => {
                             <div className="suggestion-buttons">
                               {getDurationSuggestions().map((dur, index) => (
                                 <button
-                                  key={dur.value}
+                                  key={`dur-${index}`}
                                   type="button"
                                   className={`suggestion-btn ${index === 0 ? 'recommended' : ''}`}
                                   onClick={() => setFormData(prev => ({ ...prev, duration_days: dur.value }))}
@@ -1408,7 +1588,7 @@ const TreatmentManagement = () => {
                   )}
 
                   {/* Veterinary Information */}
-                  {isVetRequired() && (
+                  {isVetRequired() && user?.role !== 'veterinarian' && (
                     <div className="form-section">
                       <h3>👨‍⚕️ Veterinary Information</h3>
                       <div className="form-row">
@@ -1542,8 +1722,8 @@ const TreatmentManagement = () => {
                             className="form-control"
                           >
                             <option value="">Select Reason</option>
-                            {getAllReasonOptions().map(reason => (
-                              <option key={reason} value={reason}>
+                            {getAllReasonOptions().map((reason, index) => (
+                              <option key={`reason-${index}`} value={reason}>
                                 {reason}
                               </option>
                             ))}
@@ -1569,8 +1749,8 @@ const TreatmentManagement = () => {
                             className="form-control"
                           >
                             <option value="">Select Cause</option>
-                            {getAllCauseOptions().map(cause => (
-                              <option key={cause} value={cause}>
+                            {getAllCauseOptions().map((cause, index) => (
+                              <option key={`cause-${index}`} value={cause}>
                                 {cause}
                               </option>
                             ))}
@@ -1635,7 +1815,7 @@ const TreatmentManagement = () => {
                       <h3>📊 MRL Compliance Information</h3>
                       <div className="mrl-grid">
                         {mrlData.map((mrl, idx) => (
-                          <div key={idx} className="mrl-card">
+                          <div key={`mrl-${mrl.species}-${mrl.matrix}-${idx}`} className="mrl-card">
                             <div className="mrl-header">
                               <span className="mrl-species">{mrl.species}</span>
                               <span className="mrl-matrix">{mrl.matrix}</span>
@@ -1687,13 +1867,123 @@ const TreatmentManagement = () => {
           </div>
         )}
 
-        {!showAddForm && entity_id && (
+        {showRequestForm && (
+          <div className="treatment-form-card">
+            <div className="form-header">
+              <h2>📋 {t('request_treatment_for')} {selectedEntity?.species}</h2>
+              <div className="form-badges">
+                {selectedEntity && (
+                  <span className={`badge ${selectedEntity.entity_type}`}>
+                    {selectedEntity.entity_type === 'animal' ? t('individual_animal') : t('batch')}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <form onSubmit={handleRequestSubmit} className="treatment-form">
+              {/* Animal/Batch Selection */}
+              <div className="form-section">
+                <h3>🏷️ {t('selected_animal_batch')}</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>{t('animal_batch_required')}</label>
+                    <select
+                      name="entity_id"
+                      value={formData.entity_id}
+                      onChange={(e) => handleEntitySelect(e.target.value)}
+                      required
+                      className="form-control"
+                    >
+                      <option value="">{t('select_animal_batch')}</option>
+                      {entities.map(entity => (
+                        <option key={entity.entity_id} value={entity.entity_id}>
+                          {entity.entity_type === 'animal' ? entity.tag_id : entity.batch_name}
+                          ({entity.species}) - {entity.farm_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {selectedEntity && (
+                  <div className="entity-summary-card">
+                    <h4>{t('selected_entity_details')}</h4>
+                    <div className="entity-details-grid">
+                      <div className="detail-item">
+                        <span className="label">{t('type')}:</span>
+                        <span className="value">{selectedEntity.entity_type === 'animal' ? t('individual_animal') : t('batch')}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">{t('species')}:</span>
+                        <span className="value">{selectedEntity.species}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">{t('farm')}:</span>
+                        <span className="value">{selectedEntity.farm_name}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">{t('product')}:</span>
+                        <span className="value">{selectedEntity.matrix}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Symptoms Description */}
+              <div className="form-section">
+                <h3>🏥 {t('symptoms_request_details')}</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>{t('symptoms_description_required')}</label>
+                    <textarea
+                      name="symptoms"
+                      value={requestFormData.symptoms}
+                      onChange={(e) => setRequestFormData(prev => ({ ...prev, symptoms: e.target.value }))}
+                      required
+                      className="form-control"
+                      placeholder={t('describe_symptoms_placeholder')}
+                      rows="4"
+                    />
+                    <small className="form-help">
+                      💡 {t('symptoms_help_text')}
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Actions */}
+              <div className="form-actions">
+                <button 
+                  type="submit" 
+                  className="btn-primary"
+                  disabled={!formData.entity_id || !requestFormData.symptoms.trim()}
+                >
+                  <span className="btn-icon">📤</span>
+                  {t('submit_treatment_request')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowRequestForm(false);
+                    setRequestFormData({ symptoms: '' });
+                  }}
+                  className="btn-secondary"
+                >
+                  {t('cancel')}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {!showAddForm && !showRequestForm && entity_id && (
           <div className="treatments-section">
             <div className="section-header">
-              <h2>Treatment History</h2>
+              <h2>{t('treatment_history')}</h2>
               <div className="treatment-stats">
                 <span className="stat-item">
-                  <strong>{treatments.length}</strong> Total Treatments
+                  <strong>{treatments.length}</strong> {t('total_treatments')}
                 </span>
               </div>
             </div>
@@ -1701,11 +1991,27 @@ const TreatmentManagement = () => {
             {treatments.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">💊</div>
-                <h3>No treatments found</h3>
-                <p>This animal/batch hasn't received any treatments yet.</p>
-                <button onClick={() => setShowAddForm(true)} className="btn-primary">
-                  Add First Treatment
-                </button>
+                <h3>{t('no_treatments_found')}</h3>
+                <p>{t('no_treatments_yet')}</p>
+                {!(user?.role === 'veterinarian' && !requestDetails) && (
+                  <button 
+                    onClick={() => {
+                      if (selectedEntity && !['chicken', 'poultry'].includes(selectedEntity.species.toLowerCase())) {
+                        setShowRequestForm(true);
+                        setShowAddForm(false);
+                      } else {
+                        setShowAddForm(true);
+                        setShowRequestForm(false);
+                      }
+                    }} 
+                    className="btn-primary"
+                  >
+                    {selectedEntity && !['chicken', 'poultry'].includes(selectedEntity.species.toLowerCase()) 
+                      ? 'Request First Treatment' 
+                      : 'Add First Treatment'
+                    }
+                  </button>
+                )}
               </div>
             ) : (
               <div className="treatments-grid">
@@ -1716,9 +2022,14 @@ const TreatmentManagement = () => {
                     <div className="treatment-header">
                       <div className="treatment-title">
                         <h3>{treatment.species} - {treatment.entity_type === 'animal' ? (treatment.tag_id || 'No Tag') : (treatment.batch_name || 'No Batch')} - {treatment.medicine || treatment.active_ingredient} ({treatment.medication_type})</h3>
-                        <span className={`status-badge ${new Date() > new Date(treatment.end_date) ? 'completed' : 'active'}`}>
-                          {new Date() > new Date(treatment.end_date) ? 'Completed' : 'Active'}
-                        </span>
+                        <div className="status-badges">
+                          <span className={`status-badge ${new Date() > new Date(treatment.end_date) ? 'completed' : 'active'}`}>
+                            {new Date() > new Date(treatment.end_date) ? 'Completed' : 'Active'}
+                          </span>
+                          <span className={`approval-badge ${treatment.status === 'approved' ? 'approved' : 'pending'}`}>
+                            {treatment.status === 'approved' ? '✅ Approved' : '⏳ Pending'}
+                          </span>
+                        </div>
                         {treatment.is_vaccine && (
                           <span className="vaccine-badge">💉 Vaccine</span>
                         )}

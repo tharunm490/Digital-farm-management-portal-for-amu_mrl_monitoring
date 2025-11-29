@@ -28,11 +28,20 @@ const AuthCallback = () => {
         const userData = response.data;
 
         // Check if user has completed profile (for Google OAuth users)
-        if (userData.auth_provider === 'google' && !userData.role) {
-          // Redirect to role selection
-          navigate(`/role-selection?token=${token}`);
+        if (userData.auth_provider === 'google') {
+          if (userData.role === 'farmer' && !userData.farmer_id) {
+            // Redirect to role selection for farmer details
+            navigate(`/role-selection?token=${token}`);
+          } else if (userData.role === 'veterinarian' && !userData.vet_id) {
+            // Redirect to role selection for vet details
+            navigate(`/role-selection?token=${token}`);
+          } else {
+            // User has complete profile, go to dashboard
+            await checkAuth();
+            navigate('/dashboard');
+          }
         } else {
-          // User has role, go to dashboard
+          // Local auth user, go to dashboard
           await checkAuth();
           navigate('/dashboard');
         }

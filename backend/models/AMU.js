@@ -140,6 +140,21 @@ class AMU {
         treatment_id,
         amu_id: amuId
       });
+
+      // Also notify veterinarian
+      const VetFarmMapping = require('./VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetForFarm(farm_id);
+      if (vetMapping) {
+        await Notification.create({
+          user_id: vetMapping.user_id,
+          type: 'alert',
+          subtype: 'unsafe_mrl',
+          message: `Unsafe condition detected for ${medicine} in ${species} on farm ${vetMapping.farm_name}. Risk category: ${risk_category}`,
+          entity_id,
+          treatment_id,
+          amu_id: amuId
+        });
+      }
     }
 
     // Create notification if overdosage
@@ -153,6 +168,21 @@ class AMU {
         treatment_id,
         amu_id: amuId
       });
+
+      // Also notify veterinarian
+      const VetFarmMapping = require('./VetFarmMapping');
+      const vetMapping = await VetFarmMapping.getVetForFarm(farm_id);
+      if (vetMapping) {
+        await Notification.create({
+          user_id: vetMapping.user_id,
+          type: 'alert',
+          subtype: 'overdosage',
+          message: `Overdosage detected for ${medicine} in ${species} on farm ${vetMapping.farm_name}. Please review the treatment.`,
+          entity_id,
+          treatment_id,
+          amu_id: amuId
+        });
+      }
     }
 
     return result.insertId;
@@ -225,6 +255,64 @@ class AMU {
       ORDER BY a.start_date DESC
     `;
     const [rows] = await db.execute(query, [farmerId]);
+    // Add status and MRL limits to each record
+    const TissueResult = require('./TissueResult');
+    return await Promise.all(rows.map(async row => {
+      // Use risk_category for status, capitalize it
+      const status = (row.risk_category && row.risk_category !== '0' && row.risk_category !== 0) ? row.risk_category.charAt(0).toUpperCase() + row.risk_category.slice(1) : 'Unknown';
+
+      // Get MRL limits from dosage reference
+      let safe_max = null, borderline_max = null, unsafe_above = null;
+      if (dosageRef && dosageRef[row.species] && dosageRef[row.species][row.medication_type] && dosageRef[row.species][row.medication_type][row.medicine]) {
+        const medData = dosageRef[row.species][row.medication_type][row.medicine];
+        if (medData.mrl_by_matrix && medData.mrl_by_matrix[row.matrix]) {
+          const mrl = medData.mrl_by_matrix[row.matrix].mrl_ug_per_kg;
+          safe_max = mrl.safe;
+          borderline_max = mrl.borderline;
+          unsafe_above = mrl.unsafe;
+        }
+      }
+
+      // Get tissue results if matrix is meat
+      let tissue_results = null;
+      if (row.matrix === 'meat') {
+        const tissues = await TissueResult.getByAmuId(row.amu_id);
+        if (tissues.length > 0) {
+          tissue_results = {
+            tissues: {},
+            worst_tissue: row.worst_tissue,
+            overall_risk_category: row.risk_category,
+            predicted_mrl: row.predicted_mrl
+          };
+          tissues.forEach(t => {
+            tissue_results.tissues[t.tissue] = {
+              predicted_mrl: t.predicted_mrl,
+              base_mrl: t.base_mrl,
+              risk_percent: t.risk_percent,
+              risk_category: t.risk_category
+            };
+          });
+        }
+      }
+
+      return { ...row, status, safe_max, borderline_max, unsafe_above, tissue_results };
+    }));
+  }
+
+  // Get all AMU records for a vet (mapped farms)
+  static async getByVet(vetId) {
+    const query = `
+      SELECT a.*, t.start_date as treatment_start, t.medicine as treatment_medicine,
+             e.entity_type, e.tag_id, e.batch_name, e.species, f.farm_name
+      FROM amu_records a
+      JOIN treatment_records t ON a.treatment_id = t.treatment_id
+      JOIN animals_or_batches e ON a.entity_id = e.entity_id
+      JOIN farms f ON a.farm_id = f.farm_id
+      JOIN vet_farm_mapping vfm ON f.farm_id = vfm.farm_id
+      WHERE vfm.vet_id = ?
+      ORDER BY a.start_date DESC
+    `;
+    const [rows] = await db.execute(query, [vetId]);
     // Add status and MRL limits to each record
     const TissueResult = require('./TissueResult');
     return await Promise.all(rows.map(async row => {

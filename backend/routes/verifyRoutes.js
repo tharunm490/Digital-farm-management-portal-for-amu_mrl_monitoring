@@ -154,42 +154,35 @@ router.get('/:entity_id', async (req, res) => {
         ? { text: 'PASS', color1: '#dafbe6', color2: '#ffe066', icon: 'fa-solid fa-circle-check', gradient: 'linear-gradient(90deg,#dafbe6,#ffe066)' }
         : { text: 'FAIL', color1: '#ffdede', color2: '#ffe066', icon: 'fa-solid fa-circle-xmark', gradient: 'linear-gradient(90deg,#ffdede,#ffe066)' };
 
-      // Combined Treatment and AMU Records as cards
-      const combinedRecordsHtml = response.treatment_records && response.treatment_records.length > 0 ? `
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-          ${response.treatment_records.map(record => {
-            const medicineData = dosageData[record.species]?.[record.medication_type]?.[record.medicine];
-            const safeMax = medicineData?.recommended_doses?.safe?.max || 0;
-            const overdosageAlert = record.overdosage ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">OVERDOSAGE GIVEN RED ALERT</div>' : '';
-            const unsafeAlert = record.mrl_status === 'unsafe' ? '<div style="color:red; font-weight:bold; background:#ffe6e6; padding:10px; border-radius:5px; margin-top:10px;">UNSAFE MRL RED ALERT</div>' : '';
-            return `
-            <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f7fafc;">
-              <h3 style="margin: 0 0 15px 0; color: #2d3748;">${record.active_ingredient || record.medicine}${record.safe_date && new Date(record.safe_date) <= new Date() ? ' <span style="color: green; font-size: 0.8em;">(SAFE)</span>' : ''}</h3>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                ${record.dose_amount ? `<div><strong>Dose:</strong> ${record.dose_amount} ${record.dose_unit}</div>` : ''}
-                <div><strong>Route:</strong> ${record.route}</div>
+      // Combined Treatment and AMU Records as cards (render as strings)
+      const combinedRecordsHtml = response.treatment_records && response.treatment_records.length > 0
+        ? `
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          ${response.treatment_records.map(record => `
+            <div style="border:1px solid #e2e8f0;border-radius:12px;padding:20px;background:#f7fafc;">
+              <h3 style="margin:0 0 15px 0;color:#2d3748;">${record.active_ingredient || record.medicine}${record.safe_date && new Date(record.safe_date) <= new Date() ? ' <span style="color: green; font-size: 0.8em;">(SAFE)</span>' : ''}</h3>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
+                ${record.dose_amount ? `<div><strong>Dose:</strong> ${record.dose_amount} ${record.dose_unit || ''}</div>` : ''}
+                <div><strong>Route:</strong> ${record.route || ''}</div>
                 ${record.frequency_per_day ? `<div><strong>Frequency:</strong> ${record.frequency_per_day}x per day</div>` : ''}
                 ${record.duration_days ? `<div><strong>Duration:</strong> ${record.duration_days} days</div>` : ''}
-                <div><strong>Start Date:</strong> ${record.start_date}</div>
-                <div><strong>End Date:</strong> ${record.end_date}</div>
+                <div><strong>Start Date:</strong> ${record.start_date || ''}</div>
+                <div><strong>End Date:</strong> ${record.end_date || ''}</div>
                 ${record.withdrawal_period_days ? `<div><strong>Withdrawal Period:</strong> ${record.withdrawal_period_days} days</div>` : ''}
                 ${record.safe_date ? `<div><strong>Safe Date:</strong> ${record.safe_date}</div>` : ''}
-                ${record.predicted_mrl ? `<div><strong>Predicted Residual Limit:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.predicted_mrl} mcg/kg</span></div>` : ''}
-                ${record.predicted_mrl && medicineData?.mrl_by_matrix?.[record.matrix]?.mrl_ug_per_kg?.safe ? `<div><strong>Safe Residual Limit:</strong> ${medicineData.mrl_by_matrix[record.matrix].mrl_ug_per_kg.safe} mcg/kg</div>` : ''}
+                ${record.predicted_mrl ? `<div><strong>Predicted Residual Limit:</strong> ${record.predicted_mrl} mcg/kg</div>` : ''}
                 ${record.predicted_withdrawal_days ? `<div><strong>Predicted Withdrawal Days:</strong> ${Math.max(0, record.predicted_withdrawal_days)}</div>` : ''}
-                ${record.mrl_status ? `<div><strong>Risk Category:</strong> <span style="color: ${record.mrl_status === 'safe' ? '#4CAF50' : record.mrl_status === 'borderline' ? '#FF9800' : record.mrl_status === 'unsafe' ? '#f44336' : 'inherit'}; font-weight: bold;">${record.mrl_status}</span></div>` : ''}
+                ${record.mrl_status ? `<div><strong>Risk Category:</strong> ${record.mrl_status}</div>` : ''}
                 ${record.medication_type ? `<div><strong>Category:</strong> ${record.medication_type}</div>` : ''}
                 ${record.reason ? `<div><strong>Reason:</strong> ${record.reason}</div>` : ''}
                 ${record.cause ? `<div><strong>Cause:</strong> ${record.cause}</div>` : ''}
                 ${record.vet_name ? `<div><strong>Veterinarian:</strong> ${record.vet_name}</div>` : ''}
               </div>
-              ${overdosageAlert}
-              ${unsafeAlert}
             </div>
-            `;
-          }).join('')}
+          `).join('')}
         </div>
-      ` : `<div style="color:#888;font-size:1.05rem;padding:18px;text-align:center;">No treatment or AMU records found.</div>`;
+      `
+        : `<div style="color:#888;font-size:1.05rem;padding:18px;text-align:center;">No treatment or AMU records found.</div>`;
 
       const html = `
         <!doctype html>

@@ -171,6 +171,43 @@
   text-align: right;
 }
 
+.request-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.total-count {
+  color: #666;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-pending {
+  color: #ffc107;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-approved {
+  color: #28a745;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-completed {
+  color: #17a2b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-rejected {
+  color: #dc3545;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .farm-actions {
   display: flex;
   gap: 10px;

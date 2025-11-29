@@ -198,9 +198,49 @@
   transition: color 0.3s ease;
 }
 
-.register-link a:hover {
-  color: #2d5016;
-  text-decoration: underline;
+.role-selection {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.role-selection p {
+  margin-bottom: 15px;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.role-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.role-btn {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.role-btn:hover {
+  border-color: #4a7c2c;
+  background: #f8faf5;
+}
+
+.role-btn.active {
+  border-color: #4a7c2c;
+  background: #4a7c2c;
+  color: white;
 }
 
 /* Responsive */

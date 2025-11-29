@@ -4,9 +4,11 @@ const Farm = {
   // Get all farms for a farmer
   getByFarmerId: async (farmer_id) => {
     const [rows] = await db.query(`
-      SELECT f.*, 
+      SELECT f.*, u.display_name as farmer_name,
              (SELECT COUNT(*) FROM animals_or_batches WHERE farm_id = f.farm_id) as entity_count
       FROM farms f
+      LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id
+      LEFT JOIN users u ON fr.user_id = u.user_id
       WHERE f.farmer_id = ?
       ORDER BY f.created_at DESC
     `, [farmer_id]);
@@ -30,7 +32,7 @@ const Farm = {
   getById: async (farm_id) => {
     const [rows] = await db.query(`
       SELECT f.*, fr.farmer_id, u.display_name as farmer_name, u.email as farmer_email,
-             fr.phone, fr.address, fr.state, fr.district
+             fr.phone, fr.address, fr.state, fr.district, fr.taluk
       FROM farms f
       LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id
       LEFT JOIN users u ON fr.user_id = u.user_id
@@ -46,10 +48,53 @@ const Farm = {
       'INSERT INTO farms (farmer_id, farm_name, latitude, longitude) VALUES (?, ?, ?, ?)',
       [farmer_id, farm_name, latitude, longitude]
     );
-    return result.insertId;
+    const farmId = result.insertId;
+
+    // Auto-assign veterinarian based on farmer's location
+    try {
+      const [farmerRows] = await db.query('SELECT state, district, taluk FROM farmers WHERE farmer_id = ?', [farmer_id]);
+      if (farmerRows && farmerRows[0]) {
+        const VetFarmMapping = require('./VetFarmMapping');
+        await VetFarmMapping.autoAssignVet(farmId, farmerRows[0].state, farmerRows[0].district, farmerRows[0].taluk);
+      }
+    } catch (error) {
+      console.warn('Failed to auto-assign veterinarian:', error.message);
+      // Don't fail farm creation if vet assignment fails
+    }
+
+    return farmId;
   },
 
-  // ...existing code...
+  // Get farms mapped to a vet
+  getByVetId: async (vet_id) => {
+    const [rows] = await db.query(`
+      SELECT f.*, fr.farmer_id, u.display_name as farmer_name, u.email as farmer_email,
+             fr.phone, fr.address, fr.state, fr.district, fr.taluk
+      FROM farms f
+      JOIN vet_farm_mapping vfm ON vfm.farm_id = f.farm_id
+      LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id
+      LEFT JOIN users u ON fr.user_id = u.user_id
+      WHERE vfm.vet_id = ?
+      ORDER BY f.created_at DESC
+    `, [vet_id]);
+    return rows;
+  },
+
+  // Update farm
+  update: async (farm_id, farmData) => {
+    const { farm_name, latitude, longitude } = farmData;
+    const [result] = await db.query(
+      'UPDATE farms SET farm_name = ?, latitude = ?, longitude = ? WHERE farm_id = ?',
+      [farm_name, latitude, longitude, farm_id]
+    );
+    return result.affectedRows;
+  },
+
+  // Delete farm
+  delete: async (farm_id) => {
+    const [result] = await db.query('DELETE FROM farms WHERE farm_id = ?', [farm_id]);
+    return result.affectedRows;
+  }
 };
 
 module.exports = Farm;

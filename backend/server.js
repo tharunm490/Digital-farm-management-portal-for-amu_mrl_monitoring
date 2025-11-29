@@ -43,12 +43,12 @@ if (hotspotIp) {
 // =========================================
 // SPECIAL CORS RULES FOR QR + VERIFY (PUBLIC ACCESS)
 // =========================================
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api/verify') || req.path.startsWith('/api/qr')) {
-    return cors({ origin: "*" })(req, res, next);
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   if (req.path.startsWith('/api/verify') || req.path.startsWith('/api/qr')) {
+//     return cors({ origin: "*" })(req, res, next);
+//   }
+//   next();
+// });
 
 // =========================================
 // STANDARD CORS FOR REST API
@@ -67,8 +67,8 @@ app.use(cors({
 // =========================================
 // BODY PARSERS
 // =========================================
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // =========================================
 // SESSION (REQUIRED FOR PASSPORT GOOGLE LOGIN)
@@ -97,6 +97,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/farms', require('./routes/farmRoutes'));
 app.use('/api/entities', require('./routes/entityRoutes'));
 app.use('/api/treatments', require('./routes/treatmentRoutes'));
+app.use('/api/treatment-requests', require('./routes/treatmentRequestRoutes'));
 app.use('/api/vaccinations', require('./routes/vaccinationRoutes'));
 app.use('/api/batches', require('./routes/batchRoutes'));
 app.use('/api/amu', require('./routes/amuRoutes'));
@@ -105,6 +106,7 @@ app.use('/api/verify', require('./routes/verifyRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/predict', require('./routes/predictRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/vet-farm-mapping', require('./routes/vetFarmMappingRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

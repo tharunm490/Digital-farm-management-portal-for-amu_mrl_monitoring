@@ -64,7 +64,7 @@ class VaccinationHistory {
   // Get vaccination history for a farmer
   static async getByFarmer(farmerId) {
     const query = `
-      SELECT vh.*, tr.medication_type, tr.medicine, e.entity_type, e.tag_id, e.batch_name, e.species, f.farm_name
+      SELECT vh.*, tr.medication_type, tr.medicine, e.tag_id, e.batch_name, e.species, f.farm_name
       FROM vaccination_history vh
       JOIN treatment_records tr ON vh.treatment_id = tr.treatment_id
       JOIN animals_or_batches e ON vh.entity_id = e.entity_id
@@ -73,6 +73,22 @@ class VaccinationHistory {
       ORDER BY vh.next_due_date ASC
     `;
     const [rows] = await db.execute(query, [farmerId]);
+    return rows;
+  }
+
+  // Get vaccination history for a vet (treatments they've administered)
+  static async getByVet(vetUserId) {
+    const query = `
+      SELECT vh.*, tr.medication_type, tr.medicine, e.tag_id, e.batch_name, e.species, f.farm_name
+      FROM vaccination_history vh
+      JOIN treatment_records tr ON vh.treatment_id = tr.treatment_id
+      JOIN animals_or_batches e ON vh.entity_id = e.entity_id
+      JOIN farms f ON e.farm_id = f.farm_id
+      JOIN vet_farm_mapping vfm ON f.farm_id = vfm.farm_id
+      WHERE vfm.vet_id = (SELECT vet_id FROM veterinarians WHERE user_id = ?)
+      ORDER BY vh.next_due_date ASC
+    `;
+    const [rows] = await db.execute(query, [vetUserId]);
     return rows;
   }
 

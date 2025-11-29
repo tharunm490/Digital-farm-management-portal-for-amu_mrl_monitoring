@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Farm = require('../models/Farm');
-const { Farmer } = require('../models/User');
-const { authMiddleware, farmerOnly } = require('../middleware/auth');
+const { Farmer, Veterinarian } = require('../models/User');
+const VetFarmMapping = require('../models/VetFarmMapping');
+const { authMiddleware, farmerOnly, veterinarianOnly } = require('../middleware/auth');
 
 // Get all farms (filtered by role)
 router.get('/', authMiddleware, async (req, res) => {
@@ -16,6 +17,16 @@ router.get('/', authMiddleware, async (req, res) => {
       }
       
       const farms = await Farm.getByFarmerId(farmer.farmer_id);
+      res.json(farms);
+    } else if (req.user.role === 'veterinarian') {
+      // Veterinarians only see mapped farms
+      const veterinarian = await Veterinarian.getByUserId(req.user.user_id);
+      
+      if (!veterinarian) {
+        return res.json([]);
+      }
+      
+      const farms = await VetFarmMapping.getFarmsByVet(veterinarian.vet_id);
       res.json(farms);
     } else {
       // Authorities see all farms
@@ -78,6 +89,11 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     };
     
     const farmId = await Farm.create(farmData);
+    
+    // Auto-assign veterinarian based on farmer's location
+    const VetFarmMapping = require('../models/VetFarmMapping');
+    await VetFarmMapping.autoAssignVet(farmId, farmer.state, farmer.district, farmer.taluk);
+    
     res.status(201).json({ id: farmId, message: 'Farm created successfully' });
   } catch (error) {
     console.error(error);

@@ -7,6 +7,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [role, setRole] = useState('farmer');
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -23,9 +24,9 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Redirect to backend Google auth endpoint
+    // Redirect to backend Google auth endpoint with role
     const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-    window.location.href = `${backendUrl}/auth/google`;
+    window.location.href = `${backendUrl}/auth/google?role=${role}`;
   };
 
   return (
@@ -63,6 +64,33 @@ const Login = () => {
         </form>
         
         <div className="divider">OR</div>
+        
+        <div className="role-selection">
+          <p>Select your role for Google sign-in:</p>
+          <div className="role-buttons">
+            <button
+              type="button"
+              className={`role-btn ${role === 'farmer' ? 'active' : ''}`}
+              onClick={() => setRole('farmer')}
+            >
+              🌾 Farmer
+            </button>
+            <button
+              type="button"
+              className={`role-btn ${role === 'authority' ? 'active' : ''}`}
+              onClick={() => setRole('authority')}
+            >
+              👮 Authority
+            </button>
+            <button
+              type="button"
+              className={`role-btn ${role === 'veterinarian' ? 'active' : ''}`}
+              onClick={() => setRole('veterinarian')}
+            >
+              🩺 Veterinarian
+            </button>
+          </div>
+        </div>
         
         <button onClick={handleGoogleLogin} className="btn-google">
           <span>🔐</span> Sign in with Google

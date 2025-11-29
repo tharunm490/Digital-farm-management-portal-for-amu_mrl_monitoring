@@ -47,6 +47,20 @@ class Entity {
     return rows;
   }
 
+  // Get all entities for a vet (via mapped farms)
+  static async getAllByVet(vetId) {
+    const query = `
+      SELECT e.*, f.farm_name, f.latitude, f.longitude 
+      FROM animals_or_batches e
+      JOIN farms f ON e.farm_id = f.farm_id
+      JOIN vet_farm_mapping vfm ON f.farm_id = vfm.farm_id
+      WHERE vfm.vet_id = ? 
+      ORDER BY e.created_at DESC
+    `;
+    const [rows] = await db.execute(query, [vetId]);
+    return rows;
+  }
+
   // Get all entities for a specific farm
   static async getAllByFarm(farmId) {
     const query = `
@@ -110,11 +124,11 @@ class Entity {
     }
 
     const treatmentQuery = `
-      SELECT t.*, a.medicine_name, a.dose, a.route, a.withdrawal_period
+      SELECT t.*, a.medicine, a.dose_amount as dose, a.route, a.predicted_withdrawal_days as withdrawal_period
       FROM treatment_records t
       LEFT JOIN amu_records a ON t.treatment_id = a.treatment_id
       WHERE t.entity_id = ?
-      ORDER BY t.treatment_date DESC
+      ORDER BY t.start_date DESC
     `;
     const [treatmentRows] = await db.execute(treatmentQuery, [entityId]);
 

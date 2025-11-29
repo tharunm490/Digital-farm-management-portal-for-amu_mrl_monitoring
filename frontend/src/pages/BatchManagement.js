@@ -3,14 +3,28 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import api from '../services/api';
 import { getAllSpecies, getBreedsBySpecies } from '../data/speciesBreeds';
+import { useTranslation } from '../hooks/useTranslation';
 import './BatchManagement.css';
 
 const BatchManagement = () => {
   const { farm_id } = useParams();
+  const { t } = useTranslation();
   const safeValue = (val) => {
     if (val == null) return '';
     if (typeof val === 'object') return '';
     return String(val);
+  };
+
+  const getAnimalIcon = (species) => {
+    const normalizedSpecies = species?.toLowerCase();
+    switch (normalizedSpecies) {
+      case 'cattle': return '🐄';
+      case 'pig':
+      case 'pigs': return '🐖';
+      case 'sheep': return '🐑';
+      case 'goat': return '🐐';
+      default: return '🐄'; // Default to cattle icon
+    }
   };
 
   const navigate = useNavigate();
@@ -20,6 +34,9 @@ const BatchManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [treatmentRequests, setTreatmentRequests] = useState([]);
+  const [expandedRequests, setExpandedRequests] = useState({});
+  const [activeWithdrawals, setActiveWithdrawals] = useState([]);
 
   const [formData, setFormData] = useState({
     entity_type: 'animal',
@@ -45,6 +62,8 @@ const BatchManagement = () => {
   useEffect(() => {
     fetchEntities();
     fetchFarms();
+    fetchTreatmentRequests();
+    fetchActiveWithdrawals();
   }, []);
 
   useEffect(() => {
@@ -74,6 +93,24 @@ const BatchManagement = () => {
       setFarms(response.data);
     } catch (err) {
       console.error('Fetch farms error:', err);
+    }
+  };
+
+  const fetchTreatmentRequests = async () => {
+    try {
+      const response = await api.get('/treatment-requests');
+      setTreatmentRequests(response.data);
+    } catch (err) {
+      console.error('Fetch treatment requests error:', err);
+    }
+  };
+
+  const fetchActiveWithdrawals = async () => {
+    try {
+      const response = await api.get('/treatments/withdrawals/active');
+      setActiveWithdrawals(response.data);
+    } catch (err) {
+      console.error('Fetch active withdrawals error:', err);
     }
   };
 
@@ -154,15 +191,15 @@ const BatchManagement = () => {
       <div className="batch-content">
         <div className="page-header">
           {farm_id && (
-            <button onClick={() => navigate('/farms')} className="btn-back">← Back to Farms</button>
+            <button onClick={() => navigate('/farms')} className="btn-back">← {t('back_to_farms')}</button>
           )}
           <div className="header-content">
-            <h1>🐄 {farm_id ? `Batches for ${currentFarm?.farm_name || 'Farm'}` : 'Animal & Batch Management'}</h1>
-            <p className="header-subtitle">{farm_id ? 'Manage batches for this farm' : 'Manage your livestock and poultry batches'}</p>
+            <h1>🐄 {farm_id ? `${t('batches_for')} ${currentFarm?.farm_name || 'Farm'}` : t('animal_batch_management')}</h1>
+            <p className="header-subtitle">{farm_id ? t('manage_batches_farm') : t('manage_livestock')}</p>
           </div>
           <button onClick={() => setShowForm(!showForm)} className="btn-primary">
             <span className="btn-icon">+</span>
-            {showForm ? 'Cancel' : 'Add New Entity'}
+            {showForm ? t('cancel') : t('add_entity')}
           </button>
         </div>
 
@@ -176,20 +213,20 @@ const BatchManagement = () => {
         {showForm && (
           <div className="form-card">
             <div className="form-header">
-              <h2>Add New {formData.entity_type === 'animal' ? 'Animal' : 'Batch'}</h2>
+              <h2>{t(formData.entity_type === 'animal' ? 'add_new_animal' : 'add_new_batch')}</h2>
               <div className="form-badges">
                 <span className={`badge ${formData.entity_type}`}>
-                  {formData.entity_type === 'animal' ? 'Individual Animal' : 'Batch/Group'}
+                  {formData.entity_type === 'animal' ? t('animal') : t('batch')}
                 </span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="entity-form">
               <div className="form-section">
-                <h3>📍 Farm & Entity Type</h3>
+                <h3>📍 {t('farm_location')} & {t('entity_type')}</h3>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label>Farm Location *</label>
+                    <label>{t('farm_location')} *</label>
                     {farm_id ? (
                       <div className="form-control disabled">
                         {currentFarm?.farm_name || 'Loading...'}
@@ -202,7 +239,7 @@ const BatchManagement = () => {
                         required
                         className="form-control"
                       >
-                        <option value="">Select Farm</option>
+                        <option value="">{t('select_farm')}</option>
                         {farms.map((farm) => (
                           <option key={farm.farm_id} value={farm.farm_id}>
                             {farm.farm_name}
@@ -213,7 +250,7 @@ const BatchManagement = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Entity Type *</label>
+                    <label>{t('entity_type')} *</label>
                     <div className="radio-group modern">
                       <label className={`radio-option ${formData.entity_type === 'animal' ? 'active' : ''}`}>
                         <input
@@ -226,8 +263,8 @@ const BatchManagement = () => {
                         <div className="radio-content">
                           <span className="radio-icon">🐄</span>
                           <div>
-                            <strong>Individual Animal</strong>
-                            <small>Single cattle, goat, sheep</small>
+                            <strong>{t('animal')}</strong>
+                            <small>{t('single_cattle_goat_sheep')}</small>
                           </div>
                         </div>
                       </label>
@@ -243,8 +280,8 @@ const BatchManagement = () => {
                         <div className="radio-content">
                           <span className="radio-icon">🐔</span>
                           <div>
-                            <strong>Batch/Group</strong>
-                            <small>Pigs or poultry groups</small>
+                            <strong>{t('batch')}</strong>
+                            <small>{t('pigs_poultry_groups')}</small>
                           </div>
                         </div>
                       </label>
@@ -255,9 +292,9 @@ const BatchManagement = () => {
 
               {formData.entity_type === 'animal' && (
                 <div className="form-section">
-                  <h3>🏷️ Animal Identification</h3>
+                  <h3>🏷️ {t('animal_identification')}</h3>
                   <div className="form-group">
-                    <label>Tag ID *</label>
+                    <label>{t('tag_id')} *</label>
                     <div className="input-with-icon">
                       <span className="input-icon">🏷️</span>
                       <input
@@ -270,17 +307,17 @@ const BatchManagement = () => {
                         placeholder="e.g., TAG01-cow-01"
                       />
                     </div>
-                    <small className="form-help">Unique identifier for this animal</small>
+                    <small className="form-help">{t('unique_identifier')}</small>
                   </div>
                 </div>
               )}
 
               {formData.entity_type === 'batch' && (
                 <div className="form-section">
-                  <h3>📊 Batch Information</h3>
+                  <h3>📊 {t('batch_information')}</h3>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>Batch Name *</label>
+                      <label>{t('batch_name')} *</label>
                       <div className="input-with-icon">
                         <span className="input-icon">📦</span>
                         <input
@@ -296,7 +333,7 @@ const BatchManagement = () => {
                     </div>
 
                     <div className="form-group">
-                      <label>Number of Animals *</label>
+                      <label>{t('number_of_animals')} *</label>
                       <div className="input-with-icon">
                         <span className="input-icon">🔢</span>
                         <input
@@ -316,10 +353,10 @@ const BatchManagement = () => {
               )}
 
               <div className="form-section">
-                <h3>🔬 Species & Product Details</h3>
+                <h3>🔬 {t('species_product_details')}</h3>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label>Species *</label>
+                    <label>{t('species')} *</label>
                     <select
                       name="species"
                       value={formData.species}
@@ -327,7 +364,7 @@ const BatchManagement = () => {
                       required
                       className="form-control"
                     >
-                      <option value="">Select Species</option>
+                      <option value="">{t('select_species')}</option>
                       {getSpeciesOptions().map((s) => (
                         <option key={s} value={s}>
                           {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -337,7 +374,7 @@ const BatchManagement = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Product Matrix *</label>
+                    <label>{t('product_matrix')} *</label>
                     <select
                       name="matrix"
                       value={formData.matrix}
@@ -345,9 +382,9 @@ const BatchManagement = () => {
                       required
                       className="form-control"
                     >
-                      <option value="milk">Milk</option>
-                      <option value="meat">Meat</option>
-                      <option value="egg">Egg</option>
+                      <option value="milk">{t('milk')}</option>
+                      <option value="meat">{t('meat')}</option>
+                      <option value="egg">{t('egg')}</option>
                     </select>
                   </div>
                 </div>
@@ -356,14 +393,14 @@ const BatchManagement = () => {
               <div className="form-actions">
                 <button type="submit" className="btn-primary">
                   <span className="btn-icon">💾</span>
-                  Add {formData.entity_type === 'animal' ? 'Animal' : 'Batch'}
+                  {t(formData.entity_type === 'animal' ? 'add_animal' : 'add_batch')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
                   className="btn-secondary"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
               </div>
             </form>
@@ -372,26 +409,26 @@ const BatchManagement = () => {
 
         <div className="entities-section">
           <div className="section-header">
-            <h2>Your Entities ({filteredEntities.length})</h2>
+            <h2>{t('your_entities')} ({filteredEntities.length})</h2>
             <div className="filter-tabs">
-              <button className="tab active">All</button>
-              <button className="tab">Animals</button>
-              <button className="tab">Batches</button>
+              <button className="tab active">{t('all')}</button>
+              <button className="tab">{t('animals')}</button>
+              <button className="tab">{t('batches')}</button>
             </div>
           </div>
 
           {loading ? (
             <div className="loading-state">
               <div className="loading-spinner"></div>
-              <p>Loading your entities...</p>
+              <p>{t('loading_entities')}</p>
             </div>
           ) : filteredEntities.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">🐄</div>
-              <h3>No entities found</h3>
-              <p>Start by adding your first animal or batch to begin tracking.</p>
+              <h3>{t('no_entities')}</h3>
+              <p>{t('start_adding')}</p>
               <button onClick={() => setShowForm(true)} className="btn-primary">
-                Add Your First Entity
+                {t('add_first_entity')}
               </button>
             </div>
           ) : (
@@ -401,7 +438,7 @@ const BatchManagement = () => {
                   <div className="card-header">
                     <div className="entity-info">
                       <div className="entity-type-icon">
-                        {entity.entity_type === 'animal' ? '🐄' : '🐔'}
+                        {entity.entity_type === 'animal' ? getAnimalIcon(entity.species) : '🐔'}
                       </div>
                       <div>
                         <h3 className="entity-title">
@@ -411,7 +448,7 @@ const BatchManagement = () => {
                         </h3>
                         <div className="entity-meta">
                           <span className={`badge ${entity.entity_type}`}>
-                            {entity.entity_type === 'animal' ? 'Individual' : 'Batch'}
+                            {entity.entity_type === 'animal' ? t('individual') : t('batch')}
                           </span>
                           <span className="species-badge">
                             {safeValue(entity.species)}
@@ -434,27 +471,90 @@ const BatchManagement = () => {
                   <div className="card-content">
                     <div className="entity-details">
                       <div className="detail-item">
-                        <span className="label">ID:</span>
+                        <span className="label">{t('entity_id')}:</span>
                         <span className="value">#{safeValue(entity.entity_id)}</span>
                       </div>
 
                       <div className="detail-item">
-                        <span className="label">Farm:</span>
+                        <span className="label">{t('farm')}:</span>
                         <span className="value">{safeValue(entity.farm_name)}</span>
                       </div>
 
                       <div className="detail-item">
-                        <span className="label">Product:</span>
+                        <span className="label">{t('product')}:</span>
                         <span className="value">{safeValue(entity.matrix)}</span>
                       </div>
 
                       {entity.entity_type === 'batch' && entity.batch_count && (
                         <div className="detail-item">
-                          <span className="label">Count:</span>
-                          <span className="value">{safeValue(entity.batch_count)} animals</span>
+                          <span className="label">{t('count')}:</span>
+                          <span className="value">{safeValue(entity.batch_count)} {t('animals')}</span>
                         </div>
                       )}
                     </div>
+
+                    {/* Treatment Requests Section */}
+                    {(() => {
+                      const entityRequests = treatmentRequests.filter(req => req.entity_id === entity.entity_id);
+                      const isExpanded = expandedRequests[entity.entity_id];
+                      const entityWithdrawal = activeWithdrawals.find(w => w.entity_id === entity.entity_id);
+                      
+                      return (
+                        <>
+                          {entityWithdrawal && (
+                            <div className="withdrawal-warning">
+                              <span className="warning-icon">⚠️</span>
+                              <span className="warning-text">
+                                {t('withdrawal_period_active')} {new Date(entityWithdrawal.safe_date).toLocaleDateString()}. 
+                                {t('new_requests_blocked')}.
+                              </span>
+                            </div>
+                          )}
+                          
+                          {entityRequests.length > 0 && (
+                            <div className="treatment-requests-section">
+                              <div className="requests-header">
+                                <h4>🩺 {t('treatment_requests')}</h4>
+                                <button
+                                  onClick={() => setExpandedRequests(prev => ({ ...prev, [entity.entity_id]: !prev[entity.entity_id] }))}
+                                  className="btn-toggle"
+                                >
+                                  {isExpanded ? t('hide_history') : t('view_history')}
+                                </button>
+                              </div>
+                              <div className="request-summary">
+                                <span className="request-count">{entityRequests.length} {t('requests_sent')}</span>
+                                <span className="assigned-vets">
+                                  {t('assigned_to')} {[...new Set(entityRequests.map(req => req.vet_name || req.vet_user_name))].join(', ')}
+                                </span>
+                              </div>
+                              {isExpanded && (
+                                <div className="requests-details">
+                                  {entityRequests.map((request) => (
+                                    <div key={request.request_id} className="treatment-request-item">
+                                      <div className="request-status">
+                                        <span className={`status-badge ${request.status}`}>
+                                          {t(request.status.toLowerCase())}
+                                        </span>
+                                        <span className="request-date">
+                                          {new Date(request.created_at).toLocaleDateString()}
+                                        </span>
+                                      </div>
+                                      <div className="request-symptoms">
+                                        <strong>{t('symptoms')}:</strong> {request.symptoms}
+                                      </div>
+                                      <div className="assigned-vet">
+                                        <strong>{t('assigned_vet')}:</strong> Dr. {request.vet_name || request.vet_user_name}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
                   <div className="card-footer">
@@ -464,7 +564,7 @@ const BatchManagement = () => {
                       }
                       className="btn-outline"
                     >
-                      💊 Treatments
+                      💊 {t('treatments')}
                     </button>
                     <button
                       onClick={() =>
@@ -472,7 +572,7 @@ const BatchManagement = () => {
                       }
                       className="btn-outline"
                     >
-                      💉 Vaccinations
+                      💉 {t('vaccinations')}
                     </button>
                   </div>
                 </div>

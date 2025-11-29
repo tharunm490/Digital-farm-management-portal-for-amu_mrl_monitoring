@@ -40,13 +40,42 @@ class Notification {
 
   // Get notifications for a user
   static async getByUser(user_id, limit = 50) {
-    const query = `
-      SELECT * FROM notification_history
-      WHERE user_id = ?
-      ORDER BY created_at DESC
-      LIMIT ?
-    `;
-    const [rows] = await db.execute(query, [user_id, limit]);
+    // Get user role
+    const userQuery = `SELECT role FROM users WHERE user_id = ?`;
+    const [userRows] = await db.execute(userQuery, [user_id]);
+    const role = userRows[0]?.role;
+
+    let query;
+    let params;
+
+    if (role === 'veterinarian') {
+      // For vets, get their own notifications plus notifications from farmers of mapped farms
+      query = `
+        SELECT n.* FROM notification_history n
+        WHERE n.user_id = ? OR n.user_id IN (
+          SELECT u.user_id FROM users u
+          JOIN farmers f ON u.user_id = f.user_id
+          JOIN farms fa ON f.farmer_id = fa.farmer_id
+          JOIN vet_farm_mapping vfm ON fa.farm_id = vfm.farm_id
+          JOIN veterinarians v ON vfm.vet_id = v.vet_id
+          WHERE v.user_id = ?
+        )
+        ORDER BY created_at DESC
+        LIMIT ${parseInt(limit)}
+      `;
+      params = [user_id, user_id];
+    } else {
+      // For farmers and others, get their own notifications
+      query = `
+        SELECT * FROM notification_history
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT ${parseInt(limit)}
+      `;
+      params = [user_id];
+    }
+
+    const [rows] = await db.execute(query, params);
     return rows;
   }
 
@@ -54,23 +83,62 @@ class Notification {
   static async getByType(user_id, type, subtype = null, limit = 50) {
     console.log('getByType called with:', { user_id, type, subtype, limit });
 
+    // Get user role
+    const userQuery = `SELECT role FROM users WHERE user_id = ?`;
+    const [userRows] = await db.execute(userQuery, [user_id]);
+    const role = userRows[0]?.role;
+
     let query;
     let params;
 
-    if (subtype) {
-      query = `
-        SELECT * FROM notification_history
-        WHERE user_id = ? AND type = ? AND subtype = ?
-        ORDER BY created_at DESC
-      `;
-      params = [user_id, type, subtype];
+    if (role === 'veterinarian') {
+      // For vets, get their own notifications plus notifications from farmers of mapped farms
+      if (subtype) {
+        query = `
+          SELECT n.* FROM notification_history n
+          WHERE (n.user_id = ? OR n.user_id IN (
+            SELECT u.user_id FROM users u
+            JOIN farmers f ON u.user_id = f.user_id
+            JOIN farms fa ON f.farmer_id = fa.farmer_id
+            JOIN vet_farm_mapping vfm ON fa.farm_id = vfm.farm_id
+            JOIN veterinarians v ON vfm.vet_id = v.vet_id
+            WHERE v.user_id = ?
+          )) AND n.type = ? AND n.subtype = ?
+          ORDER BY created_at DESC
+        `;
+        params = [user_id, user_id, type, subtype];
+      } else {
+        query = `
+          SELECT n.* FROM notification_history n
+          WHERE (n.user_id = ? OR n.user_id IN (
+            SELECT u.user_id FROM users u
+            JOIN farmers f ON u.user_id = f.user_id
+            JOIN farms fa ON f.farmer_id = fa.farmer_id
+            JOIN vet_farm_mapping vfm ON fa.farm_id = vfm.farm_id
+            JOIN veterinarians v ON vfm.vet_id = v.vet_id
+            WHERE v.user_id = ?
+          )) AND n.type = ?
+          ORDER BY created_at DESC
+        `;
+        params = [user_id, user_id, type];
+      }
     } else {
-      query = `
-        SELECT * FROM notification_history
-        WHERE user_id = ? AND type = ?
-        ORDER BY created_at DESC
-      `;
-      params = [user_id, type];
+      // For farmers and others, get their own notifications
+      if (subtype) {
+        query = `
+          SELECT * FROM notification_history
+          WHERE user_id = ? AND type = ? AND subtype = ?
+          ORDER BY created_at DESC
+        `;
+        params = [user_id, type, subtype];
+      } else {
+        query = `
+          SELECT * FROM notification_history
+          WHERE user_id = ? AND type = ?
+          ORDER BY created_at DESC
+        `;
+        params = [user_id, type];
+      }
     }
 
     console.log('Executing query:', query);

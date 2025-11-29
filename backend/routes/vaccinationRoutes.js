@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Vaccination = require('../models/Vaccination');
 const Entity = require('../models/Entity');
-const { authMiddleware, farmerOnly } = require('../middleware/auth');
+const { authMiddleware } = require('../middleware/auth');
 
 // Helper function to convert integer date (YYYYMMDD) to string date (YYYY-MM-DD)
 function intToDate(intDate) {
@@ -15,18 +15,44 @@ function intToDate(intDate) {
   return `${year}-${month}-${day}`;
 }
 
-// All routes require authentication and farmer role
-router.use(authMiddleware, farmerOnly);
+// All routes require authentication
+router.use(authMiddleware);
 
-// Get all vaccinations for logged-in farmer
+// Helper function to check if user has access to farm
+async function checkFarmAccess(user, farmId) {
+  if (user.role === 'farmer') {
+    const farmer = await require('../models/User').Farmer.getByUserId(user.user_id);
+    return farmer && farmer.farmer_id === farmId;
+  } else if (user.role === 'veterinarian') {
+    const VetFarmMapping = require('../models/VetFarmMapping');
+    const mapping = await VetFarmMapping.getVetForFarm(farmId);
+    const vet = await require('../models/User').Veterinarian.getByUserId(user.user_id);
+    return mapping && mapping.vet_id === vet.vet_id;
+  }
+  return false;
+}
+
+// Get all vaccinations for logged-in user (farmer or vet)
 router.get('/', async (req, res) => {
   try {
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
+    let vaccinations = [];
+    
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      vaccinations = await Vaccination.getByFarmer(farmer.farmer_id);
+    } else if (req.user.role === 'veterinarian') {
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      if (!vet) {
+        return res.status(404).json({ error: 'Veterinarian profile not found' });
+      }
+      vaccinations = await Vaccination.getByVet(vet.vet_id);
+    } else {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
-    const vaccinations = await Vaccination.getByFarmer(farmer.farmer_id);
     res.json(vaccinations);
   } catch (error) {
     console.error('Get vaccinations error:', error);
@@ -37,16 +63,15 @@ router.get('/', async (req, res) => {
 // Get vaccinations for specific entity
 router.get('/entity/:entityId', async (req, res) => {
   try {
-    // Verify entity ownership
+    // Verify entity exists
     const entity = await Entity.getById(req.params.entityId);
     if (!entity) {
       return res.status(404).json({ error: 'Entity not found' });
     }
 
-    const farm = await require('../models/Farm').getById(entity.farm_id);
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-
-    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+    // Check if user has access to the farm
+    const hasAccess = await checkFarmAccess(req.user, entity.farm_id);
+    if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -59,9 +84,9 @@ router.get('/entity/:entityId', async (req, res) => {
 });
 
 // Get single vaccination
-router.get('/:vaccinationId', async (req, res) => {
+router.get('/:treatmentId', async (req, res) => {
   try {
-    const vaccination = await Vaccination.getById(req.params.vaccinationId);
+    const vaccination = await Vaccination.getById(req.params.treatmentId);
 
     if (!vaccination) {
       return res.status(404).json({ error: 'Vaccination not found' });
@@ -147,9 +172,9 @@ router.post('/', async (req, res) => {
 });
 
 // Update vaccination
-router.put('/:vaccinationId', async (req, res) => {
+router.put('/:treatmentId', async (req, res) => {
   try {
-    const vaccination = await Vaccination.getById(req.params.vaccinationId);
+    const vaccination = await Vaccination.getById(req.params.treatmentId);
 
     if (!vaccination) {
       return res.status(404).json({ error: 'Vaccination not found' });
@@ -164,8 +189,8 @@ router.put('/:vaccinationId', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    await Vaccination.update(req.params.vaccinationId, req.body);
-    const updatedVaccination = await Vaccination.getById(req.params.vaccinationId);
+    await Vaccination.update(req.params.treatmentId, req.body);
+    const updatedVaccination = await Vaccination.getById(req.params.treatmentId);
 
     res.json({
       message: 'Vaccination updated successfully',
@@ -178,9 +203,9 @@ router.put('/:vaccinationId', async (req, res) => {
 });
 
 // Delete vaccination
-router.delete('/:vaccinationId', async (req, res) => {
+router.delete('/:treatmentId', async (req, res) => {
   try {
-    const vaccination = await Vaccination.getById(req.params.vaccinationId);
+    const vaccination = await Vaccination.getById(req.params.treatmentId);
 
     if (!vaccination) {
       return res.status(404).json({ error: 'Vaccination not found' });
@@ -195,7 +220,7 @@ router.delete('/:vaccinationId', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    await Vaccination.delete(req.params.vaccinationId);
+    await Vaccination.delete(req.params.treatmentId);
 
     res.json({ message: 'Vaccination deleted successfully' });
   } catch (error) {
@@ -208,12 +233,73 @@ router.delete('/:vaccinationId', async (req, res) => {
 router.get('/upcoming/:days?', async (req, res) => {
   try {
     const days = parseInt(req.params.days) || 30;
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
+    let farmerId = null;
+    let vetId = null;
+    
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      farmerId = farmer.farmer_id;
+    } else if (req.user.role === 'veterinarian') {
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      if (!vet) {
+        return res.status(404).json({ error: 'Veterinarian profile not found' });
+      }
+      vetId = vet.vet_id;
+    } else {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
-    const vaccinations = await Vaccination.getUpcoming(farmer.farmer_id, days);
+    let vaccinations = [];
+    let upcomingHistory = [];
+    
+    if (farmerId) {
+      // For farmers: get vaccinations for their own farms
+      vaccinations = await Vaccination.getUpcoming(farmerId, days);
+      const VaccinationHistory = require('../models/VaccinationHistory');
+      upcomingHistory = await VaccinationHistory.getUpcomingVaccinations(farmerId, days);
+    } else if (vetId) {
+      // For vets: get vaccinations for farms they're mapped to
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const farmMappings = await VetFarmMapping.getFarmsByVet(vetId);
+      
+      for (const mapping of farmMappings) {
+        const farmVaccinations = await Vaccination.getUpcoming(mapping.farmer_id, days);
+        vaccinations = vaccinations.concat(farmVaccinations);
+        
+        const VaccinationHistory = require('../models/VaccinationHistory');
+        const farmUpcomingHistory = await VaccinationHistory.getUpcomingVaccinations(mapping.farmer_id, days);
+        upcomingHistory = upcomingHistory.concat(farmUpcomingHistory);
+      }
+    }
+    
+    // Create notifications for upcoming scheduled vaccinations
+    for (const vacc of upcomingHistory) {
+      // Check if notification already exists for this vaccination today
+      const existingNotificationQuery = `
+        SELECT * FROM notification_history 
+        WHERE user_id = ? 
+        AND type = 'vaccination' 
+        AND vacc_id = ? 
+        AND DATE(created_at) = CURDATE()
+      `;
+      const [existing] = await require('../config/database').execute(existingNotificationQuery, [req.user.user_id, vacc.vacc_id]);
+      
+      if (existing.length === 0) {
+        // Create notification for upcoming scheduled vaccination
+        await require('./Notification').create({
+          user_id: req.user.user_id,
+          type: 'vaccination',
+          message: `Upcoming vaccination: ${vacc.vaccine_name} for ${vacc.species} ${vacc.tag_id || vacc.batch_name} is due in ${vacc.days_until_due} days (${vacc.next_due_date}).`,
+          entity_id: vacc.entity_id,
+          treatment_id: vacc.treatment_id,
+          vacc_id: vacc.vacc_id
+        });
+      }
+    }
+
     res.json(vaccinations);
   } catch (error) {
     console.error('Get upcoming vaccinations error:', error);
@@ -224,12 +310,74 @@ router.get('/upcoming/:days?', async (req, res) => {
 // Get overdue vaccinations
 router.get('/overdue', async (req, res) => {
   try {
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
+    let farmerId = null;
+    let vetId = null;
+    
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      farmerId = farmer.farmer_id;
+    } else if (req.user.role === 'veterinarian') {
+      const vet = await require('../models/User').Veterinarian.getByUserId(req.user.user_id);
+      if (!vet) {
+        return res.status(404).json({ error: 'Veterinarian profile not found' });
+      }
+      vetId = vet.vet_id;
+    } else {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
-    const vaccinations = await Vaccination.getOverdue(farmer.farmer_id);
+    let vaccinations = [];
+    let overdueHistory = [];
+    
+    if (farmerId) {
+      // For farmers: get vaccinations for their own farms
+      vaccinations = await Vaccination.getOverdue(farmerId);
+      const VaccinationHistory = require('../models/VaccinationHistory');
+      overdueHistory = await VaccinationHistory.getOverdueVaccinations(farmerId);
+    } else if (vetId) {
+      // For vets: get vaccinations for farms they're mapped to
+      const VetFarmMapping = require('../models/VetFarmMapping');
+      const farmMappings = await VetFarmMapping.getFarmsByVet(vetId);
+      
+      for (const mapping of farmMappings) {
+        const farmVaccinations = await Vaccination.getOverdue(mapping.farmer_id);
+        vaccinations = vaccinations.concat(farmVaccinations);
+        
+        const VaccinationHistory = require('../models/VaccinationHistory');
+        const farmOverdueHistory = await VaccinationHistory.getOverdueVaccinations(mapping.farmer_id);
+        overdueHistory = overdueHistory.concat(farmOverdueHistory);
+      }
+    }
+    
+    // Create notifications for overdue scheduled vaccinations
+    for (const vacc of overdueHistory) {
+      // Check if notification already exists for this vaccination today
+      const existingNotificationQuery = `
+        SELECT * FROM notification_history 
+        WHERE user_id = ? 
+        AND type = 'vaccination' 
+        AND vacc_id = ? 
+        AND message LIKE 'Overdue%'
+        AND DATE(created_at) = CURDATE()
+      `;
+      const [existing] = await require('../config/database').execute(existingNotificationQuery, [req.user.user_id, vacc.vacc_id]);
+      
+      if (existing.length === 0) {
+        // Create notification for overdue scheduled vaccination
+        await require('./Notification').create({
+          user_id: req.user.user_id,
+          type: 'vaccination',
+          message: `Overdue vaccination: ${vacc.vaccine_name} for ${vacc.species} ${vacc.tag_id || vacc.batch_name} was due ${vacc.days_overdue} days ago (${vacc.next_due_date}).`,
+          entity_id: vacc.entity_id,
+          treatment_id: vacc.treatment_id,
+          vacc_id: vacc.vacc_id
+        });
+      }
+    }
+
     res.json(vaccinations);
   } catch (error) {
     console.error('Get overdue vaccinations error:', error);
@@ -239,16 +387,24 @@ router.get('/overdue', async (req, res) => {
 
 // Vaccination History Routes
 
-// Get vaccination history for logged-in farmer
+// Get vaccination history for logged-in user (farmer or vet)
 router.get('/history', async (req, res) => {
   try {
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-    if (!farmer) {
-      return res.status(404).json({ error: 'Farmer profile not found' });
-    }
-
     const VaccinationHistory = require('../models/VaccinationHistory');
-    const history = await VaccinationHistory.getByFarmer(farmer.farmer_id);
+    let history = [];
+    
+    if (req.user.role === 'farmer') {
+      const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
+      if (!farmer) {
+        return res.status(404).json({ error: 'Farmer profile not found' });
+      }
+      history = await VaccinationHistory.getByFarmer(farmer.farmer_id);
+    } else if (req.user.role === 'veterinarian') {
+      history = await VaccinationHistory.getByVet(req.user.user_id);
+    } else {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
     res.json(history);
   } catch (error) {
     console.error('Get vaccination history error:', error);
@@ -259,16 +415,15 @@ router.get('/history', async (req, res) => {
 // Get vaccination history for specific entity
 router.get('/history/entity/:entityId', async (req, res) => {
   try {
-    // Verify entity ownership
+    // Verify entity exists
     const entity = await Entity.getById(req.params.entityId);
     if (!entity) {
       return res.status(404).json({ error: 'Entity not found' });
     }
 
-    const farm = await require('../models/Farm').getById(entity.farm_id);
-    const farmer = await require('../models/User').Farmer.getByUserId(req.user.user_id);
-
-    if (!farm || farm.farmer_id !== farmer.farmer_id) {
+    // Check if user has access to the farm
+    const hasAccess = await checkFarmAccess(req.user, entity.farm_id);
+    if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
     }
 

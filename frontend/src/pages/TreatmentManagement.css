@@ -73,6 +73,12 @@
   border: 1px solid #fecaca;
 }
 
+.alert-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
 .alert-icon {
   font-size: 1.25rem;
 }
@@ -569,6 +575,32 @@
 .status-badge.completed {
   background: #e2e3e5;
   color: #383d41;
+}
+
+.status-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-self: flex-start;
+}
+
+.approval-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.approval-badge.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.approval-badge.pending {
+  background: #fff3cd;
+  color: #856404;
 }
 
 .treatment-meta {
@@ -1362,6 +1394,11 @@
   }
 
   .status-badge {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.65rem;
+  }
+
+  .approval-badge {
     padding: 0.2rem 0.6rem;
     font-size: 0.65rem;
   }

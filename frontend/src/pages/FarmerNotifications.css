@@ -161,9 +161,24 @@
   background: linear-gradient(90deg, #fff3e0, #fafafa);
 }
 
-.notification-card.alert {
+.notification-card.completed {
+  border-left: 4px solid #4caf50;
+  background: linear-gradient(90deg, #e8f5e8, #fafafa);
+}
+
+.notification-card.overdue {
   border-left: 4px solid #f44336;
   background: linear-gradient(90deg, #ffebee, #fafafa);
+}
+
+.notification-card.due-today {
+  border-left: 4px solid #ff9800;
+  background: linear-gradient(90deg, #fff3e0, #fafafa);
+}
+
+.notification-card.active {
+  border-left: 4px solid #2196f3;
+  background: linear-gradient(90deg, #e3f2fd, #fafafa);
 }
 
 .notification-header {
@@ -219,8 +234,11 @@
   color: white;
 }
 
-.notification-details {
-  margin-bottom: 15px;
+.vaccination-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
 }
 
 .detail-grid {

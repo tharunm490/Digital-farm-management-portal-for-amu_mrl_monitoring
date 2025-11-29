@@ -48,6 +48,7 @@ const VaccinationManagement = () => {
 
   const fetchEntities = async () => {
     try {
+      // The /entities route already filters by role (farmer/vet)
       const response = await api.get('/entities');
       setEntities(response.data);
     } catch (err) {
