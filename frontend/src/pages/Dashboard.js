@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../hooks/useTranslation';
 import Navigation from '../components/Navigation';
 import Chatbot from '../components/Chatbot';
+import Weather from '../components/Weather';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const getWeatherLocation = () => {
+    if (user?.state && user?.district) {
+      return `${user.district}, ${user.state}`;
+    }
+    return 'Delhi, India'; // Default location
+  };
 
   return (
     <div className={`dashboard-container ${user?.role === 'veterinarian' ? 'vet-theme' : ''}`}>
@@ -59,39 +67,53 @@ const Dashboard = () => {
                 <h3>{t('profile')}</h3>
                 <p>{t('update_information')}</p>
               </div>
+
+              <Weather location={getWeatherLocation()} />
             </>
           )}
 
           {user?.role === 'authority' && (
             <>
-              <div className="dashboard-card" onClick={() => navigate('/farms')}>
-                <div className="card-icon">🏡</div>
-                <h3>All Farms</h3>
-                <p>View all registered farms</p>
-              </div>
-
-              <div className="dashboard-card" onClick={() => navigate('/animals')}>
-                <div className="card-icon">🐄</div>
-                <h3>All Animals</h3>
-                <p>Monitor all animal records</p>
-              </div>
-
-              <div className="dashboard-card" onClick={() => navigate('/treatments')}>
-                <div className="card-icon">💊</div>
-                <h3>Treatments</h3>
-                <p>Review treatment records</p>
-              </div>
-
-              <div className="dashboard-card" onClick={() => navigate('/verify')}>
-                <div className="card-icon">🔍</div>
-                <h3>QR Verification</h3>
-                <p>Verify traceability codes</p>
-              </div>
-
-              <div className="dashboard-card">
+              <div className="dashboard-card" onClick={() => navigate('/dashboard')}>
                 <div className="card-icon">📊</div>
+                <h3>Dashboard</h3>
+                <p>View main dashboard</p>
+              </div>
+
+              <div className="dashboard-card" onClick={() => navigate('/amu-analytics')}>
+                <div className="card-icon">📈</div>
+                <h3>AMU Analytics</h3>
+                <p>Analyze antimicrobial usage data</p>
+              </div>
+
+              <div className="dashboard-card" onClick={() => navigate('/heat-map')}>
+                <div className="card-icon">🌡️</div>
+                <h3>Heat Map</h3>
+                <p>View usage heat maps</p>
+              </div>
+
+              <div className="dashboard-card" onClick={() => navigate('/india-map')}>
+                <div className="card-icon">🗺️</div>
+                <h3>India Map</h3>
+                <p>Geographic data visualization</p>
+              </div>
+
+              <div className="dashboard-card" onClick={() => navigate('/complaints-alerts')}>
+                <div className="card-icon">🚨</div>
+                <h3>Complaints & Alerts</h3>
+                <p>Manage complaints and alerts</p>
+              </div>
+
+              <div className="dashboard-card" onClick={() => navigate('/reports')}>
+                <div className="card-icon">📋</div>
                 <h3>Reports</h3>
                 <p>Generate compliance reports</p>
+              </div>
+
+              <div className="dashboard-card" onClick={() => navigate('/notifications')}>
+                <div className="card-icon">🔔</div>
+                <h3>Notifications</h3>
+                <p>View system notifications</p>
               </div>
 
               <div className="dashboard-card" onClick={() => navigate('/profile')}>
@@ -99,6 +121,8 @@ const Dashboard = () => {
                 <h3>Profile</h3>
                 <p>Update your information</p>
               </div>
+
+              <Weather location={getWeatherLocation()} />
             </>
           )}
 
@@ -127,6 +151,8 @@ const Dashboard = () => {
                 <h3>Profile</h3>
                 <p>Update your information</p>
               </div>
+
+              <Weather location={getWeatherLocation()} />
             </>
           )}
         </div>
