@@ -83,118 +83,173 @@ const AuthorityDashboard = () => {
         <p>National Overview of Antimicrobial Usage & Monitoring</p>
       </div>
 
-      <div className="stats-grid">
-        <StatCard
-          title="Registered Farms"
-          value={stats.totalFarms}
-          icon="🏡"
-          color="blue"
-          subtitle="Across India"
-        />
-        <StatCard
-          title="Total Treatments"
-          value={stats.totalTreatments}
-          icon="💊"
-          color="green"
-          subtitle="This month"
-        />
-        <StatCard
-          title="Antibiotics Used"
-          value={stats.totalAntibiotics}
-          icon="🧪"
-          color="purple"
-          subtitle="Kg this month"
-        />
-        <StatCard
-          title="Unsafe MRL Cases"
-          value={stats.unsafeMRLCases}
-          icon="⚠️"
-          color="red"
-          subtitle="Require attention"
-        />
-        <StatCard
-          title="High Risk Farms"
-          value={stats.highRiskFarms}
-          icon="🚨"
-          color="orange"
-          subtitle="Over threshold"
-        />
-        <StatCard
-          title="Active Veterinarians"
-          value={stats.activeVets}
-          icon="👨‍⚕️"
-          color="teal"
-          subtitle="Registered vets"
-        />
-      </div>
+      <div className="dashboard-content">
+        {/* Stats Flash Cards */}
+        <div className="stats-flash-grid">
+          <div className="stat-flash-card">
+            <div className="stat-flash-header">
+              <div className="stat-icon">🏡</div>
+              <h3>Registered Farms</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.totalFarms.toLocaleString()}</div>
+              <div className="stat-subtitle">Across India</div>
+              <div className="stat-trend">📈 Growing network</div>
+            </div>
+          </div>
 
-      <div className="dashboard-sections">
-        <div className="dashboard-section">
-          <h2>📍 State-wise Farm Distribution</h2>
-          <div className="state-distribution">
-            {getTopStates().length > 0 ? (
-              getTopStates().map(([state, count]) => (
-                <div key={state} className="state-item">
-                  <span className="state-name">{state}</span>
-                  <div className="state-bar">
-                    <div
-                      className="state-bar-fill"
-                      style={{
-                        width: `${(count / Math.max(...Object.values(stats.stateDistribution))) * 100}%`
-                      }}
-                    ></div>
-                  </div>
-                  <span className="state-count">{count}</span>
+          <div className="stat-flash-card">
+            <div className="stat-flash-header">
+              <div className="stat-icon">💊</div>
+              <h3>Total Treatments</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.totalTreatments.toLocaleString()}</div>
+              <div className="stat-subtitle">This month</div>
+              <div className="stat-trend">📊 Active monitoring</div>
+            </div>
+          </div>
+
+          <div className="stat-flash-card">
+            <div className="stat-flash-header">
+              <div className="stat-icon">🧪</div>
+              <h3>Antibiotics Used</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.totalAntibiotics.toLocaleString()}</div>
+              <div className="stat-subtitle">Kg this month</div>
+              <div className="stat-trend">⚖️ Usage tracking</div>
+            </div>
+          </div>
+
+          <div className="stat-flash-card alert">
+            <div className="stat-flash-header">
+              <div className="stat-icon">⚠️</div>
+              <h3>Unsafe MRL Cases</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.unsafeMRLCases.toLocaleString()}</div>
+              <div className="stat-subtitle">Require attention</div>
+              <div className="stat-trend">🚨 Critical issues</div>
+            </div>
+          </div>
+
+          <div className="stat-flash-card warning">
+            <div className="stat-flash-header">
+              <div className="stat-icon">🚨</div>
+              <h3>High Risk Farms</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.highRiskFarms.toLocaleString()}</div>
+              <div className="stat-subtitle">Over threshold</div>
+              <div className="stat-trend">⚡ Priority monitoring</div>
+            </div>
+          </div>
+
+          <div className="stat-flash-card">
+            <div className="stat-flash-header">
+              <div className="stat-icon">👨‍⚕️</div>
+              <h3>Active Veterinarians</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.activeVets.toLocaleString()}</div>
+              <div className="stat-subtitle">Registered vets</div>
+              <div className="stat-trend">🏥 Healthcare network</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dashboard Sections Flash Cards */}
+        <div className="dashboard-sections-flash">
+          <div className="section-flash-card">
+            <div className="section-flash-header">
+              <div className="section-icon">📍</div>
+              <h3>State-wise Farm Distribution</h3>
+            </div>
+            <div className="section-flash-content">
+              {getTopStates().length > 0 ? (
+                <div className="state-distribution">
+                  {getTopStates().map(([state, count]) => (
+                    <div key={state} className="state-item">
+                      <span className="state-name">{state}</span>
+                      <div className="state-bar">
+                        <div
+                          className="state-bar-fill"
+                          style={{
+                            width: `${(count / Math.max(...Object.values(stats.stateDistribution))) * 100}%`
+                          }}
+                        ></div>
+                      </div>
+                      <span className="state-count">{count}</span>
+                    </div>
+                  ))}
                 </div>
-              ))
-            ) : (
-              <p className="no-data">No farm distribution data available</p>
-            )}
-          </div>
-        </div>
-
-        <div className="dashboard-section">
-          <h2>🚨 Recent Alerts & Compliance Issues</h2>
-          <div className="alerts-preview">
-            <div className="alert-item">
-              <span className="alert-icon">⚠️</span>
-              <div className="alert-content">
-                <p className="alert-title">Unsafe MRL Violations</p>
-                <p className="alert-count">{stats.unsafeMRLCases} active cases</p>
-              </div>
-            </div>
-            <div className="alert-item">
-              <span className="alert-icon">💊</span>
-              <div className="alert-content">
-                <p className="alert-title">High Dosage Alerts</p>
-                <p className="alert-count">Monitor closely</p>
-              </div>
-            </div>
-            <div className="alert-item">
-              <span className="alert-icon">📊</span>
-              <div className="alert-content">
-                <p className="alert-title">Overdosage Events</p>
-                <p className="alert-count">Track patterns</p>
-              </div>
+              ) : (
+                <div className="no-data-flash">
+                  <div className="no-data-icon">📊</div>
+                  <p>No farm distribution data available</p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
 
-        <div className="dashboard-section">
-          <h2>📈 Quick Actions</h2>
-          <div className="quick-actions">
-            <button className="action-btn primary" onClick={() => window.location.href = '/authority/amu-analytics'}>
-              📊 View AMU Analytics
-            </button>
-            <button className="action-btn secondary" onClick={() => window.location.href = '/authority/heat-map'}>
-              🌡️ Check Heat Map
-            </button>
-            <button className="action-btn warning" onClick={() => window.location.href = '/authority/complaints'}>
-              🚨 Review Alerts
-            </button>
-            <button className="action-btn info" onClick={() => window.location.href = '/authority/reports'}>
-              📋 Generate Reports
-            </button>
+          <div className="section-flash-card">
+            <div className="section-flash-header">
+              <div className="section-icon">🚨</div>
+              <h3>Recent Alerts & Compliance Issues</h3>
+            </div>
+            <div className="section-flash-content">
+              <div className="alerts-preview">
+                <div className="alert-flash-item">
+                  <span className="alert-flash-icon">⚠️</span>
+                  <div className="alert-flash-content">
+                    <p className="alert-flash-title">Unsafe MRL Violations</p>
+                    <p className="alert-flash-count">{stats.unsafeMRLCases} active cases</p>
+                  </div>
+                </div>
+                <div className="alert-flash-item">
+                  <span className="alert-flash-icon">💊</span>
+                  <div className="alert-flash-content">
+                    <p className="alert-flash-title">High Dosage Alerts</p>
+                    <p className="alert-flash-count">Monitor closely</p>
+                  </div>
+                </div>
+                <div className="alert-flash-item">
+                  <span className="alert-flash-icon">📊</span>
+                  <div className="alert-flash-content">
+                    <p className="alert-flash-title">Overdosage Events</p>
+                    <p className="alert-flash-count">Track patterns</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="section-flash-card">
+            <div className="section-flash-header">
+              <div className="section-icon">📈</div>
+              <h3>Quick Actions</h3>
+            </div>
+            <div className="section-flash-content">
+              <div className="quick-actions-flash">
+                <button className="action-flash-btn primary" onClick={() => window.location.href = '/authority/amu-analytics'}>
+                  <span className="btn-icon">📊</span>
+                  <span className="btn-text">View AMU Analytics</span>
+                </button>
+                <button className="action-flash-btn secondary" onClick={() => window.location.href = '/authority/map-view'}>
+                  <span className="btn-icon">🗺️</span>
+                  <span className="btn-text">Maps & Heatmaps</span>
+                </button>
+                <button className="action-flash-btn warning" onClick={() => window.location.href = '/authority/complaints'}>
+                  <span className="btn-icon">🚨</span>
+                  <span className="btn-text">Review Alerts</span>
+                </button>
+                <button className="action-flash-btn info" onClick={() => window.location.href = '/authority/reports'}>
+                  <span className="btn-icon">📋</span>
+                  <span className="btn-text">Generate Reports</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -258,16 +258,10 @@ const AuthorityReports = () => {
             {reportData && (
               <div className="export-actions">
                 <button
-                  className="export-btn csv"
-                  onClick={() => exportReport('csv')}
-                >
-                  📊 Export CSV
-                </button>
-                <button
                   className="export-btn pdf"
                   onClick={() => exportReport('pdf')}
                 >
-                  📄 Export PDF
+                  📄 Export PDF Report
                 </button>
               </div>
             )}

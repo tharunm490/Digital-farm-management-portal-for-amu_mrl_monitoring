@@ -28,7 +28,7 @@ const AuthorityNavigation = () => {
       <div className="authority-nav-container">
         <div className="authority-nav-brand">
           <span className="authority-icon">🏛️</span>
-          <span className="authority-title">Authority Dashboard</span>
+          <span className="authority-title">Authority Portal</span>
         </div>
 
         <button
@@ -52,42 +52,21 @@ const AuthorityNavigation = () => {
           <li className="authority-nav-item">
             <Link to="/authority/amu-analytics" className="authority-nav-link" onClick={closeMobileMenu}>
               <span className="authority-nav-icon">📈</span>
-              <span className="authority-nav-text">AMU Analytics</span>
-            </Link>
-          </li>
-
-          <li className="authority-nav-item">
-            <Link to="/authority/heat-map" className="authority-nav-link" onClick={closeMobileMenu}>
-              <span className="authority-nav-icon">🌡️</span>
-              <span className="authority-nav-text">Heat Map</span>
+              <span className="authority-nav-text">Analytics</span>
             </Link>
           </li>
 
           <li className="authority-nav-item">
             <Link to="/authority/map-view" className="authority-nav-link" onClick={closeMobileMenu}>
               <span className="authority-nav-icon">🗺️</span>
-              <span className="authority-nav-text">India Map</span>
+              <span className="authority-nav-text">Maps</span>
             </Link>
           </li>
 
           <li className="authority-nav-item">
             <Link to="/authority/complaints" className="authority-nav-link" onClick={closeMobileMenu}>
               <span className="authority-nav-icon">🚨</span>
-              <span className="authority-nav-text">Complaints & Alerts</span>
-            </Link>
-          </li>
-
-          <li className="authority-nav-item">
-            <Link to="/authority/reports" className="authority-nav-link" onClick={closeMobileMenu}>
-              <span className="authority-nav-icon">📋</span>
-              <span className="authority-nav-text">Reports</span>
-            </Link>
-          </li>
-
-          <li className="authority-nav-item">
-            <Link to="/authority/notifications" className="authority-nav-link" onClick={closeMobileMenu}>
-              <span className="authority-nav-icon">🔔</span>
-              <span className="authority-nav-text">Notifications</span>
+              <span className="authority-nav-text">Alerts</span>
             </Link>
           </li>
 

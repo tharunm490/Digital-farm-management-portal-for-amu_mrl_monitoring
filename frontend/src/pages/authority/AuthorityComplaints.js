@@ -26,7 +26,7 @@ const AuthorityComplaints = () => {
         if (value !== 'all') params.append(key, value);
       });
 
-      const response = await api.get(`/authority/alerts?${params}`);
+      const response = await api.get(`/authority/complaints?${params}`);
       setAlerts(response.data);
     } catch (error) {
       console.error('Error fetching alerts:', error);
@@ -44,7 +44,7 @@ const AuthorityComplaints = () => {
 
   const markAsReviewed = async (alertId) => {
     try {
-      await api.patch(`/authority/alerts/${alertId}/review`);
+      await api.patch(`/authority/complaints/${alertId}/review`);
       // Refresh alerts
       fetchAlerts();
     } catch (error) {
@@ -52,12 +52,25 @@ const AuthorityComplaints = () => {
     }
   };
 
-  const getSeverityColor = (severity) => {
-    switch (severity) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#10b981';
-      default: return '#6b7280';
+  const getSeverityColor = (alert) => {
+    // Determine severity based on subtype and risk_category
+    if (alert.subtype === 'overdosage' || alert.risk_category === 'unsafe') {
+      return '#ef4444'; // red for high severity
+    } else if (alert.subtype === 'high_dosage' || alert.risk_category === 'borderline') {
+      return '#f59e0b'; // orange for medium severity
+    } else {
+      return '#10b981'; // green for low severity
+    }
+  };
+
+  const getSeverityLevel = (alert) => {
+    // Determine severity level based on subtype and risk_category
+    if (alert.subtype === 'overdosage' || alert.risk_category === 'unsafe') {
+      return 'high';
+    } else if (alert.subtype === 'high_dosage' || alert.risk_category === 'borderline') {
+      return 'medium';
+    } else {
+      return 'low';
     }
   };
 
@@ -165,15 +178,15 @@ const AuthorityComplaints = () => {
       <div className="alerts-summary">
         <div className="summary-stats">
           <div className="stat-item">
-            <span className="stat-number">{alerts.filter(a => a.severity === 'high').length}</span>
+            <span className="stat-number">{alerts.filter(a => getSeverityLevel(a) === 'high').length}</span>
             <span className="stat-label">High Priority</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">{alerts.filter(a => a.severity === 'medium').length}</span>
+            <span className="stat-number">{alerts.filter(a => getSeverityLevel(a) === 'medium').length}</span>
             <span className="stat-label">Medium Priority</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">{alerts.filter(a => a.severity === 'low').length}</span>
+            <span className="stat-number">{alerts.filter(a => getSeverityLevel(a) === 'low').length}</span>
             <span className="stat-label">Low Priority</span>
           </div>
           <div className="stat-item">
@@ -185,71 +198,82 @@ const AuthorityComplaints = () => {
 
       <div className="alerts-list">
         {alerts.length === 0 ? (
-          <div className="no-alerts">
-            <p>✅ No alerts found matching the current filters.</p>
+          <div className="no-alerts-flash">
+            <div className="no-alerts-icon">✅</div>
+            <h3>No alerts found</h3>
+            <p>All systems are running smoothly. No alerts match your current filters.</p>
           </div>
         ) : (
-          alerts.map((alert) => (
-            <div
-              key={alert.id}
-              className={`alert-item ${alert.severity} ${alert.reviewed ? 'reviewed' : ''}`}
-              onClick={() => setSelectedAlert(selectedAlert?.id === alert.id ? null : alert)}
-            >
-              <div className="alert-header">
-                <div className="alert-icon">
-                  {getAlertIcon(alert.subtype)}
-                </div>
-                <div className="alert-basic-info">
-                  <h3>{alert.farm_name} - {alert.species}</h3>
-                  <p className="alert-location">{alert.state}, {alert.district}</p>
-                </div>
-                <div className="alert-meta">
-                  <span
-                    className="severity-badge"
-                    style={{ backgroundColor: getSeverityColor(alert.severity) }}
-                  >
-                    {alert.severity.toUpperCase()}
-                  </span>
-                  <span className="alert-date">
-                    {new Date(alert.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="alert-content">
-                <p className="alert-message">{formatAlertMessage(alert)}</p>
-
-                <div className="alert-details">
-                  <div className="detail-item">
-                    <strong>Veterinarian:</strong> {alert.vet_name || 'N/A'}
+          <div className="alerts-flash-grid">
+            {alerts.map((alert) => (
+              <div
+                key={alert.notification_id || alert.id}
+                className={`alert-flash-card ${getSeverityLevel(alert)} ${alert.is_read ? 'reviewed' : ''}`}
+                onClick={() => setSelectedAlert(selectedAlert?.notification_id === alert.notification_id ? null : alert)}
+              >
+                <div className="alert-flash-header">
+                  <div className="alert-flash-icon">
+                    {getAlertIcon(alert.subtype)}
                   </div>
-                  <div className="detail-item">
-                    <strong>Farm ID:</strong> {alert.farm_id}
-                  </div>
-                  <div className="detail-item">
-                    <strong>Entity ID:</strong> {alert.entity_id}
+                  <div className="alert-flash-meta">
+                    <span
+                      className="severity-flash-badge"
+                      style={{ backgroundColor: getSeverityColor(alert) }}
+                    >
+                      {getSeverityLevel(alert).toUpperCase()}
+                    </span>
+                    <span className="alert-flash-date">
+                      {new Date(alert.created_at).toLocaleDateString()}
+                    </span>
                   </div>
                 </div>
 
-                <div className="alert-actions">
-                  {!alert.reviewed && (
+                <div className="alert-flash-content">
+                  <h3 className="alert-flash-title">
+                    {alert.farm_name || 'Unknown Farm'} - {alert.species || 'Unknown Species'}
+                  </h3>
+                  <p className="alert-flash-location">
+                    📍 {alert.state || 'Unknown State'}, {alert.district || 'Unknown District'}
+                  </p>
+                  <p className="alert-flash-message">
+                    {formatAlertMessage(alert)}
+                  </p>
+                </div>
+
+                <div className="alert-flash-details">
+                  <div className="detail-flash-item">
+                    <span className="detail-flash-label">Vet:</span>
+                    <span className="detail-flash-value">{alert.vet_name || 'N/A'}</span>
+                  </div>
+                  <div className="detail-flash-item">
+                    <span className="detail-flash-label">Risk:</span>
+                    <span className="detail-flash-value">{alert.risk_category || 'N/A'}</span>
+                  </div>
+                  <div className="detail-flash-item">
+                    <span className="detail-flash-label">Farm ID:</span>
+                    <span className="detail-flash-value">{alert.farm_id}</span>
+                  </div>
+                </div>
+
+                <div className="alert-flash-actions">
+                  {!alert.is_read && (
                     <button
-                      className="review-btn"
+                      className="review-flash-btn"
                       onClick={(e) => {
                         e.stopPropagation();
-                        markAsReviewed(alert.id);
+                        markAsReviewed(alert.notification_id || alert.id);
                       }}
                     >
-                      Mark as Reviewed
+                      ✓ Mark as Reviewed
                     </button>
                   )}
-                  {alert.reviewed && (
-                    <span className="reviewed-badge">✓ Reviewed</span>
+                  {alert.is_read && (
+                    <span className="reviewed-flash-badge">✓ Reviewed</span>
                   )}
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
 
@@ -279,7 +303,8 @@ const AuthorityComplaints = () => {
                 <div className="detail-section">
                   <h3>Alert Information</h3>
                   <p><strong>Type:</strong> {selectedAlert.subtype}</p>
-                  <p><strong>Severity:</strong> {selectedAlert.severity}</p>
+                  <p><strong>Severity:</strong> {getSeverityLevel(selectedAlert).toUpperCase()}</p>
+                  <p><strong>Risk Category:</strong> {selectedAlert.risk_category || 'N/A'}</p>
                   <p><strong>Date:</strong> {new Date(selectedAlert.created_at).toLocaleString()}</p>
                 </div>
 

@@ -107,6 +107,7 @@ app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/predict', require('./routes/predictRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/vet-farm-mapping', require('./routes/vetFarmMappingRoutes'));
+app.use('/api/authority', require('./routes/authorityRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

@@ -85,6 +85,12 @@ class AMU {
       }
     }
 
+    // Clamp risk_percent to prevent database range errors
+    let clampedRiskPercent = risk_percent;
+    if (clampedRiskPercent !== null && clampedRiskPercent !== undefined) {
+      clampedRiskPercent = Math.max(0, Math.min(999.99, parseFloat(clampedRiskPercent)));
+    }
+
     const query = `
       INSERT INTO amu_records (
         treatment_id, entity_id, farm_id, user_id,
@@ -124,7 +130,7 @@ class AMU {
       overdosage,
       risk_category,
       worst_tissue,
-      risk_percent
+      clampedRiskPercent
     ]);
 
     const amuId = result.insertId;
@@ -377,8 +383,16 @@ class AMU {
 
   // Update AMU record
   static async update(amuId, updateData) {
-    const fields = Object.keys(updateData);
-    const values = Object.values(updateData);
+    // Clone updateData to avoid modifying the original
+    const clampedData = { ...updateData };
+    
+    // Clamp risk_percent if present
+    if (clampedData.risk_percent !== null && clampedData.risk_percent !== undefined) {
+      clampedData.risk_percent = Math.max(0, Math.min(999.99, parseFloat(clampedData.risk_percent)));
+    }
+    
+    const fields = Object.keys(clampedData);
+    const values = Object.values(clampedData);
     const setClause = fields.map(field => `${field} = ?`).join(', ');
     const query = `UPDATE amu_records SET ${setClause} WHERE amu_id = ?`;
     values.push(amuId);

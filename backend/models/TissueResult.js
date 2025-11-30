@@ -4,12 +4,18 @@ const db = require('../config/database');
 class TissueResult {
   static async create(data) {
     const { amu_id, tissue, predicted_mrl, base_mrl, risk_percent, risk_category } = data;
+    
+    // Clamp risk_percent to prevent database range errors
+    const clampedRiskPercent = risk_percent !== null && risk_percent !== undefined 
+      ? Math.max(0, Math.min(999.99, parseFloat(risk_percent))) 
+      : null;
+    
     const sql = `
       INSERT INTO amu_tissue_results 
       (amu_id, tissue, predicted_mrl, base_mrl, risk_percent, risk_category) 
       VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [result] = await db.execute(sql, [amu_id, tissue, predicted_mrl, base_mrl, risk_percent, risk_category]);
+    const [result] = await db.execute(sql, [amu_id, tissue, predicted_mrl, base_mrl, clampedRiskPercent, risk_category]);
     return result.insertId;
   }
 

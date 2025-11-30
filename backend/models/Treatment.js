@@ -396,6 +396,10 @@ class Treatment {
           }
 
           // Update AMU with worst tissue info
+          const worstTissueRiskPercent = tissueResults.tissues[tissueResults.worst_tissue].risk_percent;
+          // Clamp risk_percent to prevent database range errors
+          const clampedWorstTissueRiskPercent = Math.max(0, Math.min(999.99, parseFloat(worstTissueRiskPercent)));
+          
           await AMU.update(amuId, {
             worst_tissue: tissueResults.worst_tissue,
             risk_category: tissueResults.overall_risk_category,
@@ -403,7 +407,7 @@ class Treatment {
             predicted_withdrawal_days: tissueResults.predicted_withdrawal_days,
             safe_date: tissueResults.safe_date,
             overdosage: tissueResults.overdosage,
-            risk_percent: tissueResults.tissues[tissueResults.worst_tissue].risk_percent
+            risk_percent: clampedWorstTissueRiskPercent
           });
         }
       }
@@ -465,6 +469,13 @@ class Treatment {
       safe_date = endDate.toISOString().split('T')[0];
     }
 
+    // Clamp risk_percent to prevent database range errors
+    let clampedRiskPercent = risk_percent;
+    if (clampedRiskPercent !== null && clampedRiskPercent !== undefined) {
+      // Assuming the column can hold values up to 999.99, clamp to reasonable range
+      clampedRiskPercent = Math.max(0, Math.min(999.99, parseFloat(clampedRiskPercent)));
+    }
+
     const insertQuery = `
       INSERT INTO amu_records (
         treatment_id, entity_id, farm_id, user_id,
@@ -510,7 +521,7 @@ class Treatment {
       overdosage ? 1 : 0,
       status || 'safe',
       safe_date,
-      risk_percent || null,
+      clampedRiskPercent || null,
       treatmentId
     ]);
 
