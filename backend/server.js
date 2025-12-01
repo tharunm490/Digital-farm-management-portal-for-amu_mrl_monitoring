@@ -108,6 +108,7 @@ app.use('/api/predict', require('./routes/predictRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/vet-farm-mapping', require('./routes/vetFarmMappingRoutes'));
 app.use('/api/authority', require('./routes/authorityRoutes'));
+app.use('/api/loans', require('./routes/loanRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

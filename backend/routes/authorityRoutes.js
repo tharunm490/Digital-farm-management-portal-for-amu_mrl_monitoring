@@ -477,7 +477,7 @@ router.get('/farm/:farm_id', authMiddleware, authorityMiddleware, async (req, re
 router.get('/profile', authMiddleware, authorityMiddleware, async (req, res) => {
   try {
     const [profile] = await db.query(`
-      SELECT u.*, ap.department, ap.designation, ap.phone
+      SELECT u.*, ap.department, ap.designation, ap.phone, ap.state, ap.district, ap.taluk
       FROM users u
       LEFT JOIN authority_profiles ap ON u.user_id = ap.user_id
       WHERE u.user_id = ?
@@ -496,7 +496,7 @@ router.get('/profile', authMiddleware, authorityMiddleware, async (req, res) => 
 
 router.put('/profile', authMiddleware, authorityMiddleware, async (req, res) => {
   try {
-    const { display_name, phone, department } = req.body;
+    const { display_name, phone, department, designation, state, district, taluk } = req.body;
 
     await db.query(`
       UPDATE users
@@ -504,12 +504,18 @@ router.put('/profile', authMiddleware, authorityMiddleware, async (req, res) => 
       WHERE user_id = ?
     `, [display_name, req.user.user_id]);
 
-    // Update or insert authority profile
+    // Update or insert authority profile with location fields
     await db.query(`
-      INSERT INTO authority_profiles (user_id, phone, department)
-      VALUES (?, ?, ?)
-      ON DUPLICATE KEY UPDATE phone = VALUES(phone), department = VALUES(department)
-    `, [req.user.user_id, phone, department]);
+      INSERT INTO authority_profiles (user_id, phone, department, designation, state, district, taluk)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+        phone = VALUES(phone), 
+        department = VALUES(department),
+        designation = VALUES(designation),
+        state = VALUES(state),
+        district = VALUES(district),
+        taluk = VALUES(taluk)
+    `, [req.user.user_id, phone, department, designation, state, district, taluk]);
 
     res.json({ message: 'Profile updated successfully' });
   } catch (error) {

@@ -140,6 +140,35 @@ const Navigation = () => {
             </li>
           )}
 
+          {/* Financial Assistance Dropdown - Farmers only */}
+          {user?.role === 'farmer' && (
+            <li className="nav-item dropdown">
+              <button 
+                className="nav-link dropdown-toggle" 
+                onClick={() => toggleDropdown('finance')}
+                aria-expanded={dropdownOpen === 'finance'}
+              >
+                <span className="nav-icon">💰</span>
+                <span className="nav-text">Financial Assistance</span>
+                <span className="dropdown-arrow">▼</span>
+              </button>
+              <ul className={`dropdown-menu ${dropdownOpen === 'finance' ? 'show' : ''}`}>
+                <li>
+                  <Link to="/apply-loan" className="dropdown-item" onClick={closeAllMenus}>
+                    <span className="nav-icon">📝</span>
+                    <span className="nav-text">Apply for Loan</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/loan-status" className="dropdown-item" onClick={closeAllMenus}>
+                    <span className="nav-icon">📋</span>
+                    <span className="nav-text">Loan Status</span>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+          )}
+
           {/* Account Section */}
           <li className="nav-item">
             <Link to="/notifications" className="nav-link" onClick={closeAllMenus}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import indiaData from '../../data/indiaLocations';
 import './AuthorityProfile.css';
 
 const AuthorityProfile = () => {
@@ -9,7 +10,11 @@ const AuthorityProfile = () => {
     email: user?.email || '',
     phone: '',
     display_name: user?.display_name || '',
-    department: ''
+    department: '',
+    designation: '',
+    state: '',
+    district: '',
+    taluk: ''
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -19,6 +24,24 @@ const AuthorityProfile = () => {
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
 
+  // Get available districts based on selected state
+  const getDistricts = () => {
+    if (profileData.state && indiaData[profileData.state]) {
+      return Object.keys(indiaData[profileData.state]);
+    }
+    return [];
+  };
+
+  // Get available taluks based on selected district
+  const getTaluks = () => {
+    if (profileData.state && profileData.district && 
+        indiaData[profileData.state] && 
+        indiaData[profileData.state][profileData.district]) {
+      return indiaData[profileData.state][profileData.district];
+    }
+    return [];
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -27,7 +50,11 @@ const AuthorityProfile = () => {
           email: response.data.email || user?.email || '',
           phone: response.data.phone || '',
           display_name: response.data.display_name || user?.display_name || '',
-          department: response.data.department || ''
+          department: response.data.department || '',
+          designation: response.data.designation || '',
+          state: response.data.state || '',
+          district: response.data.district || '',
+          taluk: response.data.taluk || ''
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -38,6 +65,25 @@ const AuthorityProfile = () => {
 
     fetchProfile();
   }, [user]);
+
+  // Handle state change - reset district and taluk
+  const handleStateChange = (e) => {
+    setProfileData(prev => ({
+      ...prev,
+      state: e.target.value,
+      district: '',
+      taluk: ''
+    }));
+  };
+
+  // Handle district change - reset taluk
+  const handleDistrictChange = (e) => {
+    setProfileData(prev => ({
+      ...prev,
+      district: e.target.value,
+      taluk: ''
+    }));
+  };
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -113,6 +159,17 @@ const AuthorityProfile = () => {
                   <span className="info-value">{profileData.department || 'Not specified'}</span>
                 </div>
                 <div className="info-item">
+                  <span className="info-label">Designation</span>
+                  <span className="info-value">{profileData.designation || 'Not specified'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Location</span>
+                  <span className="info-value">
+                    {[profileData.state, profileData.district, profileData.taluk]
+                      .filter(Boolean).join(' → ') || 'Not specified'}
+                  </span>
+                </div>
+                <div className="info-item">
                   <span className="info-label">Role</span>
                   <span className="info-value">Authority</span>
                 </div>
@@ -169,6 +226,75 @@ const AuthorityProfile = () => {
                         onChange={(e) => setProfileData(prev => ({ ...prev, department: e.target.value }))}
                         placeholder="e.g., Animal Husbandry, Agriculture"
                       />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="designation">Designation</label>
+                      <input
+                        type="text"
+                        id="designation"
+                        value={profileData.designation}
+                        onChange={(e) => setProfileData(prev => ({ ...prev, designation: e.target.value }))}
+                        placeholder="e.g., District Officer, Veterinary Inspector"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-section-divider">
+                    <h3>📍 Jurisdiction Location</h3>
+                    <p className="section-hint">Select your area of authority/jurisdiction</p>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="state">State *</label>
+                      <select
+                        id="state"
+                        value={profileData.state}
+                        onChange={handleStateChange}
+                        required
+                      >
+                        <option value="">Select State</option>
+                        {Object.keys(indiaData).map(state => (
+                          <option key={state} value={state}>{state}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="district">District *</label>
+                      <select
+                        id="district"
+                        value={profileData.district}
+                        onChange={handleDistrictChange}
+                        required
+                        disabled={!profileData.state}
+                      >
+                        <option value="">Select District</option>
+                        {getDistricts().map(district => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="taluk">Taluk *</label>
+                      <select
+                        id="taluk"
+                        value={profileData.taluk}
+                        onChange={(e) => setProfileData(prev => ({ ...prev, taluk: e.target.value }))}
+                        required
+                        disabled={!profileData.district}
+                      >
+                        <option value="">Select Taluk</option>
+                        {getTaluks().map(taluk => (
+                          <option key={taluk} value={taluk}>{taluk}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 

@@ -289,7 +289,7 @@ router.get('/upcoming/:days?', async (req, res) => {
       
       if (existing.length === 0) {
         // Create notification for upcoming scheduled vaccination
-        await require('./Notification').create({
+        await require('../models/Notification').create({
           user_id: req.user.user_id,
           type: 'vaccination',
           message: `Upcoming vaccination: ${vacc.vaccine_name} for ${vacc.species} ${vacc.tag_id || vacc.batch_name} is due in ${vacc.days_until_due} days (${vacc.next_due_date}).`,
@@ -367,7 +367,7 @@ router.get('/overdue', async (req, res) => {
       
       if (existing.length === 0) {
         // Create notification for overdue scheduled vaccination
-        await require('./Notification').create({
+        await require('../models/Notification').create({
           user_id: req.user.user_id,
           type: 'vaccination',
           message: `Overdue vaccination: ${vacc.vaccine_name} for ${vacc.species} ${vacc.tag_id || vacc.batch_name} was due ${vacc.days_overdue} days ago (${vacc.next_due_date}).`,

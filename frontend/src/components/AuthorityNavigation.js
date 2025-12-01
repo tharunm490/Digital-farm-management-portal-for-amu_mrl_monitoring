@@ -71,6 +71,13 @@ const AuthorityNavigation = () => {
           </li>
 
           <li className="authority-nav-item">
+            <Link to="/authority/loan-applications" className="authority-nav-link" onClick={closeMobileMenu}>
+              <span className="authority-nav-icon">💼</span>
+              <span className="authority-nav-text">Loan Applications</span>
+            </Link>
+          </li>
+
+          <li className="authority-nav-item">
             <Link to="/authority/profile" className="authority-nav-link" onClick={closeMobileMenu}>
               <span className="authority-nav-icon">👤</span>
               <span className="authority-nav-text">Profile</span>

@@ -18,6 +18,8 @@ import RoleSelection from './pages/RoleSelection';
 import AMURecords from './pages/AMURecords';
 import FarmerNotifications from './pages/FarmerNotifications';
 import TreatmentRequestManagement from './pages/TreatmentRequestManagement';
+import ApplyForLoan from './pages/ApplyForLoan';
+import LoanStatus from './pages/LoanStatus';
 import AuthorityNavigation from './components/AuthorityNavigation';
 import AuthorityDashboard from './pages/authority/AuthorityDashboard';
 import AuthorityAMUAnalytics from './pages/authority/AuthorityAMUAnalytics';
@@ -27,6 +29,8 @@ import AuthorityReports from './pages/authority/AuthorityReports';
 import AuthorityMapView from './pages/authority/AuthorityMapView';
 import AuthorityProfile from './pages/authority/AuthorityProfile';
 import AuthorityNotifications from './pages/authority/AuthorityNotifications';
+import AuthorityLoanApplications from './pages/authority/AuthorityLoanApplications';
+import AuthorityLoanDetail from './pages/authority/AuthorityLoanDetail';
 import './App.css';
 
 // Authority Routes Component
@@ -43,6 +47,8 @@ const AuthorityRoutes = () => {
         <Route path="/map-view" element={<AuthorityMapView />} />
         <Route path="/profile" element={<AuthorityProfile />} />
         <Route path="/notifications" element={<AuthorityNotifications />} />
+        <Route path="/loan-applications" element={<AuthorityLoanApplications />} />
+        <Route path="/loan-detail/:loanId" element={<AuthorityLoanDetail />} />
         <Route path="/" element={<Navigate to="/authority/dashboard" />} />
       </Routes>
     </>
@@ -85,6 +91,8 @@ function AppRoutes() {
       <Route path="/vaccinations/entity/:entity_id" element={<ProtectedRoute><VaccinationManagement /></ProtectedRoute>} />
       <Route path="/qr-generator" element={<ProtectedRoute><QRGenerator /></ProtectedRoute>} />
       <Route path="/amu-records" element={<ProtectedRoute><AMURecords /></ProtectedRoute>} />
+      <Route path="/apply-loan" element={<ProtectedRoute><ApplyForLoan /></ProtectedRoute>} />
+      <Route path="/loan-status" element={<ProtectedRoute><LoanStatus /></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -443,6 +443,9 @@
   /* Use same green accent as other cards so it visually matches the dashboard */
   border-left: 6px solid #10b981; /* green accent */
   box-shadow: 0 8px 32px rgba(16, 185, 129, 0.06); /* subtle green tint */
+  border-radius: 20px; /* ensure rounded corners match other cards */
+  /* defensive overrides in case other styles add red accents */
+  border-left-color: #10b981 !important;
 }
 
 /* Keep header consistent with the other flash cards but emphasize slightly */
@@ -473,12 +476,16 @@
   color: white;
   display: flex;
   align-items: center;
+  justify-content: center; /* center title horizontally */
   gap: 15px;
+  position: relative; /* allow icon to be positioned left while title stays centered */
 }
 
 .stat-flash-header .stat-icon {
   font-size: 2rem;
   opacity: 0.9;
+  position: absolute; /* keep icon on the left while title remains centered */
+  left: 20px;
 }
 
 .stat-flash-header h3 {
@@ -490,6 +497,10 @@
 .stat-flash-content {
   padding: 25px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-main-value {
