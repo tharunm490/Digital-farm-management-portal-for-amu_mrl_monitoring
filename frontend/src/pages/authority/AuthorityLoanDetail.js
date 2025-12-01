@@ -22,15 +22,21 @@ const AuthorityLoanDetail = () => {
   };
 
   useEffect(() => {
+    console.log('AuthorityLoanDetail - loanId from useParams:', loanId);
     fetchLoanDetail();
   }, [loanId]);
 
   const fetchLoanDetail = async () => {
     try {
+      console.log('Fetching loan detail for loanId:', loanId);
+      console.log('API URL:', `/loans/applications/${loanId}`);
       const response = await api.get(`/loans/applications/${loanId}`);
+      console.log('Response received:', response.data);
       setLoanData(response.data);
     } catch (err) {
       console.error('Error fetching loan detail:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
       setError('Failed to load loan details. Please try again.');
     } finally {
       setLoading(false);
