@@ -141,21 +141,33 @@ router.get('/verify-product/:qr_hash', async (req, res) => {
     
     if (amuRecords.length > 0) {
       const latestAmu = amuRecords[0];
-      const safeDate = new Date(latestAmu.safe_date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      safeDate.setHours(0, 0, 0, 0);
       
-      const isSafe = safeDate <= today;
-      const daysRemaining = isSafe ? 0 : Math.ceil((safeDate - today) / (1000 * 60 * 60 * 24));
-      
-      withdrawalStatus = {
-        is_safe: isSafe,
-        safe_date: latestAmu.safe_date,
-        last_treatment: latestAmu.treatment_date,
-        medicine_name: latestAmu.medicine_name,
-        days_remaining: daysRemaining
-      };
+      // If withdrawal period is null or 0, it's safe (vaccines, vitamins, etc.)
+      if (latestAmu.withdrawal_period_days === null || latestAmu.withdrawal_period_days === 0) {
+        withdrawalStatus = {
+          is_safe: true,
+          safe_date: latestAmu.treatment_date, // Same as treatment date
+          last_treatment: latestAmu.treatment_date,
+          medicine_name: latestAmu.medicine_name,
+          days_remaining: 0
+        };
+      } else {
+        const safeDate = new Date(latestAmu.safe_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        safeDate.setHours(0, 0, 0, 0);
+        
+        const isSafe = safeDate <= today;
+        const daysRemaining = isSafe ? 0 : Math.ceil((safeDate - today) / (1000 * 60 * 60 * 24));
+        
+        withdrawalStatus = {
+          is_safe: isSafe,
+          safe_date: latestAmu.safe_date,
+          last_treatment: latestAmu.treatment_date,
+          medicine_name: latestAmu.medicine_name,
+          days_remaining: daysRemaining
+        };
+      }
     }
     
     // Get all recent treatments for transparency

@@ -275,12 +275,47 @@ router.get('/applications/:loanId', authMiddleware, authorityMiddleware, async (
       }
     });
 
-    // Get violations count (MRL violations - tissue results that exceed limits)
+    // Get violations count (MRL violations - AMU records marked as UNSAFE)
     const [violationsCount] = await db.query(
-      `SELECT COUNT(DISTINCT amu_id) AS total_violations
-       FROM amu_tissue_results
-       WHERE amu_id IN (SELECT amu_id FROM amu_records WHERE farm_id = ?)
-       AND risk_category = 'UNSAFE'`,
+      `SELECT COUNT(*) AS total_violations
+       FROM amu_records
+       WHERE farm_id = ? AND risk_category = 'UNSAFE'`,
+      [farmId]
+    );
+
+    // Get distributor verification statistics for animals/batches from this farm
+    const [distributorStats] = await db.query(
+      `SELECT 
+        COUNT(*) as total_verifications,
+        SUM(CASE WHEN verification_status = 'accepted' THEN 1 ELSE 0 END) as accepted_count,
+        SUM(CASE WHEN verification_status = 'rejected' THEN 1 ELSE 0 END) as rejected_count
+       FROM distributor_verification_logs dvl
+       WHERE dvl.entity_id IN (
+         SELECT entity_id FROM animals_or_batches WHERE farm_id = ?
+       )`,
+      [farmId, farmId]
+    );
+
+    // Get detailed distributor verification logs
+    const [distributorLogs] = await db.query(
+      `SELECT 
+        dvl.log_id,
+        dvl.verification_status,
+        dvl.is_withdrawal_safe,
+        dvl.safe_date,
+        dvl.reason,
+        dvl.scanned_at,
+        d.distributor_name,
+        d.company_name,
+        e.tag_id,
+        e.batch_name,
+        e.species
+       FROM distributor_verification_logs dvl
+       JOIN distributors d ON dvl.distributor_id = d.distributor_id
+       JOIN animals_or_batches e ON dvl.entity_id = e.entity_id
+       WHERE e.farm_id = ?
+       ORDER BY dvl.scanned_at DESC
+       LIMIT 20`,
       [farmId]
     );
 
@@ -309,6 +344,12 @@ router.get('/applications/:loanId', authMiddleware, authorityMiddleware, async (
         riskSummary,
         totalAmuRecords: riskSummary.safe + riskSummary.borderline + riskSummary.unsafe,
         violations: violationsCount[0].total_violations || 0
+      },
+      distributorVerification: {
+        totalVerifications: distributorStats[0]?.total_verifications || 0,
+        acceptedCount: distributorStats[0]?.accepted_count || 0,
+        rejectedCount: distributorStats[0]?.rejected_count || 0,
+        verificationLogs: distributorLogs
       },
       history
     });

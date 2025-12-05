@@ -238,16 +238,25 @@ const VerifyProduct = () => {
           </div>
           <div className="banner-content">
             <h2>
-              {productData?.withdrawal_info?.is_withdrawal_safe 
+              {!productData?.withdrawal_info?.withdrawal_period_days || 
+               productData?.withdrawal_info?.withdrawal_period_days === 0 ||
+               productData?.withdrawal_info?.is_withdrawal_safe 
                 ? 'SAFE FOR CONSUMPTION' 
                 : 'WITHDRAWAL PERIOD ACTIVE'}
             </h2>
-            {!productData?.withdrawal_info?.is_withdrawal_safe && (
+            {productData?.withdrawal_info?.withdrawal_period_days > 0 && 
+             !productData?.withdrawal_info?.is_withdrawal_safe && (
               <p>
                 <strong>{productData?.withdrawal_info?.days_remaining} days remaining</strong> 
                 until safe date ({formatDate(productData?.withdrawal_info?.safe_date)})
               </p>
             )}
+            {!productData?.withdrawal_info?.withdrawal_period_days || 
+             productData?.withdrawal_info?.withdrawal_period_days === 0 ? (
+              <p>
+                <strong>No withdrawal period required</strong> - Product is safe for immediate consumption
+              </p>
+            ) : null}
             {productData?.withdrawal_info?.risk_category && (
               <p className="medicine-info">
                 Risk Category: <span className={`risk-badge risk-${productData.withdrawal_info.risk_category}`}>
@@ -382,11 +391,20 @@ const VerifyProduct = () => {
                   </button>
                 </div>
                 
-                {!productData?.withdrawal_info?.is_withdrawal_safe && (
+                {productData?.withdrawal_info?.withdrawal_period_days > 0 && 
+                 !productData?.withdrawal_info?.is_withdrawal_safe && (
                   <div className="warning-note">
                     <strong>⚠️ Warning:</strong> This product is within its withdrawal period. 
                     Safe date is {formatDate(productData?.withdrawal_info?.safe_date)}. 
                     Consider rejecting until withdrawal period completes.
+                  </div>
+                )}
+
+                {(!productData?.withdrawal_info?.withdrawal_period_days || 
+                  productData?.withdrawal_info?.withdrawal_period_days === 0) && (
+                  <div className="success-note">
+                    <strong>✅ Safe:</strong> No withdrawal period required for this product. 
+                    It is safe for immediate consumption.
                   </div>
                 )}
                 

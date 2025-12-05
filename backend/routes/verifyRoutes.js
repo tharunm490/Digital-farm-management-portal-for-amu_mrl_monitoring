@@ -102,7 +102,13 @@ router.get('/:identifier', async (req, res) => {
       withdrawalFinishDate = new Date(latestTreatment.withdrawal_end_date);
     }
 
-    if (withdrawalFinishDate) {
+    // If withdrawal period is null or 0, treat as safe (no withdrawal needed)
+    if (latestAMU && (latestAMU.predicted_withdrawal_days === null || latestAMU.predicted_withdrawal_days === 0)) {
+      mrlPass = true;
+      withdrawalStatus = 'PASS';
+      daysRemaining = 0;
+      daysFromWithdrawal = 0;
+    } else if (withdrawalFinishDate) {
       // Calculate days from withdrawal (absolute value for display)
       const today = new Date();
       const timeDiff = withdrawalFinishDate - today;

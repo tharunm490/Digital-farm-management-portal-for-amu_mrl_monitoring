@@ -440,18 +440,35 @@ function QRVerification() {
 
                 {/* Days Remaining */}
                 <div className={`relative bg-gradient-to-br ${
-                  verificationData.withdrawal_info.days_remaining <= 0 ? 'from-green-50 to-emerald-50 border-green-200' : 'from-red-50 to-rose-50 border-red-200'
+                  !verificationData.withdrawal_info.withdrawal_period_days || 
+                  verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                  verificationData.withdrawal_info.days_remaining <= 0 
+                    ? 'from-green-50 to-emerald-50 border-green-200' 
+                    : 'from-red-50 to-rose-50 border-red-200'
                 } rounded-xl p-5 border-2 overflow-hidden`}>
                   <div className="absolute top-0 right-0 text-6xl opacity-10">
-                    {verificationData.withdrawal_info.days_remaining <= 0 ? '✓' : '⏳'}
+                    {!verificationData.withdrawal_info.withdrawal_period_days || 
+                     verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                     verificationData.withdrawal_info.days_remaining <= 0 ? '✓' : '⏳'}
                   </div>
                   <p className={`text-xs font-bold ${
-                    verificationData.withdrawal_info.days_remaining <= 0 ? 'text-green-600' : 'text-red-600'
+                    !verificationData.withdrawal_info.withdrawal_period_days || 
+                    verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                    verificationData.withdrawal_info.days_remaining <= 0 
+                      ? 'text-green-600' 
+                      : 'text-red-600'
                   } uppercase tracking-wide mb-2`}>Days Remaining</p>
                   <p className={`text-lg font-black ${
-                    verificationData.withdrawal_info.days_remaining <= 0 ? 'text-green-900' : 'text-red-900'
+                    !verificationData.withdrawal_info.withdrawal_period_days || 
+                    verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                    verificationData.withdrawal_info.days_remaining <= 0 
+                      ? 'text-green-900' 
+                      : 'text-red-900'
                   }`}>
-                    {verificationData.withdrawal_info.days_remaining > 0 
+                    {!verificationData.withdrawal_info.withdrawal_period_days || 
+                     verificationData.withdrawal_info.withdrawal_period_days === 0
+                      ? 'No withdrawal needed'
+                      : verificationData.withdrawal_info.days_remaining > 0 
                       ? `${verificationData.withdrawal_info.days_remaining} days` 
                       : verificationData.withdrawal_info.days_remaining === 0
                       ? 'Ready today'
@@ -463,19 +480,37 @@ function QRVerification() {
 
                 {/* MRL Status */}
                 <div className={`relative bg-gradient-to-br ${
-                  verificationData.withdrawal_info.mrl_pass ? 'from-green-100 to-emerald-100 border-green-400' : 'from-red-100 to-rose-100 border-red-400'
+                  !verificationData.withdrawal_info.withdrawal_period_days || 
+                  verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                  verificationData.withdrawal_info.mrl_pass 
+                    ? 'from-green-100 to-emerald-100 border-green-400' 
+                    : 'from-red-100 to-rose-100 border-red-400'
                 } rounded-xl p-5 border-2 overflow-hidden`}>
                   <div className="absolute top-0 right-0 text-6xl opacity-10">
-                    {verificationData.withdrawal_info.mrl_pass ? '✓' : '✗'}
+                    {!verificationData.withdrawal_info.withdrawal_period_days || 
+                     verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                     verificationData.withdrawal_info.mrl_pass ? '✓' : '✗'}
                   </div>
                   <p className={`text-xs font-bold ${
-                    verificationData.withdrawal_info.mrl_pass ? 'text-green-700' : 'text-red-700'
-                  } uppercase tracking-wide mb-2`}>MRL Status</p>
+                    !verificationData.withdrawal_info.withdrawal_period_days || 
+                    verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                    verificationData.withdrawal_info.mrl_pass 
+                      ? 'text-green-700' 
+                      : 'text-red-700'
+                  } uppercase tracking-wide mb-2`}>Status</p>
                   <p className={`text-2xl font-black ${
-                    verificationData.withdrawal_info.mrl_pass ? 'text-green-900' : 'text-red-900'
+                    !verificationData.withdrawal_info.withdrawal_period_days || 
+                    verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                    verificationData.withdrawal_info.mrl_pass 
+                      ? 'text-green-900' 
+                      : 'text-red-900'
                   } flex items-center space-x-2`}>
-                    <span>{verificationData.withdrawal_info.mrl_pass ? '✓' : '✗'}</span>
-                    <span>{verificationData.withdrawal_info.mrl_pass ? 'SAFE' : 'NOT SAFE'}</span>
+                    <span>{!verificationData.withdrawal_info.withdrawal_period_days || 
+                            verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                            verificationData.withdrawal_info.mrl_pass ? '✓' : '✗'}</span>
+                    <span>{!verificationData.withdrawal_info.withdrawal_period_days || 
+                            verificationData.withdrawal_info.withdrawal_period_days === 0 || 
+                            verificationData.withdrawal_info.mrl_pass ? 'SAFE' : 'NOT SAFE'}</span>
                   </p>
                 </div>
               </div>

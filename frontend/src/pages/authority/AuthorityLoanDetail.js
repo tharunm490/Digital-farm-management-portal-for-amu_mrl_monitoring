@@ -119,7 +119,7 @@ const AuthorityLoanDetail = () => {
     );
   }
 
-  const { loan, livestock, treatmentSummary, history } = loanData;
+  const { loan, livestock, treatmentSummary, distributorVerification, history } = loanData;
 
   return (
     <div className="loan-detail-container">
@@ -394,6 +394,95 @@ const AuthorityLoanDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Distributor Verification Section */}
+      {distributorVerification && (
+        <div className="distributor-verification-section">
+          <div className="section-header">
+            <h2>🏪 Distributor Verification Summary</h2>
+            <p className="section-subtitle">Product acceptance and rejection details from distributors</p>
+          </div>
+          
+          <div className="verification-stats-grid">
+            <div className="stat-card total">
+              <div className="stat-icon">📦</div>
+              <div className="stat-content">
+                <span className="stat-number">{distributorVerification.totalVerifications}</span>
+                <span className="stat-label">Total Verifications</span>
+              </div>
+            </div>
+            
+            <div className="stat-card accepted">
+              <div className="stat-icon">✅</div>
+              <div className="stat-content">
+                <span className="stat-number">{distributorVerification.acceptedCount}</span>
+                <span className="stat-label">Accepted Products</span>
+              </div>
+            </div>
+            
+            <div className="stat-card rejected">
+              <div className="stat-icon">❌</div>
+              <div className="stat-content">
+                <span className="stat-number">{distributorVerification.rejectedCount}</span>
+                <span className="stat-label">Rejected Products</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Verification Logs */}
+          {distributorVerification.verificationLogs && distributorVerification.verificationLogs.length > 0 && (
+            <div className="verification-logs">
+              <h3>Recent Verification Details</h3>
+              <div className="logs-table-container">
+                <table className="verification-table">
+                  <thead>
+                    <tr>
+                      <th>Date & Time</th>
+                      <th>Distributor</th>
+                      <th>Product Details</th>
+                      <th>Status</th>
+                      <th>Withdrawal Safe</th>
+                      <th>Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {distributorVerification.verificationLogs.map((log) => (
+                      <tr key={log.log_id} className={`log-row ${log.verification_status}`}>
+                        <td className="log-date">{formatDate(log.scanned_at)}</td>
+                        <td className="log-distributor">
+                          <div className="distributor-info">
+                            <strong>{log.distributor_name}</strong>
+                            {log.company_name && <span className="company-name">{log.company_name}</span>}
+                          </div>
+                        </td>
+                        <td className="log-product">
+                          <div className="product-info">
+                            <span className="species-badge">{log.species}</span>
+                            <span className="product-id">{log.tag_id || log.batch_name}</span>
+                          </div>
+                        </td>
+                        <td className="log-status">
+                          <span className={`status-pill ${log.verification_status}`}>
+                            {log.verification_status === 'accepted' ? '✅ Accepted' : '❌ Rejected'}
+                          </span>
+                        </td>
+                        <td className="log-safe">
+                          <span className={`safe-badge ${log.is_withdrawal_safe ? 'safe' : 'unsafe'}`}>
+                            {log.is_withdrawal_safe ? '✓ Safe' : '✗ Unsafe'}
+                          </span>
+                        </td>
+                        <td className="log-reason">
+                          {log.reason || '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Loan History Timeline */}
       {history && history.length > 0 && (
