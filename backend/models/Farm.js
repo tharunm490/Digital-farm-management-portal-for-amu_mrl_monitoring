@@ -32,13 +32,22 @@ const Farm = {
   getById: async (farm_id) => {
     const [rows] = await db.query(`
       SELECT f.*, fr.farmer_id, u.display_name as farmer_name, u.email as farmer_email,
-             fr.phone, fr.address, fr.state, fr.district, fr.taluk
+             u.phone, u.state, u.district, u.taluk
       FROM farms f
       LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id
       LEFT JOIN users u ON fr.user_id = u.user_id
       WHERE f.farm_id = ?
     `, [farm_id]);
     return rows[0];
+  },
+
+  // Check if farm with same name exists for farmer
+  checkDuplicate: async (farmer_id, farm_name) => {
+    const [rows] = await db.query(
+      'SELECT farm_id FROM farms WHERE farmer_id = ? AND farm_name = ?',
+      [farmer_id, farm_name]
+    );
+    return rows.length > 0;
   },
 
   // Create new farm
@@ -50,12 +59,17 @@ const Farm = {
     );
     const farmId = result.insertId;
 
-    // Auto-assign veterinarian based on farmer's location
+    // Auto-assign veterinarian based on farmer's location (location is in users table)
     try {
-      const [farmerRows] = await db.query('SELECT state, district, taluk FROM farmers WHERE farmer_id = ?', [farmer_id]);
-      if (farmerRows && farmerRows[0]) {
+      const [userRows] = await db.query(`
+        SELECT u.state, u.district, u.taluk 
+        FROM farmers fr 
+        JOIN users u ON fr.user_id = u.user_id 
+        WHERE fr.farmer_id = ?
+      `, [farmer_id]);
+      if (userRows && userRows[0]) {
         const VetFarmMapping = require('./VetFarmMapping');
-        await VetFarmMapping.autoAssignVet(farmId, farmerRows[0].state, farmerRows[0].district, farmerRows[0].taluk);
+        await VetFarmMapping.autoAssignVet(farmId, userRows[0].state, userRows[0].district, userRows[0].taluk);
       }
     } catch (error) {
       console.warn('Failed to auto-assign veterinarian:', error.message);
@@ -69,7 +83,7 @@ const Farm = {
   getByVetId: async (vet_id) => {
     const [rows] = await db.query(`
       SELECT f.*, fr.farmer_id, u.display_name as farmer_name, u.email as farmer_email,
-             fr.phone, fr.address, fr.state, fr.district, fr.taluk
+             u.phone, u.state, u.district, u.taluk
       FROM farms f
       JOIN vet_farm_mapping vfm ON vfm.farm_id = f.farm_id
       LEFT JOIN farmers fr ON f.farmer_id = fr.farmer_id

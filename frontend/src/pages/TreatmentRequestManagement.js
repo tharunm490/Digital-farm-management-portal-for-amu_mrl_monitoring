@@ -156,7 +156,7 @@ const TreatmentRequestManagement = () => {
                   <p>{t('no_treatment_requests_found')}</p>
                 ) : (
                   requests.map((request, index) => (
-                    <div key={request.request_id || `request-${index}`} className="request-card">
+                    <div key={request.request_id || `request-${index}`} className="request-card vet-request-card">
                       <div className="request-header">
                         <h3>
                           <span className="species-icon">
@@ -179,22 +179,105 @@ const TreatmentRequestManagement = () => {
                         </span>
                       </div>
 
-                      <div className="request-details">
-                        <p><strong>{t('farm')}:</strong> {request.farm_name}</p>
-                        <p><strong>{t('farmer')}:</strong> {request.farmer_name}</p>
-                        <p><strong>{t('symptoms')}:</strong> {request.symptoms}</p>
-                        <p><strong>{t('requested')}:</strong> {new Date(request.created_at).toLocaleDateString()}</p>
-                        {request.handling_status === 'handled_by_other' && (
-                          <p className="handling-notice">
-                            ℹ️ {t('request_handled_by_other').replace('{vet}', request.handled_by_vet)}
-                          </p>
-                        )}
-                        {request.handling_status === 'handled_by_me' && (
-                          <p className="handling-notice">
-                            ✅ {t('request_handled_by_you')}
-                          </p>
-                        )}
+                      <div className="request-body">
+                        {/* Farmer Contact Card */}
+                        <div className="farmer-contact-card">
+                          <div className="contact-header">
+                            <span className="contact-icon">👨‍🌾</span>
+                            <h4>{t('farmer_details') || 'Farmer Details'}</h4>
+                          </div>
+                          <div className="contact-info">
+                            <div className="contact-item">
+                              <span className="icon">👤</span>
+                              <span className="label">{t('name') || 'Name'}:</span>
+                              <span className="value">{request.farmer_name || 'N/A'}</span>
+                            </div>
+                            <div className="contact-item">
+                              <span className="icon">📞</span>
+                              <span className="label">{t('phone') || 'Phone'}:</span>
+                              <span className="value phone-link">
+                                {request.farmer_phone ? (
+                                  <a href={`tel:${request.farmer_phone}`}>{request.farmer_phone}</a>
+                                ) : 'N/A'}
+                              </span>
+                            </div>
+                            <div className="contact-item">
+                              <span className="icon">📧</span>
+                              <span className="label">{t('email') || 'Email'}:</span>
+                              <span className="value email-link">
+                                {request.farmer_email ? (
+                                  <a href={`mailto:${request.farmer_email}`}>{request.farmer_email}</a>
+                                ) : 'N/A'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Farm Location Card */}
+                        <div className="farm-location-card">
+                          <div className="location-header">
+                            <span className="location-icon">🏡</span>
+                            <h4>{t('farm_location') || 'Farm Location'}</h4>
+                          </div>
+                          <div className="location-info">
+                            <div className="location-item">
+                              <span className="icon">🏠</span>
+                              <span className="label">{t('farm_name') || 'Farm'}:</span>
+                              <span className="value">{request.farm_name || 'N/A'}</span>
+                            </div>
+                            <div className="location-item">
+                              <span className="icon">📍</span>
+                              <span className="label">{t('address') || 'Address'}:</span>
+                              <span className="value">
+                                {[request.farmer_taluk, request.farmer_district, request.farmer_state]
+                                  .filter(Boolean).join(', ') || 'N/A'}
+                              </span>
+                            </div>
+                            {request.latitude && request.longitude && (
+                              <div className="location-item">
+                                <span className="icon">🗺️</span>
+                                <span className="label">{t('coordinates') || 'GPS'}:</span>
+                                <span className="value map-link">
+                                  <a 
+                                    href={`https://www.google.com/maps?q=${request.latitude},${request.longitude}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {t('view_on_map') || 'View on Map'} 📍
+                                  </a>
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Symptoms Card */}
+                        <div className="symptoms-card">
+                          <div className="symptoms-header">
+                            <span className="symptoms-icon">🏥</span>
+                            <h4>{t('symptoms') || 'Symptoms'}</h4>
+                          </div>
+                          <div className="symptoms-content">
+                            <p>{request.symptoms || 'No symptoms provided'}</p>
+                          </div>
+                          <div className="request-meta">
+                            <span className="meta-item">
+                              📅 {t('requested') || 'Requested'}: {new Date(request.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
                       </div>
+
+                      {request.handling_status === 'handled_by_other' && (
+                        <div className="handling-notice warning">
+                          ℹ️ {t('request_handled_by_other').replace('{vet}', request.handled_by_vet)}
+                        </div>
+                      )}
+                      {request.handling_status === 'handled_by_me' && (
+                        <div className="handling-notice success">
+                          ✅ {t('request_handled_by_you')}
+                        </div>
+                      )}
 
                       {request.status === 'pending' && isVet && request.handling_status !== 'handled_by_other' && (
                         <div className="request-actions">
@@ -223,6 +306,11 @@ const TreatmentRequestManagement = () => {
                           >
                             {approvingRequests.has(request.request_id) ? t('approving') : t('approve_treat')}
                           </button>
+                          {request.farmer_phone && (
+                            <a href={`tel:${request.farmer_phone}`} className="call-btn">
+                              📞 {t('call_farmer') || 'Call Farmer'}
+                            </a>
+                          )}
                         </div>
                       )}
                     </div>

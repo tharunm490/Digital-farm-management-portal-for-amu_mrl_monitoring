@@ -116,7 +116,12 @@ class Entity {
 
   // Get entity with treatment and AMU history
   static async getWithHistory(entityId) {
-    const entityQuery = 'SELECT * FROM animals_or_batches WHERE entity_id = ?';
+    const entityQuery = `
+      SELECT e.*, f.farm_name, f.latitude, f.longitude 
+      FROM animals_or_batches e
+      LEFT JOIN farms f ON e.farm_id = f.farm_id
+      WHERE e.entity_id = ?
+    `;
     const [entityRows] = await db.execute(entityQuery, [entityId]);
     
     if (entityRows.length === 0) {

@@ -51,11 +51,12 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     const farmer = await Farmer.getByUserId(req.user.user_id);
     if (!farmer) return res.status(404).json({ error: 'Farmer profile not found' });
     
-    // Get entity and farm details
+    // Get entity and farm details (location is in users table)
     const [entities] = await db.query(`
-      SELECT a.*, f.farm_id, f.farm_name, fr.state, fr.district, fr.taluk FROM animals_or_batches a
+      SELECT a.*, f.farm_id, f.farm_name, u.state, u.district, u.taluk FROM animals_or_batches a
       JOIN farms f ON a.farm_id = f.farm_id
       JOIN farmers fr ON f.farmer_id = fr.farmer_id
+      JOIN users u ON fr.user_id = u.user_id
       WHERE a.entity_id = ? AND f.farmer_id = ?
     `, [entity_id, farmer.farmer_id]);
     

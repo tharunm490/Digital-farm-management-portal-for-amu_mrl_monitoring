@@ -112,33 +112,16 @@ const Navigation = () => {
                   <span className="nav-text">AMU Records</span>
                 </Link>
               </li>
+              {user?.role !== 'veterinarian' && (
+                <li>
+                  <Link to="/qr-generator" className="dropdown-item" onClick={closeAllMenus}>
+                    <span className="nav-icon">📱</span>
+                    <span className="nav-text">QR Code Generator</span>
+                  </Link>
+                </li>
+              )}
             </ul>
           </li>
-
-          {/* Tools Dropdown */}
-          {user?.role !== 'veterinarian' && (
-            <li className="nav-item dropdown">
-              <button 
-                className="nav-link dropdown-toggle" 
-                onClick={() => toggleDropdown('tools')}
-                aria-expanded={dropdownOpen === 'tools'}
-              >
-                <span className="nav-icon">🛠️</span>
-                <span className="nav-text">Tools</span>
-                <span className="dropdown-arrow">▼</span>
-              </button>
-              <ul className={`dropdown-menu ${dropdownOpen === 'tools' ? 'show' : ''}`}>
-                {user?.role !== 'veterinarian' && (
-                  <li>
-                    <Link to="/qr-generator" className="dropdown-item" onClick={closeAllMenus}>
-                      <span className="nav-icon">📱</span>
-                      <span className="nav-text">QR Code Generator</span>
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            </li>
-          )}
 
           {/* Financial Assistance Dropdown - Farmers only */}
           {user?.role === 'farmer' && (

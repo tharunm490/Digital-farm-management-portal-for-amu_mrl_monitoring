@@ -66,25 +66,31 @@ const VetFarmMapping = {
 
     if (vets.length > 0) {
       const vet = vets[0];
-      await VetFarmMapping.create(vet.license_number, farm_id);
-      return vet.license_number;
+      // Use vet_id which is the primary key in veterinarians table
+      await VetFarmMapping.create(vet.vet_id, farm_id);
+      return vet.vet_id;
     }
 
     return null;
   },
 
-  // Get vets by location (helper method)
+  // Get vets by location (helper method) - location is in users table
   getVetsByLocation: async (state, district = null, taluk = null) => {
-    let query = 'SELECT v.*, u.display_name, u.email FROM veterinarians v JOIN users u ON v.user_id = u.user_id WHERE v.state = ?';
+    let query = `
+      SELECT v.*, u.display_name, u.email, u.state, u.district, u.taluk 
+      FROM veterinarians v 
+      JOIN users u ON v.user_id = u.user_id 
+      WHERE u.state = ?
+    `;
     const params = [state];
     
     if (district) {
-      query += ' AND v.district = ?';
+      query += ' AND u.district = ?';
       params.push(district);
     }
     
     if (taluk) {
-      query += ' AND v.taluk = ?';
+      query += ' AND u.taluk = ?';
       params.push(taluk);
     }
     

@@ -135,10 +135,27 @@ class AMU {
 
     const amuId = result.insertId;
 
-    // Create notification if unsafe
+    // Get the farmer's user_id for notifications (owner of the farm)
+    let farmerUserId = user_id; // Default to the user who created the record
+    try {
+      const [farmRows] = await db.query(`
+        SELECT u.user_id as farmer_user_id
+        FROM farms f
+        JOIN farmers fr ON f.farmer_id = fr.farmer_id
+        JOIN users u ON fr.user_id = u.user_id
+        WHERE f.farm_id = ?
+      `, [farm_id]);
+      if (farmRows.length > 0) {
+        farmerUserId = farmRows[0].farmer_user_id;
+      }
+    } catch (err) {
+      console.warn('Could not get farmer user_id for notifications:', err.message);
+    }
+
+    // Create notification if unsafe - send to farmer
     if (risk_category === 'UNSAFE') {
       await Notification.create({
-        user_id,
+        user_id: farmerUserId,
         type: 'alert',
         subtype: 'unsafe_mrl',
         message: `Unsafe condition detected for ${medicine} in ${species}. Risk category: ${risk_category}`,
@@ -147,10 +164,10 @@ class AMU {
         amu_id: amuId
       });
 
-      // Also notify veterinarian
+      // Also notify veterinarian (if different from farmer)
       const VetFarmMapping = require('./VetFarmMapping');
       const vetMapping = await VetFarmMapping.getVetForFarm(farm_id);
-      if (vetMapping) {
+      if (vetMapping && vetMapping.user_id !== farmerUserId) {
         await Notification.create({
           user_id: vetMapping.user_id,
           type: 'alert',
@@ -163,10 +180,10 @@ class AMU {
       }
     }
 
-    // Create notification if overdosage
+    // Create notification if overdosage - send to farmer
     if (overdosage) {
       await Notification.create({
-        user_id,
+        user_id: farmerUserId,
         type: 'alert',
         subtype: 'overdosage',
         message: `Overdosage detected for ${medicine} in ${species}. Please review the treatment.`,
@@ -175,10 +192,10 @@ class AMU {
         amu_id: amuId
       });
 
-      // Also notify veterinarian
+      // Also notify veterinarian (if different from farmer)
       const VetFarmMapping = require('./VetFarmMapping');
       const vetMapping = await VetFarmMapping.getVetForFarm(farm_id);
-      if (vetMapping) {
+      if (vetMapping && vetMapping.user_id !== farmerUserId) {
         await Notification.create({
           user_id: vetMapping.user_id,
           type: 'alert',

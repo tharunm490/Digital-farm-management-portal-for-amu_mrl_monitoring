@@ -30,6 +30,8 @@ router.get('/type/:type', authMiddleware, async (req, res) => {
     }
     let actualType = type;
     let subtype = null;
+    
+    // Handle different type mappings
     if (type === 'mrl_alert') {
       actualType = 'alert';
       subtype = 'unsafe_mrl';
@@ -39,9 +41,14 @@ router.get('/type/:type', authMiddleware, async (req, res) => {
     } else if (type === 'overdosage') {
       actualType = 'alert';
       subtype = 'overdosage';
-    } else if (type !== 'vaccination') {
+    } else if (type === 'all_alerts') {
+      // Get all alerts regardless of subtype
+      actualType = 'alert';
+      subtype = null;
+    } else if (type !== 'vaccination' && type !== 'alert') {
       return res.status(400).json({ error: 'Invalid notification type' });
     }
+    
     const limit = parseInt(req.query.limit) || 50;
     const notifications = await Notification.getByType(user_id, actualType, subtype, limit);
     res.json(notifications);

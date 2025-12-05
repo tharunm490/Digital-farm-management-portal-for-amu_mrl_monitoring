@@ -3,10 +3,10 @@ const db = require('../config/database');
 const Veterinarian = {
   // Create veterinarian profile
   create: async (vetData) => {
-    const { user_id, vet_name, license_number, phone, state, district, taluk } = vetData;
+    const { user_id, vet_name, license_number, phone } = vetData;
     const [result] = await db.query(
-      'INSERT INTO veterinarians (vet_id, user_id, vet_name, license_number, phone, state, district, taluk) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [license_number, user_id, vet_name, license_number, phone, state, district, taluk]
+      'INSERT INTO veterinarians (vet_id, user_id, vet_name, license_number, phone) VALUES (?, ?, ?, ?, ?)',
+      [license_number, user_id, vet_name, license_number, phone]
     );
     return license_number;
   },
@@ -23,16 +23,21 @@ const Veterinarian = {
     return rows[0];
   },
 
-  // Find vets by location (for mapping)
+  // Find vets by location (uses users table for location)
   findByLocation: async (state, district = null, taluk = null) => {
-    let query = 'SELECT * FROM veterinarians WHERE state = ?';
+    let query = `
+      SELECT v.*, u.state, u.district, u.taluk 
+      FROM veterinarians v 
+      JOIN users u ON v.user_id = u.user_id 
+      WHERE u.state = ?
+    `;
     let params = [state];
 
     if (taluk) {
-      query += ' AND district = ? AND taluk = ?';
+      query += ' AND u.district = ? AND u.taluk = ?';
       params.push(district, taluk);
     } else if (district) {
-      query += ' AND district = ?';
+      query += ' AND u.district = ?';
       params.push(district);
     }
 
@@ -43,10 +48,10 @@ const Veterinarian = {
 
   // Update veterinarian profile
   update: async (user_id, vetData) => {
-    const { vet_name, license_number, phone, state, district, taluk } = vetData;
+    const { vet_name, license_number, phone } = vetData;
     const [result] = await db.query(
-      'UPDATE veterinarians SET vet_name = ?, license_number = ?, phone = ?, state = ?, district = ?, taluk = ? WHERE user_id = ?',
-      [vet_name, license_number, phone, state, district, taluk, user_id]
+      'UPDATE veterinarians SET vet_name = ?, license_number = ?, phone = ? WHERE user_id = ?',
+      [vet_name, license_number, phone, user_id]
     );
     return result.affectedRows;
   }

@@ -80,6 +80,12 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     if (!farmer) {
       return res.status(404).json({ error: 'Farmer profile not found. Please complete your profile first.' });
     }
+
+    // Check for duplicate farm name
+    const isDuplicate = await Farm.checkDuplicate(farmer.farmer_id, req.body.farm_name);
+    if (isDuplicate) {
+      return res.status(400).json({ error: 'A farm with this name already exists. Please use a different name.' });
+    }
     
     const farmData = {
       farmer_id: farmer.farmer_id,

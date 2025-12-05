@@ -20,6 +20,10 @@ import FarmerNotifications from './pages/FarmerNotifications';
 import TreatmentRequestManagement from './pages/TreatmentRequestManagement';
 import ApplyForLoan from './pages/ApplyForLoan';
 import LoanStatus from './pages/LoanStatus';
+import DistributorDashboard from './pages/DistributorDashboard';
+import DistributorProfile from './pages/DistributorProfile';
+import VerifyProduct from './pages/VerifyProduct';
+import VerificationHistory from './pages/VerificationHistory';
 import AuthorityNavigation from './components/AuthorityNavigation';
 import AuthorityDashboard from './pages/authority/AuthorityDashboard';
 import AuthorityAMUAnalytics from './pages/authority/AuthorityAMUAnalytics';
@@ -69,6 +73,23 @@ function AppRoutes() {
     );
   }
   
+  // Redirect distributor users to their dashboard
+  if (user && user.role === 'distributor') {
+    return (
+      <Routes>
+        <Route path="/" element={<Navigate to="/distributor" />} />
+        <Route path="/distributor" element={<DistributorDashboard />} />
+        <Route path="/distributor/dashboard" element={<DistributorDashboard />} />
+        <Route path="/distributor/profile" element={<DistributorProfile />} />
+        <Route path="/distributor/verify-product" element={<VerifyProduct />} />
+        <Route path="/distributor/verifications" element={<VerificationHistory />} />
+        <Route path="/verify-product/:qr_hash" element={<VerifyProduct />} />
+        <Route path="/profile" element={<DistributorProfile />} />
+        <Route path="*" element={<Navigate to="/distributor" />} />
+      </Routes>
+    );
+  }
+  
   return (
     <Routes>
       <Route path="/" element={<Homepage />} />
@@ -76,6 +97,8 @@ function AppRoutes() {
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/role-selection" element={<RoleSelection />} />
+      {/* Public verify-product route - accessible to everyone */}
+      <Route path="/verify-product/:qr_hash" element={<VerifyProduct />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><FarmerNotifications /></ProtectedRoute>} />
       <Route path="/treatment-requests" element={<ProtectedRoute><TreatmentRequestManagement /></ProtectedRoute>} />

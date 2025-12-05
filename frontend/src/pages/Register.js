@@ -1,195 +1,383 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAllStates, getDistrictsByState } from '../data/statesDistricts';
+import { getTaluksByDistrict } from '../data/taluks';
 import './Register.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
     full_name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'farmer',
+    aadhaar_number: '',
     phone: '',
-    address: '',
+    email: '',
     state: '',
-    district: ''
+    district: '',
+    taluk: '',
+    address: ''
   });
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
+  
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { registerFarmer, sendOTP, verifyOTP } = useAuth();
 
   const states = getAllStates();
   const districts = formData.state ? getDistrictsByState(formData.state) : [];
+  const taluks = (formData.state && formData.district) ? getTaluksByDistrict(formData.state, formData.district) : [];
+
+  // Check for error messages from Google callback
+  useEffect(() => {
+    const errorType = searchParams.get('error');
+    if (errorType === 'farmers_use_otp') {
+      setError('Farmers must register using Aadhaar + Phone. Google registration is not available for farmers.');
+    }
+  }, [searchParams]);
+
+  // OTP resend timer
+  useEffect(() => {
+    let interval;
+    if (otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [otpTimer]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Reset district if state changes
+    // Reset district and taluk if state changes
     if (name === 'state') {
-      setFormData({ ...formData, state: value, district: '' });
+      setFormData({ ...formData, state: value, district: '', taluk: '' });
+    } else if (name === 'district') {
+      // Reset taluk if district changes
+      setFormData({ ...formData, district: value, taluk: '' });
+    } else if (name === 'aadhaar_number') {
+      // Only allow digits, max 12
+      setFormData({ ...formData, [name]: value.replace(/\D/g, '').slice(0, 12) });
+    } else if (name === 'phone') {
+      // Only allow digits, max 10
+      setFormData({ ...formData, [name]: value.replace(/\D/g, '').slice(0, 10) });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleSubmit = async (e) => {
+  // Step 1: Register farmer (creates account but not logged in yet)
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    // Validate required fields
+    if (!formData.full_name || !formData.aadhaar_number || !formData.phone || !formData.state || !formData.district) {
+      setError('Full Name, Aadhaar Number, Phone, State, and District are required');
       return;
     }
 
+    if (formData.aadhaar_number.length !== 12) {
+      setError('Aadhaar number must be exactly 12 digits');
+      return;
+    }
+
+    if (formData.phone.length !== 10) {
+      setError('Phone number must be exactly 10 digits');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const userData = { ...formData };
-      delete userData.confirmPassword;
-      
-      await register(userData);
-      navigate('/dashboard');
+      await registerFarmer({
+        display_name: formData.full_name,
+        aadhaar_number: formData.aadhaar_number,
+        phone: formData.phone,
+        email: formData.email || null,
+        state: formData.state,
+        district: formData.district,
+        taluk: formData.taluk || null,
+        address: formData.address || null
+      });
+      setRegistrationComplete(true);
+      setSuccess('Registration successful! Please verify your phone number to login.');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleGoogleSignup = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
+  // Step 2: Send OTP to verify phone
+  const handleSendOTP = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    
+    try {
+      await sendOTP(formData.aadhaar_number, formData.phone);
+      setOtpSent(true);
+      setOtpTimer(300); // 5 minutes
+      setSuccess('OTP sent to your registered phone number');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 3: Verify OTP and login
+  const handleVerifyOTP = async () => {
+    setError('');
+    setSuccess('');
+    
+    if (!otp || otp.length !== 6) {
+      setError('Please enter a valid 6-digit OTP');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await verifyOTP(formData.aadhaar_number, formData.phone, otp);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.error || 'OTP verification failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Format timer display
+  const formatTimer = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="register-container">
       <div className="register-box">
-        <h1>Farm Management Portal</h1>
-        <h2>Create Account</h2>
+        <h1>🌾 Farm Management Portal</h1>
+        <h2>Farmer Registration</h2>
         
         {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
         
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Full Name *</label>
-            <input
-              type="text"
-              name="full_name"
-              value={formData.full_name}
-              onChange={handleChange}
-              required
-              placeholder="Enter your full name"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Email *</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="Enter your email"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Password *</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="Create a password"
-              minLength="6"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Confirm Password *</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              placeholder="Confirm your password"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Role *</label>
-            <select name="role" value={formData.role} onChange={handleChange} required>
-              <option value="farmer">Farmer</option>
-              <option value="veterinarian">Veterinarian</option>
-              <option value="authority">Authority</option>
-            </select>
-          </div>
-          
-          {(formData.role === 'farmer' || formData.role === 'veterinarian') && (
-            <>
+        {/* STEP 1: Registration Form */}
+        {!registrationComplete && (
+          <form onSubmit={handleRegister}>
+            <div className="info-box">
+              <span>ℹ️</span>
+              <div>
+                <strong>Farmer Registration</strong>
+                <p>Register using your Aadhaar number and phone. You will receive an OTP for verification.</p>
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <label>Full Name *</label>
+              <input
+                type="text"
+                name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
+                required
+                placeholder="Enter your full name"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Aadhaar Number *</label>
+              <input
+                type="text"
+                name="aadhaar_number"
+                value={formData.aadhaar_number}
+                onChange={handleChange}
+                required
+                placeholder="Enter 12-digit Aadhaar number"
+                maxLength="12"
+              />
+              <span className="input-hint">{formData.aadhaar_number.length}/12 digits</span>
+            </div>
+            
+            <div className="form-group">
+              <label>Phone Number *</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                placeholder="Enter 10-digit phone number"
+                maxLength="10"
+              />
+              <span className="input-hint">{formData.phone.length}/10 digits</span>
+            </div>
+            
+            <div className="form-group">
+              <label>Email (Optional)</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email (optional)"
+              />
+            </div>
+            
+            <div className="form-row">
               <div className="form-group">
-                <label>Phone</label>
+                <label>State *</label>
+                <select
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select State</option>
+                  {states.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="form-group">
+                <label>District *</label>
+                <select
+                  name="district"
+                  value={formData.district}
+                  onChange={handleChange}
+                  disabled={!formData.state}
+                  required
+                >
+                  <option value="">Select District</option>
+                  {districts.map(district => (
+                    <option key={district} value={district}>{district}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <label>Taluk/Tehsil</label>
+              {taluks.length > 0 ? (
+                <select
+                  name="taluk"
+                  value={formData.taluk}
+                  onChange={handleChange}
+                  disabled={!formData.district}
+                >
+                  <option value="">Select Taluk/Tehsil</option>
+                  {taluks.map(taluk => (
+                    <option key={taluk} value={taluk}>{taluk}</option>
+                  ))}
+                </select>
+              ) : (
                 <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
+                  type="text"
+                  name="taluk"
+                  value={formData.taluk}
                   onChange={handleChange}
-                  placeholder="Enter your phone number"
+                  placeholder={formData.district ? "Enter your taluk/tehsil" : "Select district first"}
+                  disabled={!formData.district}
                 />
+              )}
+            </div>
+            
+            <div className="form-group">
+              <label>Address</label>
+              <textarea
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Enter your full address"
+                rows="2"
+              />
+            </div>
+            
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={loading || formData.aadhaar_number.length !== 12 || formData.phone.length !== 10 || !formData.full_name || !formData.state || !formData.district}
+            >
+              {loading ? 'Registering...' : '📝 Register as Farmer'}
+            </button>
+          </form>
+        )}
+        
+        {/* STEP 2: OTP Verification */}
+        {registrationComplete && (
+          <div className="otp-verification-section">
+            <div className="info-box success">
+              <span>✅</span>
+              <div>
+                <strong>Registration Complete!</strong>
+                <p>Please verify your phone number to access your account.</p>
               </div>
-              
-              <div className="form-group">
-                <label>Address</label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  placeholder="Enter your address"
-                  rows="2"
-                />
-              </div>
-              
-              <div className="form-row">
+            </div>
+            
+            <div className="registered-info">
+              <p><strong>Aadhaar:</strong> XXXX-XXXX-{formData.aadhaar_number.slice(-4)}</p>
+              <p><strong>Phone:</strong> +91-{formData.phone}</p>
+            </div>
+            
+            {!otpSent ? (
+              <button 
+                className="btn-primary btn-send-otp"
+                onClick={handleSendOTP}
+                disabled={loading}
+              >
+                {loading ? 'Sending OTP...' : '📱 Send OTP to Verify Phone'}
+              </button>
+            ) : (
+              <>
                 <div className="form-group">
-                  <label>State</label>
-                  <select
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select State</option>
-                    {states.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
+                  <label>Enter OTP</label>
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="Enter 6-digit OTP"
+                    maxLength="6"
+                    autoFocus
+                  />
+                  {otpTimer > 0 && (
+                    <span className="otp-timer">OTP expires in: {formatTimer(otpTimer)}</span>
+                  )}
                 </div>
                 
-                <div className="form-group">
-                  <label>District</label>
-                  <select
-                    name="district"
-                    value={formData.district}
-                    onChange={handleChange}
-                    disabled={!formData.state}
-                  >
-                    <option value="">Select District</option>
-                    {districts.map(district => (
-                      <option key={district} value={district}>{district}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </>
-          )}
-          
-          <button type="submit" className="btn-primary">Register</button>
-        </form>
+                <button 
+                  className="btn-primary"
+                  onClick={handleVerifyOTP}
+                  disabled={loading || otp.length !== 6}
+                >
+                  {loading ? 'Verifying...' : '✅ Verify & Login'}
+                </button>
+                
+                <button 
+                  className="btn-secondary"
+                  onClick={handleSendOTP}
+                  disabled={loading || otpTimer > 0}
+                >
+                  {otpTimer > 0 ? `Resend OTP in ${formatTimer(otpTimer)}` : '🔄 Resend OTP'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
         
-        <div className="divider">OR</div>
-        
-        <button onClick={handleGoogleSignup} className="btn-google">
-          <span>🔐</span> Sign up with Google
-        </button>
+        <div className="role-info-section">
+          <h3>Not a Farmer?</h3>
+          <p>Authorities and Veterinarians register using Google Sign-In on the login page.</p>
+          <Link to="/login" className="btn-link-alt">Go to Login →</Link>
+        </div>
         
         <p className="login-link">
           Already have an account? <Link to="/login">Login here</Link>

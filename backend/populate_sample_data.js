@@ -15,31 +15,31 @@ async function populateSampleData() {
     `, ['authority@example.com', hashedPassword, 'Authority User', 'authority']);
     const authorityId = authorityResult.insertId || 1;
 
-    // Insert farmer user
+    // Insert farmer user (with location in users table)
     const [farmerResult] = await db.execute(`
-      INSERT IGNORE INTO users (email, password_hash, display_name, role, created_at)
-      VALUES (?, ?, ?, ?, NOW())
-    `, ['farmer@example.com', hashedPassword, 'Sample Farmer', 'farmer']);
+      INSERT IGNORE INTO users (email, password_hash, display_name, role, state, district, taluk, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+    `, ['farmer@example.com', hashedPassword, 'Sample Farmer', 'farmer', 'Karnataka', 'Udupi', 'Udupi']);
     const farmerId = farmerResult.insertId || 2;
 
-    // Insert veterinarian user
+    // Insert veterinarian user (with location in users table)
     const [vetResult] = await db.execute(`
-      INSERT IGNORE INTO users (email, password_hash, display_name, role, created_at)
-      VALUES (?, ?, ?, ?, NOW())
-    `, ['vet@example.com', hashedPassword, 'Sample Vet', 'veterinarian']);
+      INSERT IGNORE INTO users (email, password_hash, display_name, role, state, district, taluk, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+    `, ['vet@example.com', hashedPassword, 'Sample Vet', 'veterinarian', 'Karnataka', 'Udupi', 'Udupi']);
     const vetId = vetResult.insertId || 3;
 
-    // Insert farmer profile
+    // Insert farmer profile (no location - those are in users table)
     await db.execute(`
-      INSERT IGNORE INTO farmers (user_id, phone, address, state, district, taluk)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `, [farmerId, '9876543210', 'Sample Address', 'Karnataka', 'Udupi', 'Udupi']);
+      INSERT IGNORE INTO farmers (user_id)
+      VALUES (?)
+    `, [farmerId]);
 
-    // Insert vet profile
+    // Insert vet profile (no state/district/taluk - those are in users table)
     await db.execute(`
-      INSERT IGNORE INTO veterinarians (vet_id, user_id, vet_name, license_number, phone, state, district, taluk)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `, ['VET12345', vetId, 'Dr. Smith', 'VET12345', '9876543211', 'Karnataka', 'Udupi', 'Udupi']);
+      INSERT IGNORE INTO veterinarians (vet_id, user_id, vet_name, license_number, phone)
+      VALUES (?, ?, ?, ?, ?)
+    `, ['VET12345', vetId, 'Dr. Smith', 'VET12345', '9876543211']);
 
     // Insert farm
     const [farmResult] = await db.execute(`

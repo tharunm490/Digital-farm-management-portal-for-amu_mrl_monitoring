@@ -109,6 +109,7 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/vet-farm-mapping', require('./routes/vetFarmMappingRoutes'));
 app.use('/api/authority', require('./routes/authorityRoutes'));
 app.use('/api/loans', require('./routes/loanRoutes'));
+app.use('/api/distributor', require('./routes/distributorRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

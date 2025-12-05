@@ -22,7 +22,11 @@ const Profile = () => {
     taluk: '',
     vet_name: '',
     license_number: '',
-    role: ''
+    role: '',
+    // Distributor specific fields
+    distributor_name: '',
+    company_name: '',
+    gst_number: ''
   });
 
   const states = getAllStates();
@@ -43,14 +47,18 @@ const Profile = () => {
       setFormData({
         full_name: user.display_name || user.full_name || '',
         email: user.email || '',
-        phone: user.phone || '',
+        phone: user.phone || user.distributor_phone || '',
         address: user.address || '',
         state: user.state || '',
         district: user.district || '',
         taluk: user.taluk || '',
         vet_name: user.vet_name || '',
         license_number: user.license_number || '',
-        role: user.role || 'farmer'
+        role: user.role || 'farmer',
+        // Distributor specific fields
+        distributor_name: user.distributor_name || '',
+        company_name: user.company_name || '',
+        gst_number: user.gst_number || ''
       });
     }
   }, [user]);
@@ -73,7 +81,12 @@ const Profile = () => {
     setMessage('');
 
     try {
-      const response = await api.put('/auth/profile', formData);
+      // Map full_name to display_name for backend
+      const submitData = {
+        ...formData,
+        display_name: formData.full_name // Backend expects display_name
+      };
+      const response = await api.put('/auth/profile', submitData);
       
       // Update user context
       if (response.data.user) {
@@ -105,7 +118,7 @@ const Profile = () => {
             <span className="avatar-icon">👤</span>
           </div>
           <div className="profile-info">
-            <h1>{user?.full_name}</h1>
+            <h1>{user?.display_name || user?.vet_name || user?.full_name || 'User'}</h1>
             <p className="role-badge">{user?.role}</p>
           </div>
         </div>
@@ -129,18 +142,15 @@ const Profile = () => {
 
             {editing ? (
               <form onSubmit={handleSubmit} className="profile-form">
-                <div className="form-group">
-                  <label>Role</label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="farmer">Farmer</option>
-                    <option value="veterinarian">Veterinarian</option>
-                    <option value="authority">Authority</option>
-                  </select>
+                <div className="form-group role-locked">
+                  <label>Role <span className="locked-badge">🔒 Locked</span></label>
+                  <input
+                    type="text"
+                    value={formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
+                    disabled
+                    className="role-input-disabled"
+                  />
+                  <small className="role-hint">Role cannot be changed after registration</small>
                 </div>
 
                 <div className="form-group">
@@ -177,45 +187,43 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group span-2">
                       <label>Address</label>
                       <textarea
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
-                        rows="3"
+                        rows="2"
                       />
                     </div>
 
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>State</label>
-                        <select
-                          name="state"
-                          value={formData.state}
-                          onChange={handleChange}
-                        >
-                          <option value="">Select State</option>
-                          {states.map(state => (
-                            <option key={state} value={state}>{state}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="form-group">
+                      <label>State</label>
+                      <select
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select State</option>
+                        {states.map(state => (
+                          <option key={state} value={state}>{state}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                      <div className="form-group">
-                        <label>District</label>
-                        <select
-                          name="district"
-                          value={formData.district}
-                          onChange={handleChange}
-                          disabled={!formData.state}
-                        >
-                          <option value="">Select District</option>
-                          {districts.map(district => (
-                            <option key={district} value={district}>{district}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="form-group">
+                      <label>District</label>
+                      <select
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select District</option>
+                        {districts.map(district => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
                     </div>
 
                     <div className="form-group">
@@ -269,37 +277,35 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>State</label>
-                        <select
-                          name="state"
-                          value={formData.state}
-                          onChange={handleChange}
-                          required
-                        >
-                          <option value="">Select State</option>
-                          {states.map(state => (
-                            <option key={state} value={state}>{state}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="form-group">
+                      <label>State</label>
+                      <select
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select State</option>
+                        {states.map(state => (
+                          <option key={state} value={state}>{state}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                      <div className="form-group">
-                        <label>District</label>
-                        <select
-                          name="district"
-                          value={formData.district}
-                          onChange={handleChange}
-                          required
-                          disabled={!formData.state}
-                        >
-                          <option value="">Select District</option>
-                          {districts.map(district => (
-                            <option key={district} value={district}>{district}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="form-group">
+                      <label>District</label>
+                      <select
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        required
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select District</option>
+                        {districts.map(district => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
                     </div>
 
                     <div className="form-group">
@@ -316,6 +322,123 @@ const Profile = () => {
                           <option key={taluk} value={taluk}>{taluk}</option>
                         ))}
                       </select>
+                    </div>
+                  </>
+                )}
+
+                {formData.role === 'distributor' && (
+                  <>
+                    <div className="form-group">
+                      <label>Distributor Name</label>
+                      <input
+                        type="text"
+                        name="distributor_name"
+                        value={formData.distributor_name}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter distributor name"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Company Name *</label>
+                      <input
+                        type="text"
+                        name="company_name"
+                        value={formData.company_name}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter company name"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Phone *</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>License Number</label>
+                      <input
+                        type="text"
+                        name="license_number"
+                        value={formData.license_number}
+                        onChange={handleChange}
+                        placeholder="Enter license number"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>GST Number</label>
+                      <input
+                        type="text"
+                        name="gst_number"
+                        value={formData.gst_number}
+                        onChange={handleChange}
+                        placeholder="Enter GST number"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>State</label>
+                      <select
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select State</option>
+                        {states.map(state => (
+                          <option key={state} value={state}>{state}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>District</label>
+                      <select
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select District</option>
+                        {districts.map(district => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Taluk</label>
+                      <select
+                        name="taluk"
+                        value={formData.taluk}
+                        onChange={handleChange}
+                        disabled={!formData.district}
+                      >
+                        <option value="">Select Taluk</option>
+                        {taluks.map(taluk => (
+                          <option key={taluk} value={taluk}>{taluk}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group full-width">
+                      <label>Address</label>
+                      <textarea
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        rows="2"
+                        placeholder="Enter address"
+                      />
                     </div>
                   </>
                 )}
@@ -380,6 +503,51 @@ const Profile = () => {
                     <div className="detail-item">
                       <span className="detail-label">Phone:</span>
                       <span className="detail-value">{user?.phone || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Location:</span>
+                      <span className="detail-value">
+                        {user?.taluk && user?.district && user?.state 
+                          ? `${user.taluk}, ${user.district}, ${user.state}` 
+                          : user?.district && user?.state 
+                          ? `${user.district}, ${user.state}` 
+                          : 'Not provided'}
+                      </span>
+                    </div>
+                  </>
+                )}
+
+                {user?.role === 'distributor' && (
+                  <>
+                    <div className="detail-item">
+                      <span className="detail-label">Distributor Name:</span>
+                      <span className="detail-value">{user?.distributor_name || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Company Name:</span>
+                      <span className="detail-value">{user?.company_name || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">License Number:</span>
+                      <span className="detail-value">{user?.license_number || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">GST Number:</span>
+                      <span className="detail-value">{user?.gst_number || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Phone:</span>
+                      <span className="detail-value">{user?.distributor_phone || user?.phone || 'Not provided'}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Address:</span>
+                      <span className="detail-value">{user?.address || 'Not provided'}</span>
                     </div>
 
                     <div className="detail-item">

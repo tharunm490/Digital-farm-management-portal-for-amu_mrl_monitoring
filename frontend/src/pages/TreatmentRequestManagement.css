@@ -398,21 +398,276 @@
 .handling-notice {
   background: #e8f5e8;
   border: 1px solid #4caf50;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 10px;
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin-top: 15px;
   color: #2e7d32;
   font-weight: 500;
+  text-align: center;
 }
 
-.handling-notice.handled-by-other {
+.handling-notice.warning {
   background: #fff3e0;
   border-color: #ff9800;
   color: #e65100;
 }
 
-.handling-notice.handled-by-me {
+.handling-notice.success {
   background: #e3f2fd;
   border-color: #2196f3;
   color: #0d47a1;
+}
+
+/* Vet Request Card Enhanced Styles */
+.vet-request-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.vet-request-card .request-header {
+  padding: 20px 25px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-bottom: 0;
+  border-radius: 0;
+}
+
+.vet-request-card .request-header h3 {
+  color: white;
+  border: none;
+  padding: 0;
+}
+
+.vet-request-card .status-badge {
+  background: rgba(255,255,255,0.2) !important;
+  backdrop-filter: blur(10px);
+}
+
+.request-body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Farmer Contact Card */
+.farmer-contact-card,
+.farm-location-card,
+.symptoms-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.farmer-contact-card:hover,
+.farm-location-card:hover,
+.symptoms-card:hover {
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+  transform: translateY(-3px);
+}
+
+.contact-header,
+.location-header,
+.symptoms-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.contact-header h4,
+.location-header h4,
+.symptoms-header h4 {
+  margin: 0;
+  color: #334155;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.contact-icon,
+.location-icon,
+.symptoms-icon {
+  font-size: 1.5em;
+}
+
+.contact-info,
+.location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-item,
+.location-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.contact-item:hover,
+.location-item:hover {
+  background: #f1f5f9;
+}
+
+.contact-item .icon,
+.location-item .icon {
+  font-size: 1.1em;
+  width: 24px;
+  text-align: center;
+}
+
+.contact-item .label,
+.location-item .label {
+  font-weight: 600;
+  color: #64748b;
+  min-width: 60px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-item .value,
+.location-item .value {
+  color: #1e293b;
+  font-weight: 500;
+  flex: 1;
+}
+
+.phone-link a,
+.email-link a,
+.map-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.phone-link a:hover,
+.email-link a:hover,
+.map-link a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.map-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+}
+
+.map-link a:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+/* Symptoms Card */
+.symptoms-content {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 4px solid #667eea;
+}
+
+.symptoms-content p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.6;
+  text-align: left;
+  font-size: 0.95em;
+}
+
+.request-meta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.meta-item {
+  font-size: 0.85em;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Request Actions Enhanced */
+.vet-request-card .request-actions {
+  padding: 15px 25px 25px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.call-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.call-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+}
+
+/* Handling Notice in Vet Card */
+.vet-request-card .handling-notice {
+  margin: 0 20px 15px;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .request-body {
+    grid-template-columns: 1fr;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .vet-request-card .request-header {
+    padding: 15px 20px;
+  }
+
+  .farmer-contact-card,
+  .farm-location-card,
+  .symptoms-card {
+    padding: 15px;
+  }
+
+  .vet-request-card .request-actions {
+    flex-direction: column;
+    padding: 15px 20px 20px;
+  }
+
+  .approve-btn,
+  .call-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

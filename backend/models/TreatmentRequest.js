@@ -14,8 +14,9 @@ const TreatmentRequest = {
   // Get requests for a vet
   getByVet: async (vet_id) => {
     const [rows] = await db.query(`
-      SELECT tr.*, a.species, a.tag_id, a.batch_name, f.farm_name,
-             u.display_name as farmer_name, fr.phone as farmer_phone,
+      SELECT tr.*, a.species, a.tag_id, a.batch_name, f.farm_name, f.latitude, f.longitude,
+             u.display_name as farmer_name, u.phone as farmer_phone, u.email as farmer_email,
+             u.state as farmer_state, u.district as farmer_district, u.taluk as farmer_taluk,
              CASE 
                WHEN tr.status = 'approved' AND tr.vet_id != ? THEN 'handled_by_other'
                WHEN tr.status = 'approved' AND tr.vet_id = ? THEN 'handled_by_me'
