@@ -185,7 +185,7 @@ const VerifyProduct = () => {
 
           <div className="scanner-section">
             <div className="manual-entry">
-              <h3>📝 Enter QR Code Manually</h3>
+              <h3>📝 Enter QR Code</h3>
               <form onSubmit={handleManualSearch}>
                 <input
                   type="text"
@@ -198,20 +198,6 @@ const VerifyProduct = () => {
                   Search Product
                 </button>
               </form>
-            </div>
-
-            <div className="scanner-divider">
-              <span>OR</span>
-            </div>
-
-            <div className="scan-info">
-              <h3>📱 Scan QR Code</h3>
-              <p>Use your device camera to scan the QR code on the product</p>
-              <div className="scan-placeholder">
-                <span className="scan-icon">📷</span>
-                <p>Camera scanner coming soon</p>
-                <small>For now, please enter the QR code manually or use the URL from the QR</small>
-              </div>
             </div>
           </div>
         </div>

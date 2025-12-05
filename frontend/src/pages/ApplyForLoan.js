@@ -5,6 +5,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import api from '../services/api';
 import Navigation from '../components/Navigation';
 import './ApplyForLoan.css';
+import './EnhancedModules.css';
 
 const ApplyForLoan = () => {
   const { user } = useAuth();

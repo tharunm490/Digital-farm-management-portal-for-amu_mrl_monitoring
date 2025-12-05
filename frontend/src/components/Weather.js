@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
-import './Weather.css';
 
 const Weather = ({ location }) => {
   const { t } = useTranslation();
@@ -20,10 +19,8 @@ const Weather = ({ location }) => {
       try {
         let url;
         if (isCoords) {
-          // locationToTry is {lat, lon}
           url = `https://api.openweathermap.org/data/2.5/weather?lat=${locationToTry.lat}&lon=${locationToTry.lon}&appid=${API_KEY}&units=metric`;
         } else {
-          // locationToTry is city name
           url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(locationToTry)}&appid=${API_KEY}&units=metric`;
         }
 
@@ -31,7 +28,6 @@ const Weather = ({ location }) => {
 
         if (!response.ok) {
           if (response.status === 404 && !isCoords && locationToTry !== 'Delhi') {
-            // Try with default location if the provided location fails
             console.warn(`Weather data not found for ${locationToTry}, trying default location`);
             fetchWeather('Delhi');
             return;
@@ -58,17 +54,15 @@ const Weather = ({ location }) => {
           },
           (error) => {
             console.warn('Geolocation error:', error.message);
-            // Fall back to profile location
             fetchWeather(location);
           },
           {
             enableHighAccuracy: true,
             timeout: 10000,
-            maximumAge: 300000 // 5 minutes
+            maximumAge: 300000
           }
         );
       } else {
-        // Geolocation not supported, use profile location
         fetchWeather(location);
       }
     };
@@ -78,67 +72,106 @@ const Weather = ({ location }) => {
 
   if (loading) {
     return (
-      <div className="weather-card">
-        <div className="weather-loading">Loading weather...</div>
+      <div className="bg-white rounded-xl shadow-soft p-6">
+        <div className="animate-pulse flex space-x-4">
+          <div className="rounded-full bg-gray-200 h-12 w-12"></div>
+          <div className="flex-1 space-y-2 py-1">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error || !weather) {
     return (
-      <div className="weather-card">
-        <div className="weather-error">Weather unavailable</div>
+      <div className="bg-white rounded-xl shadow-soft p-6">
+        <div className="text-center text-gray-500">
+          <span className="text-3xl mb-2 block">☁️</span>
+          <p className="text-sm">Weather unavailable</p>
+        </div>
       </div>
     );
   }
 
   const { main, weather: weatherInfo, wind } = weather;
   const iconUrl = `https://openweathermap.org/img/wn/${weatherInfo[0].icon}@2x.png`;
-  const weatherMain = weatherInfo[0].main.toLowerCase();
+
+  // Function to get weather emoji based on condition
+  const getWeatherEmoji = (weatherMain, weatherId) => {
+    // Rain conditions
+    if (weatherMain === 'Rain' || weatherMain === 'Drizzle' || weatherMain === 'Thunderstorm') {
+      return '🌧️';
+    }
+    // Snow conditions
+    if (weatherMain === 'Snow') {
+      return '❄️';
+    }
+    // Cloudy conditions
+    if (weatherMain === 'Clouds') {
+      return '☁️';
+    }
+    // Clear/Sunny
+    if (weatherMain === 'Clear') {
+      return '☀️';
+    }
+    // Fog/Mist/Haze
+    if (weatherMain === 'Mist' || weatherMain === 'Fog' || weatherMain === 'Haze') {
+      return '🌫️';
+    }
+    // Default
+    return '🌤️';
+  };
+
+  const weatherEmoji = getWeatherEmoji(weatherInfo[0].main, weatherInfo[0].id);
 
   return (
-    <div className={`dashboard-card weather-card ${weatherMain}`}>
-      <div className="weather-header">
-        <h4>{t('weather')}</h4>
-        <span className="location">📍 {weather.name}</span>
+    <div className="bg-white rounded-xl shadow-soft p-6 col-span-1 sm:col-span-2 lg:col-span-1">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-lg font-semibold text-gray-900">{t('weather')}</h4>
+        <span className="text-sm text-gray-500">📍 {weather.name}</span>
       </div>
-      <div className="weather-content">
-        <div className="weather-main">
-          <img src={iconUrl} alt={weatherInfo[0].description} className="weather-icon" />
-          <div className="weather-primary">
-            <div className="temperature">{Math.round(main.temp)}°C</div>
-            <div className="feels-like">{t('feels_like')} {Math.round(main.feels_like)}°C</div>
-            <div className="description">{weatherInfo[0].description}</div>
+      
+      <div className="flex items-center space-x-4 mb-6">
+        <div className="text-7xl">{weatherEmoji}</div>
+        <div>
+          <div className="text-4xl font-bold text-gray-900">{Math.round(main.temp)}°C</div>
+          <div className="text-sm text-gray-500">{t('feels_like')} {Math.round(main.feels_like)}°C</div>
+          <div className="text-sm text-gray-600 capitalize">{weatherInfo[0].description}</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl">💧</span>
+          <div>
+            <div className="text-sm font-medium text-gray-900">{main.humidity}%</div>
+            <div className="text-xs text-gray-500">{t('humidity')}</div>
           </div>
         </div>
-        <div className="weather-stats-grid">
-          <div className="stat-item">
-            <span className="stat-icon">💧</span>
-            <div className="stat-content">
-              <div className="stat-value">{main.humidity}%</div>
-              <div className="stat-label">{t('humidity')}</div>
-            </div>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl">💨</span>
+          <div>
+            <div className="text-sm font-medium text-gray-900">{wind.speed} m/s</div>
+            <div className="text-xs text-gray-500">{t('wind')}</div>
           </div>
-          <div className="stat-item">
-            <span className="stat-icon">💨</span>
-            <div className="stat-content">
-              <div className="stat-value">{wind.speed} m/s</div>
-              <div className="stat-label">{t('wind')}</div>
-            </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl">🌡️</span>
+          <div>
+            <div className="text-sm font-medium text-gray-900">{main.pressure} hPa</div>
+            <div className="text-xs text-gray-500">{t('pressure')}</div>
           </div>
-          <div className="stat-item">
-            <span className="stat-icon">🌡️</span>
-            <div className="stat-content">
-              <div className="stat-value">{main.pressure} hPa</div>
-              <div className="stat-label">{t('pressure')}</div>
-            </div>
-          </div>
-          <div className="stat-item">
-            <span className="stat-icon">👁️</span>
-            <div className="stat-content">
-              <div className="stat-value">{(weather.visibility / 1000).toFixed(1)} km</div>
-              <div className="stat-label">{t('visibility')}</div>
-            </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl">👁️</span>
+          <div>
+            <div className="text-sm font-medium text-gray-900">{(weather.visibility / 1000).toFixed(1)} km</div>
+            <div className="text-xs text-gray-500">{t('visibility')}</div>
           </div>
         </div>
       </div>
@@ -147,3 +180,4 @@ const Weather = ({ location }) => {
 };
 
 export default Weather;
+

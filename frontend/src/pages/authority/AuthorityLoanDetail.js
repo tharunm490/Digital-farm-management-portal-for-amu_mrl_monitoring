@@ -374,6 +374,23 @@ const AuthorityLoanDetail = () => {
                 </div>
               </div>
             </div>
+
+            {/* Violations Section */}
+            <div className="violations-section">
+              <div className="violations-header">
+                <h4>🚨 MRL Violations</h4>
+                <span className={`violation-badge ${treatmentSummary.violations > 0 ? 'has-violations' : 'no-violations'}`}>
+                  {treatmentSummary.violations > 0 
+                    ? `${treatmentSummary.violations} Violation${treatmentSummary.violations !== 1 ? 's' : ''}` 
+                    : 'No Violations'}
+                </span>
+              </div>
+              <p className="violations-description">
+                {treatmentSummary.violations > 0 
+                  ? `This farm has ${treatmentSummary.violations} MRL violation${treatmentSummary.violations !== 1 ? 's' : ''} where antimicrobial usage exceeded safe limits.`
+                  : 'This farm has no recorded MRL violations. All antimicrobial usage is within safe limits.'}
+              </p>
+            </div>
           </div>
         </div>
       </div>

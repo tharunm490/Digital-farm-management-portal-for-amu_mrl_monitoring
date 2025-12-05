@@ -66,16 +66,21 @@ router.post('/', authMiddleware, farmerOnly, async (req, res) => {
     
     const entity = entities[0];
     
-    // Check minimum gap rule - no new request during withdrawal period
+    // Check minimum gap rule - no new request during active treatment duration
     const [existingTreatments] = await db.query(`
-      SELECT a.safe_date FROM treatment_records t
-      JOIN amu_records a ON t.treatment_id = a.treatment_id
-      WHERE t.entity_id = ? AND a.safe_date IS NOT NULL AND a.safe_date > CURDATE()
-      ORDER BY a.safe_date DESC LIMIT 1
+      SELECT t.end_date 
+      FROM treatment_records t
+      WHERE t.entity_id = ? 
+        AND t.end_date IS NOT NULL 
+        AND t.end_date >= CURDATE()
+      ORDER BY t.end_date DESC 
+      LIMIT 1
     `, [entity_id]);
 
     if (existingTreatments.length > 0) {
-      return res.status(400).json({ error: `Withdrawal period active. New treatment request not allowed until ${existingTreatments[0].safe_date}.` });
+      return res.status(400).json({ 
+        error: `This animal/batch is currently undergoing treatment until ${existingTreatments[0].end_date}. New treatment request not allowed during active treatment period.` 
+      });
     }
 
     // Check if species requires vet

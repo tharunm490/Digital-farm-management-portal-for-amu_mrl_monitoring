@@ -4,6 +4,7 @@ import Navigation from '../components/Navigation';
 import { useTranslation } from '../hooks/useTranslation';
 import api from '../services/api';
 import './QRGenerator.css';
+import './EnhancedModules.css';
 
 function QRGenerator() {
   const location = useLocation();
@@ -64,13 +65,30 @@ function QRGenerator() {
   };
 
   return (
-    <div className="qr-generator-page">
+    <div className="module-page">
       <Navigation />
-      <div className="qr-container">
-        <h1>{t('qr_code_generator')}</h1>
-        
-        <div className="qr-form">
-          <div className="form-group">
+      
+      {/* Enhanced Header */}
+      <div className="module-header">
+        <div className="module-header-card">
+          <div className="module-header-content">
+            <div className="module-title-section">
+              <div className="module-icon-circle">
+                📱
+              </div>
+              <div className="module-title-text">
+                <h1>{t('qr_code_generator')}</h1>
+                <p>Generate QR codes for traceability and verification</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Selection Form */}
+      <div className="module-filters">
+        <div className="module-filters-card">
+          <div className="filter-field">
             <label>{t('select_animal_batch')}:</label>
             <select
               value={entityId}
@@ -87,7 +105,7 @@ function QRGenerator() {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className="filter-field">
             <label>{t('or_enter_entity_id')}:</label>
             <input
               type="text"
@@ -101,67 +119,121 @@ function QRGenerator() {
           <button 
             onClick={() => generateQR()} 
             disabled={loading || !entityId}
-            className="btn-primary"
+            className="btn-modern-primary"
+            style={{alignSelf: 'flex-end'}}
           >
-            {loading ? t('generating') : t('generate_qr_code')}
+            {loading ? '⏳ ' + t('generating') : '🔄 ' + t('generate_qr_code')}
           </button>
         </div>
+      </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
+      {error && (
+        <div className="max-w-4xl mx-auto px-6 mb-6">
+          <div style={{background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)', padding: '1rem', borderRadius: '16px', border: '2px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+            <span style={{fontSize: '1.5rem'}}>❌</span>
+            <p style={{color: '#991b1b', fontWeight: '600', margin: 0}}>{error}</p>
           </div>
-        )}
+        </div>
+      )}
 
-        {qrData && (
-          <div className="qr-result">
-            <h2>{t('qr_generated_successfully')}</h2>
-            
-            <div className="qr-details">
-              <div className="detail-row">
-                <span className="label">{t('entity_id')}:</span>
-                <span className="value">{qrData.entity_id}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">{t('type')}:</span>
-                <span className="value">{qrData.entity_type}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">{t('name')}:</span>
-                <span className="value">
-                  {qrData.entity_type === 'animal' ? qrData.tag_id : qrData.batch_name}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="label">{t('species')}:</span>
-                <span className="value">{qrData.species}</span>
-              </div>
-              {qrData.breed && (
-                <div className="detail-row">
-                  <span className="label">{t('breed')}:</span>
-                  <span className="value">{qrData.breed}</span>
+      {qrData && (
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="module-card">
+            <div className="module-card-header">
+              <div className="module-card-header-content">
+                <div className="module-card-title-section">
+                  <h3 className="module-card-title">
+                    ✅ {t('qr_generated_successfully')}
+                  </h3>
+                  <p className="module-card-subtitle">
+                    {qrData.entity_type === 'animal' ? qrData.tag_id : qrData.batch_name}
+                  </p>
                 </div>
-              )}
-              <div className="detail-row">
-                <span className="label">{t('farm')}:</span>
-                <span className="value">{qrData.farm_name}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">{t('product')}:</span>
-                <span className="value">{qrData.matrix}</span>
+                <div className="module-card-badge">
+                  {qrData.entity_type.toUpperCase()}
+                </div>
               </div>
             </div>
 
-            <div className="qr-image-container">
-              <img 
-                src={qrData.qr_code} 
-                alt="QR Code" 
-                className="qr-image"
-              />
+            <div className="module-card-body">
+              {/* Entity Details */}
+              <div className="module-info-grid" style={{marginBottom: '2rem'}}>
+                <div className="module-info-item">
+                  <div className="module-info-icon">🆔</div>
+                  <div className="module-info-content">
+                    <div className="module-info-label">{t('entity_id')}</div>
+                    <div className="module-info-value">#{qrData.entity_id}</div>
+                  </div>
+                </div>
+
+                <div className="module-info-item">
+                  <div className="module-info-icon">🐄</div>
+                  <div className="module-info-content">
+                    <div className="module-info-label">{t('species')}</div>
+                    <div className="module-info-value">{qrData.species}</div>
+                  </div>
+                </div>
+
+                {qrData.breed && (
+                  <div className="module-info-item">
+                    <div className="module-info-icon">🧬</div>
+                    <div className="module-info-content">
+                      <div className="module-info-label">{t('breed')}</div>
+                      <div className="module-info-value">{qrData.breed}</div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="module-info-item">
+                  <div className="module-info-icon">🏡</div>
+                  <div className="module-info-content">
+                    <div className="module-info-label">{t('farm')}</div>
+                    <div className="module-info-value">{qrData.farm_name}</div>
+                  </div>
+                </div>
+
+                <div className="module-info-item">
+                  <div className="module-info-icon">🥛</div>
+                  <div className="module-info-content">
+                    <div className="module-info-label">{t('product')}</div>
+                    <div className="module-info-value">{qrData.matrix}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code Display */}
+              <div style={{background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)', padding: '2rem', borderRadius: '20px', textAlign: 'center'}}>
+                <div style={{display: 'inline-block', background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)'}}>
+                  <img 
+                    src={qrData.qr_code} 
+                    alt="QR Code" 
+                    style={{maxWidth: '300px', width: '100%', height: 'auto', display: 'block'}}
+                  />
+                </div>
+                <p style={{marginTop: '1.5rem', fontSize: '0.95rem', color: '#6b7280', fontWeight: '600'}}>
+                  Scan this QR code for instant verification
+                </p>
+              </div>
+
+              {/* Verification URL */}
+              <div style={{marginTop: '2rem', padding: '1.5rem', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', borderRadius: '16px', border: '2px solid #93c5fd'}}>
+                <label style={{display: 'block', fontSize: '0.875rem', fontWeight: '700', color: '#1e40af', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px'}}>
+                  🔗 {t('verification_url')}
+                </label>
+                <input 
+                  type="text" 
+                  value={qrData.verification_url} 
+                  readOnly 
+                  style={{width: '100%', padding: '0.875rem 1.25rem', border: '2px solid #3b82f6', borderRadius: '12px', fontSize: '0.95rem', background: 'white', fontFamily: 'monospace'}}
+                />
+              </div>
             </div>
 
-            <div className="qr-actions">
-              <button onClick={downloadQR} className="btn-primary">
+            <div className="module-card-footer">
+              <button onClick={downloadQR} className="btn-card-action primary">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
                 {t('download_qr_code')}
               </button>
               <button 
@@ -188,24 +260,17 @@ function QRGenerator() {
                     alert(t('verification_url_copied'));
                   }
                 }}
-                className="btn-secondary"
+                className="btn-card-action secondary"
               >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
                 {t('copy_verification_url')}
               </button>
             </div>
-
-            <div className="verification-url">
-              <label>{t('verification_url')}:</label>
-              <input 
-                type="text" 
-                value={qrData.verification_url} 
-                readOnly 
-                className="form-control"
-              />
-            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

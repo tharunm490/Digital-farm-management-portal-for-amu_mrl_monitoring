@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './Chatbot.css';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -202,31 +201,35 @@ const Chatbot = () => {
   return (
     <>
       {/* Chatbot Toggle Button */}
-      <div className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)}>
-        <div className="chatbot-icon">
-          {isOpen ? '✕' : '🚜'}
-        </div>
-      </div>
+      <button 
+        className="fixed bottom-6 right-6 w-16 h-16 bg-primary-600 hover:bg-primary-700 rounded-full shadow-strong flex items-center justify-center text-3xl transition-all duration-300 z-40 hover:scale-110"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle chatbot"
+      >
+        {isOpen ? '✕' : '🚜'}
+      </button>
 
       {/* Chatbot Window */}
       {isOpen && (
-        <div className="chatbot-container">
-          <div className="chatbot-header">
-            <div className="chatbot-title">
-              <span className="chatbot-avatar">🚜</span>
-              KrushiAI - Farm Assistant
+        <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-strong flex flex-col z-40 animate-fade-in">
+          {/* Header */}
+          <div className="bg-primary-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">🚜</span>
+              <span className="font-semibold">KrushiAI - Farm Assistant</span>
             </div>
-            <div className="chatbot-controls">
-              <button onClick={() => setIsOpen(false)} className="close-button" title="Close chat">
-                ✕
-              </button>
-              <button onClick={clearChat} className="clear-button" title="Clear chat">
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={clearChat} 
+                className="p-2 hover:bg-primary-700 rounded-lg transition-colors"
+                title="Clear chat"
+              >
                 🗑️
               </button>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="language-select"
+                className="bg-primary-700 text-white text-sm px-2 py-1 rounded border-none outline-none"
               >
                 {languages.map(lang => (
                   <option key={lang.value} value={lang.value}>
@@ -234,69 +237,83 @@ const Chatbot = () => {
                   </option>
                 ))}
               </select>
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="p-2 hover:bg-primary-700 rounded-lg transition-colors text-xl"
+                title="Close chat"
+              >
+                ✕
+              </button>
             </div>
           </div>
 
-          <div className="chatbot-messages">
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map(message => (
               <div
                 key={message.id}
-                className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className="message-content">
-                  {message.text}
+                <div className={`max-w-[80%] ${message.sender === 'user' ? 'bg-primary-600 text-white' : 'bg-white text-gray-900'} rounded-lg p-3 shadow-soft`}>
+                  <div className="text-sm">{message.text}</div>
                   {message.sender === 'bot' && (
                     <button
                       onClick={() => speakText(message.text)}
-                      className="speak-button"
+                      className="mt-2 text-xs opacity-70 hover:opacity-100 transition-opacity"
                       title="Speak this message"
                     >
                       {isSpeaking ? '🔊' : '🔈'}
                     </button>
                   )}
-                </div>
-                <div className="message-time">
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className={`text-xs mt-1 ${message.sender === 'user' ? 'text-primary-100' : 'text-gray-500'}`}>
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
                 </div>
               </div>
             ))}
             {isLoading && (
-              <div className="message bot-message">
-                <div className="message-content typing">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+              <div className="flex justify-start">
+                <div className="bg-white rounded-lg p-3 shadow-soft">
+                  <div className="flex space-x-1">
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
+                  </div>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="chatbot-input">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about livestock health, treatments, vaccinations..."
-              disabled={isLoading}
-            />
-            {isVoiceSupported && (
+          {/* Input */}
+          <div className="p-4 border-t border-gray-200 bg-white rounded-b-2xl">
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask about livestock health, treatments, vaccinations..."
+                disabled={isLoading}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 disabled:bg-gray-100"
+              />
+              {isVoiceSupported && (
+                <button
+                  onClick={isListening ? stopVoiceRecording : startVoiceRecording}
+                  className={`px-4 py-2 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  title={isListening ? 'Stop listening' : 'Start voice input'}
+                >
+                  {isListening ? '🎤' : '🎙️'}
+                </button>
+              )}
               <button
-                onClick={isListening ? stopVoiceRecording : startVoiceRecording}
-                className={`voice-button ${isListening ? 'listening' : ''}`}
-                title={isListening ? 'Stop listening' : 'Start voice input'}
+                onClick={sendMessage}
+                disabled={isLoading || !inputMessage.trim()}
+                className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
               >
-                {isListening ? '🎤' : '🎙️'}
+                {isLoading ? '...' : 'Send'}
               </button>
-            )}
-            <button
-              onClick={sendMessage}
-              disabled={isLoading || !inputMessage.trim()}
-              className="send-button"
-            >
-              {isLoading ? '...' : 'Send'}
-            </button>
+            </div>
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import medicineMap from '../data/medicineMap';
 import api, { vetFarmAPI } from '../services/api';
 import dosageReference from '../data/dosage_reference_full_extended_with_mrl.json';
 import './TreatmentManagement.css';
+import './EnhancedModules.css';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../hooks/useTranslation';
 

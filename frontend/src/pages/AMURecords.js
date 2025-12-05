@@ -4,6 +4,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import { amuAPI } from '../services/api';
 import TissuePredictionTable from '../components/TissuePredictionTable';
 import './AMURecords.css';
+import './EnhancedModules.css';
 
 function AMURecords() {
   const { user } = useAuth();
@@ -165,76 +166,104 @@ function AMURecords() {
 
   const stats = getStats();
 
-  if (loading) return <div className="loading">Loading AMU records...</div>;
+  if (loading) return (
+    <div className="module-page">
+      <div className="module-loading">
+        <div className="module-spinner"></div>
+        <div className="module-loading-text">Loading AMU records...</div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="amu-records-page">
-      <div className="page-header">
-        <h1>AMU Records</h1>
-        <p>Antimicrobial Use Monitoring</p>
+    <div className="module-page">
+      {/* Enhanced Header */}
+      <div className="module-header">
+        <div className="module-header-card">
+          <div className="module-header-content">
+            <div className="module-title-section">
+              <div className="module-icon-circle" style={{background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'}}>
+                📊
+              </div>
+              <div className="module-title-text">
+                <h1>AMU Records</h1>
+                <p>Antimicrobial Use Monitoring & Safety Tracking</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">📋</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.total}</div>
-            <div className="stat-label">Total Records</div>
+      <div className="module-stats-grid">
+        <div className="module-stat-card" style={{borderLeftColor: '#3b82f6'}}>
+          <div className="module-stat-content">
+            <div className="module-stat-icon">📋</div>
+            <div className="module-stat-value">{stats.total}</div>
+            <div className="module-stat-label">Total Records</div>
           </div>
         </div>
-        <div className="stat-card safe">
-          <div className="stat-icon">✅</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.safe}</div>
-            <div className="stat-label">Safe</div>
+        <div className="module-stat-card" style={{borderLeftColor: '#10b981'}}>
+          <div className="module-stat-content">
+            <div className="module-stat-icon">✅</div>
+            <div className="module-stat-value">{stats.safe}</div>
+            <div className="module-stat-label">Safe</div>
           </div>
         </div>
-        <div className="stat-card borderline">
-          <div className="stat-icon">⚠️</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.borderline}</div>
-            <div className="stat-label">Borderline</div>
+        <div className="module-stat-card" style={{borderLeftColor: '#f59e0b'}}>
+          <div className="module-stat-content">
+            <div className="module-stat-icon">⚠️</div>
+            <div className="module-stat-value">{stats.borderline}</div>
+            <div className="module-stat-label">Borderline</div>
           </div>
         </div>
-        <div className="stat-card unsafe">
-          <div className="stat-icon">❌</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.unsafe}</div>
-            <div className="stat-label">Unsafe</div>
+        <div className="module-stat-card" style={{borderLeftColor: '#ef4444'}}>
+          <div className="module-stat-content">
+            <div className="module-stat-icon">❌</div>
+            <div className="module-stat-value">{stats.unsafe}</div>
+            <div className="module-stat-label">Unsafe</div>
           </div>
         </div>
       </div>
 
-      {/* Simple Filters */}
-      <div className="filters-section">
-        <div className="filter-group">
-          <label>{t('status')}:</label>
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="all">{t('all_records')}</option>
-            <option value="safe">{t('safe_only')}</option>
-            <option value="borderline">{t('borderline_only')}</option>
-            <option value="unsafe">{t('unsafe_only')}</option>
-          </select>
-        </div>
-        <div className="filter-group">
-          <label>{t('search')}:</label>
-          <input
-            type="text"
-            placeholder={t('search_medicine_animal')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      {/* Filters */}
+      <div className="module-filters">
+        <div className="module-filters-card">
+          <div className="filter-field">
+            <label>{t('status')}:</label>
+            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+              <option value="all">{t('all_records')}</option>
+              <option value="safe">{t('safe_only')}</option>
+              <option value="borderline">{t('borderline_only')}</option>
+              <option value="unsafe">{t('unsafe_only')}</option>
+            </select>
+          </div>
+          <div className="filter-field">
+            <label>{t('search')}:</label>
+            <input
+              type="text"
+              placeholder={t('search_medicine_animal')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="max-w-6xl mx-auto px-6 mb-6">
+          <div style={{background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)', padding: '1rem 1.5rem', borderRadius: '16px', border: '2px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+            <span style={{fontSize: '1.5rem'}}>❌</span>
+            <p style={{color: '#991b1b', fontWeight: '600', margin: 0}}>{error}</p>
+          </div>
+        </div>
+      )}
 
-      {/* AMU Records Cards */}
+      {/* AMU Records Flash Cards */}
       <div className="records-container">
         {filteredRecords.length === 0 ? (
-          <div className="no-records">
-            <div className="no-records-icon">📭</div>
+          <div className="empty-state">
+            <div className="empty-icon">📭</div>
             <h3>{t('no_amu_records')}</h3>
             <p>
               {searchTerm || filter !== 'all'
@@ -243,80 +272,130 @@ function AMURecords() {
             </p>
           </div>
         ) : (
-          <div className="records-grid">
+          <div className="amu-grid">
             {filteredRecords.map((record, index) => {
               const effectiveWithdrawalDays = (record.category_type === 'vaccine' || record.category_type === 'vitamin') ? 0 : (record.predicted_withdrawal_days || 0);
               const safeDate = record.safe_date ? formatDate(record.safe_date) : 'N/A';
               const daysUntilSafe = getDaysUntilSafe(record.safe_date);
-              const displayWithdrawalDays = Math.max(0, effectiveWithdrawalDays); // Ensure withdrawal days are never negative
+              const displayWithdrawalDays = Math.max(0, effectiveWithdrawalDays);
+              const statusClass = getStatusClass(record.status).replace('status-', '');
 
               return (
-                <div key={record.amu_id || `amu-${index}`} className="record-card">
-                  <div className="card-header">
-                    <div className="medicine-info">
-                      <h3>{record.active_ingredient || record.medicine}</h3>
-                      <div className="header-meta">
-                        <span className="category">{record.category_type}</span>
-                        <span className={`matrix-indicator matrix-${record.matrix?.toLowerCase()}`}>
-                          {record.matrix?.toUpperCase()}
+                <div key={record.amu_id || `amu-${index}`} className="amu-flash-card">
+                  <div className="amu-card-header">
+                    <div className="amu-card-title">
+                      <div className="amu-title-left">
+                        <h3>💊 {record.active_ingredient || record.medicine}</h3>
+                        <p className="amu-subtitle">
+                          {record.entity_type === 'animal' ? `${getAnimalIcon(record.species)} ${record.tag_id}` : `📦 ${record.batch_name}`}
+                        </p>
+                      </div>
+                      <div className={`amu-status-badge ${statusClass}`}>
+                        {getStatusIcon(record.status)} {getStatusText(record.status)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="amu-card-body">
+                    <div className="amu-info-grid">
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">🏡 Farm</span>
+                        <span className="amu-info-value">{record.farm_name}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">🐾 Species</span>
+                        <span className="amu-info-value">{record.species}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">🥛 Product</span>
+                        <span className="amu-info-value">{record.matrix?.toUpperCase()}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">📋 Category</span>
+                        <span className="amu-info-value">{record.category_type}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">💉 Dosage</span>
+                        <span className="amu-info-value">{record.dose_amount} {record.dose_unit}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">🔄 Route</span>
+                        <span className="amu-info-value">{record.route}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">⏱️ Frequency</span>
+                        <span className="amu-info-value">{record.frequency_per_day}x/day</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">📅 Duration</span>
+                        <span className="amu-info-value">{record.duration_days} days</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">📆 Start Date</span>
+                        <span className="amu-info-value">{formatDate(record.start_date)}</span>
+                      </div>
+
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">📆 End Date</span>
+                        <span className="amu-info-value">{formatDate(record.end_date)}</span>
+                      </div>
+
+                      {record.reason && (
+                        <div className="amu-info-row" style={{gridColumn: '1 / -1'}}>
+                          <span className="amu-info-label">💬 Reason</span>
+                          <span className="amu-info-value">{record.reason}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={`amu-mrl-highlight ${statusClass === 'safe' ? '' : statusClass === 'borderline' ? 'warning' : 'danger'}`}>
+                      <div className="amu-mrl-title">🔬 Residual Analysis</div>
+                      <div className="amu-info-grid">
+                        <div className="amu-info-row highlight">
+                          <span className="amu-info-label">📊 Predicted Residual</span>
+                          <span className="amu-mrl-value">{record.predicted_mrl ? `${parseFloat(record.predicted_mrl).toFixed(2)} µg/kg` : 'N/A'}</span>
+                        </div>
+                        <div className="amu-info-row highlight">
+                          <span className="amu-info-label">⚠️ Risk Level</span>
+                          <span className="amu-mrl-value">{record.risk_percent ? `${parseFloat(record.risk_percent).toFixed(2)}%` : 'N/A'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="amu-withdrawal-info">
+                      <div className="amu-withdrawal-title">⏳ Withdrawal Period</div>
+                      <div className="amu-withdrawal-days">{displayWithdrawalDays} days</div>
+                      <div className="amu-info-row">
+                        <span className="amu-info-label">✅ Safe Date</span>
+                        <span className="amu-info-value">
+                          {safeDate}
+                          {daysUntilSafe !== null && daysUntilSafe > 0 && (
+                            <> ({daysUntilSafe} days left)</>
+                          )}
                         </span>
                       </div>
                     </div>
-                    <div className={`status-badge ${getStatusClass(record.status)}`}>
-                      {getStatusIcon(record.status)} {getStatusText(record.status)}
-                    </div>
                   </div>
 
-                  <div className="card-body">
-                    <div className="info-section">
-                      <h4>{t('animal_batch')}</h4>
-                      <p>
-                        {record.entity_type === 'animal' ? `${getAnimalIcon(record.species)} ${record.tag_id}` : `📦 ${record.batch_name}`}
-                      </p>
-                      <p className="farm">🏡 {record.farm_name}</p>
-                      <p className="species">{record.species}</p>
-                    </div>
-
-                    <div className="info-section">
-                      <h4>{t('treatment')}</h4>
-                      <p>{record.dose_amount} {record.dose_unit} • {record.route}</p>
-                      <p>{record.frequency_per_day}x/day • {record.duration_days} days</p>
-                      <p className="reason">{record.reason || 'N/A'}</p>
-                    </div>
-
-                    <div className="info-section">
-                      <h4>{t('dates')}</h4>
-                      <p>{t('start')}: {formatDate(record.start_date)}</p>
-                      <p>{t('end')}: {formatDate(record.end_date)}</p>
-                    </div>
-
-                    <div className="info-section">
-                      <h4>{t('safety')}</h4>
-                      <p>{t('predicted_residual')}: {record.predicted_mrl ? `${record.predicted_mrl} µg/kg` : 'N/A'}</p>
-                      <p>{t('risk')}: {record.risk_percent ? `${parseFloat(record.risk_percent).toFixed(2)}%` : 'N/A'}</p>
-                      <p>{t('withdrawal')}: {displayWithdrawalDays} days</p>
-                      <p className="safe-date">
-                        {t('safe_date')}: {safeDate}
-                        {daysUntilSafe !== null && daysUntilSafe > 0 && (
-                          <span> ({daysUntilSafe} {t('days_left')})</span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Residual Details Button for Meat */}
                   {record.matrix === 'meat' && (
-                    <div className="card-footer">
+                    <div className="amu-card-footer">
                       <button 
                         onClick={() => toggleExpand(record.amu_id)} 
-                        className="expand-btn"
+                        className="amu-expand-btn"
                       >
-                        {expandedRecords.has(record.amu_id) ? '🔽 ' + t('hide') : '🔍 ' + t('show')} {t('residual_details')}
+                        {expandedRecords.has(record.amu_id) ? '🔽 Hide' : '🔍 Show'} Tissue Details
                       </button>
                     </div>
                   )}
 
-                  {/* Expanded Residual Details */}
                   {expandedRecords.has(record.amu_id) && record.matrix === 'meat' && (
                     <div className="residual-details">
                       {record.tissue_results ? (

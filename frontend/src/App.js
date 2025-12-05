@@ -35,6 +35,8 @@ import AuthorityProfile from './pages/authority/AuthorityProfile';
 import AuthorityNotifications from './pages/authority/AuthorityNotifications';
 import AuthorityLoanApplications from './pages/authority/AuthorityLoanApplications';
 import AuthorityLoanDetail from './pages/authority/AuthorityLoanDetail';
+import DiseaseIntelligenceHub from './pages/authority/DiseaseIntelligenceHub';
+import TreatmentReports from './pages/authority/TreatmentReports';
 import './App.css';
 
 // Authority Routes Component
@@ -44,15 +46,18 @@ const AuthorityRoutes = () => {
       <AuthorityNavigation />
       <Routes>
         <Route path="/dashboard" element={<AuthorityDashboard />} />
+        <Route path="/analytics" element={<DiseaseIntelligenceHub />} />
         <Route path="/amu-analytics" element={<AuthorityAMUAnalytics />} />
         <Route path="/heat-map" element={<AuthorityHeatMap />} />
         <Route path="/complaints" element={<AuthorityComplaints />} />
+        <Route path="/alerts" element={<AuthorityComplaints />} />
         <Route path="/reports" element={<AuthorityReports />} />
         <Route path="/map-view" element={<AuthorityMapView />} />
         <Route path="/profile" element={<AuthorityProfile />} />
         <Route path="/notifications" element={<AuthorityNotifications />} />
         <Route path="/loan-applications" element={<AuthorityLoanApplications />} />
         <Route path="/loan-detail/:loanId" element={<AuthorityLoanDetail />} />
+        <Route path="/treatment-reports" element={<TreatmentReports />} />
         <Route path="/" element={<Navigate to="/authority/dashboard" />} />
       </Routes>
     </>

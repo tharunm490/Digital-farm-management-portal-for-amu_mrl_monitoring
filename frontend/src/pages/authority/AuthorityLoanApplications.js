@@ -102,156 +102,111 @@ const AuthorityLoanApplications = () => {
         <p>Review and manage farmer financial assistance requests</p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Flashcards */}
       <div className="loans-stats-grid">
-        <div className="stat-card total" onClick={() => setFilter('all')}>
+        <div className={`stat-flashcard ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
           <div className="stat-icon">📊</div>
-          <div className="stat-info">
+          <div className="stat-content">
             <div className="stat-value">{stats.total}</div>
             <div className="stat-label">Total Applications</div>
           </div>
         </div>
-        <div className="stat-card pending" onClick={() => setFilter('pending')}>
+        <div className={`stat-flashcard ${filter === 'pending' ? 'active' : ''}`} onClick={() => setFilter('pending')}>
           <div className="stat-icon">⏳</div>
-          <div className="stat-info">
+          <div className="stat-content">
             <div className="stat-value">{stats.pending}</div>
             <div className="stat-label">Pending Review</div>
           </div>
         </div>
-        <div className="stat-card approved" onClick={() => setFilter('approved')}>
+        <div className={`stat-flashcard ${filter === 'approved' ? 'active' : ''}`} onClick={() => setFilter('approved')}>
           <div className="stat-icon">✅</div>
-          <div className="stat-info">
+          <div className="stat-content">
             <div className="stat-value">{stats.approved}</div>
             <div className="stat-label">Approved</div>
           </div>
         </div>
-        <div className="stat-card rejected" onClick={() => setFilter('rejected')}>
+        <div className={`stat-flashcard ${filter === 'rejected' ? 'active' : ''}`} onClick={() => setFilter('rejected')}>
           <div className="stat-icon">❌</div>
-          <div className="stat-info">
+          <div className="stat-content">
             <div className="stat-value">{stats.rejected}</div>
             <div className="stat-label">Rejected</div>
           </div>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="filter-tabs">
-        <button 
-          className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
-          onClick={() => setFilter('all')}
-        >
-          All ({stats.total})
-        </button>
-        <button 
-          className={`filter-tab ${filter === 'pending' ? 'active' : ''}`}
-          onClick={() => setFilter('pending')}
-        >
-          Pending ({stats.pending})
-        </button>
-        <button 
-          className={`filter-tab ${filter === 'approved' ? 'active' : ''}`}
-          onClick={() => setFilter('approved')}
-        >
-          Approved ({stats.approved})
-        </button>
-        <button 
-          className={`filter-tab ${filter === 'rejected' ? 'active' : ''}`}
-          onClick={() => setFilter('rejected')}
-        >
-          Rejected ({stats.rejected})
-        </button>
-      </div>
-
       {error && (
-        <div className="alert alert-error">
-          <span className="alert-icon">❌</span>
-          {error}
+        <div className="error-message-card">
+          <div className="error-icon">⚠️</div>
+          <div className="error-content">
+            <h3>Unable to Load Applications</h3>
+            <p>{error}</p>
+            <button className="retry-btn" onClick={fetchLoanApplications}>
+              🔄 Retry
+            </button>
+          </div>
         </div>
       )}
 
-      {filteredLoans.length === 0 ? (
-        <div className="no-loans-card">
-          <div className="no-loans-icon">📭</div>
+      {!error && filteredLoans.length === 0 ? (
+        <div className="empty-state-card">
+          <div className="empty-icon">📭</div>
           <h3>No Loan Applications</h3>
           <p>
             {filter === 'all' 
-              ? 'No loan applications have been submitted yet.' 
-              : `No ${filter} loan applications.`}
+              ? 'No loan applications have been submitted yet. Applications will appear here once farmers submit requests.' 
+              : `No ${filter} loan applications found. Try selecting a different filter.`}
           </p>
+          {filter !== 'all' && (
+            <button className="clear-filter-btn" onClick={() => setFilter('all')}>
+              View All Applications
+            </button>
+          )}
         </div>
       ) : (
         <div className="loans-grid">
           {filteredLoans.map(loan => (
-            <div key={loan.loan_id} className={`loan-application-card ${loan.status}`}>
+            <div key={loan.loan_id} className="loan-card">
               <div className="loan-card-header">
-                <div className="loan-id">Loan #{loan.loan_id}</div>
+                <span className="loan-id">🏫 #{loan.loan_id}</span>
                 {getStatusBadge(loan.status)}
               </div>
 
               <div className="loan-card-body">
-                <div className="farmer-info">
-                  <div className="farmer-avatar">👤</div>
-                  <div className="farmer-details">
-                    <h3>{loan.farmer_name || 'Unknown Farmer'}</h3>
-                    <p className="location">
-                      📍 {[loan.state, loan.district, loan.taluk].filter(Boolean).join(' → ') || 'Location not specified'}
-                    </p>
+                <div className="farmer-section">
+                  <div className="farmer-name">👨‍🌾 {loan.farmer_name || 'Unknown Farmer'}</div>
+                  <div className="farm-name">🏡 {loan.farm_name}</div>
+                  <div className="location">
+                    📍 {[loan.state, loan.district].filter(Boolean).join(', ') || 'Location not specified'}
                   </div>
                 </div>
 
-                <div className="loan-info-grid">
-                  <div className="info-item">
-                    <span className="info-label">🏡 Farm</span>
-                    <span className="info-value">{loan.farm_name}</span>
+                <div className="loan-details">
+                  <div className="detail-row">
+                    <span className="detail-label">Purpose:</span>
+                    <span className="detail-value">{purposeLabels[loan.purpose] || loan.purpose}</span>
                   </div>
-                  <div className="info-item">
-                    <span className="info-label">🎯 Purpose</span>
-                    <span className="info-value">{purposeLabels[loan.purpose] || loan.purpose}</span>
+                  <div className="detail-row">
+                    <span className="detail-label">Amount:</span>
+                    <span className="detail-value amount">{formatCurrency(loan.amount_requested)}</span>
                   </div>
-                  <div className="info-item">
-                    <span className="info-label">💵 Amount</span>
-                    <span className="info-value amount">{formatCurrency(loan.amount_requested)}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">📅 Applied</span>
-                    <span className="info-value">{formatDate(loan.created_at)}</span>
+                  <div className="detail-row">
+                    <span className="detail-label">Applied:</span>
+                    <span className="detail-value">{formatDate(loan.created_at)}</span>
                   </div>
                 </div>
 
-                {/* Action Audit Info - Show for approved/rejected loans */}
                 {loan.status !== 'pending' && loan.action_by_name && (
-                  <div className="action-audit-info">
-                    <div className="audit-header">
-                      <span className="audit-icon">📋</span>
-                      <span className="audit-title">Action Details</span>
-                    </div>
-                    <div className="audit-details">
-                      <div className="audit-item">
-                        <span className="audit-label">Updated By:</span>
-                        <span className="audit-value">{loan.action_by_name}</span>
-                      </div>
-                      {loan.authority_department && (
-                        <div className="audit-item">
-                          <span className="audit-label">Department:</span>
-                          <span className="audit-value">{loan.authority_department}</span>
-                        </div>
-                      )}
-                      {loan.authority_designation && (
-                        <div className="audit-item">
-                          <span className="audit-label">Designation:</span>
-                          <span className="audit-value">{loan.authority_designation}</span>
-                        </div>
-                      )}
-                      <div className="audit-item">
-                        <span className="audit-label">Action Date:</span>
-                        <span className="audit-value">{formatDateTime(loan.action_date)}</span>
-                      </div>
+                  <div className="action-info">
+                    <div className="action-detail">
+                      <span>👤 {loan.action_by_name}</span>
+                      <span>•</span>
+                      <span>{formatDate(loan.action_date)}</span>
                     </div>
                   </div>
                 )}
 
                 <button 
-                  className="btn-view-details"
+                  className="view-details-btn"
                   onClick={() => navigate(`/authority/loan-detail/${loan.loan_id}`)}
                 >
                   View Details →

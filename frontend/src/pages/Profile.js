@@ -5,6 +5,7 @@ import api from '../services/api';
 import { getAllStates, getDistrictsByState } from '../data/statesDistricts';
 import indiaData from '../data/indiaLocations';
 import './Profile.css';
+import './EnhancedModules.css';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -113,72 +114,93 @@ const Profile = () => {
       <Navigation />
       
       <div className="profile-container">
-        <div className="profile-header">
-          <div className="profile-avatar">
-            <span className="avatar-icon">👤</span>
-          </div>
-          <div className="profile-info">
-            <h1>{user?.display_name || user?.vet_name || user?.full_name || 'User'}</h1>
-            <p className="role-badge">{user?.role}</p>
+        {/* Profile Header Flash Card */}
+        <div className="profile-header-card">
+          <div className="profile-header-content">
+            <div className="profile-avatar">
+              {user?.role === 'farmer' && '👨‍🌾'}
+              {user?.role === 'veterinarian' && '👨‍⚕️'}
+              {user?.role === 'distributor' && '🏢'}
+              {user?.role === 'authority' && '🏛️'}
+              {!user?.role && '👤'}
+            </div>
+            <div className="profile-info">
+              <h1>{user?.display_name || user?.vet_name || user?.distributor_name || user?.full_name || 'User'}</h1>
+              <div className="profile-role">
+                {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'User'}
+              </div>
+              <div className="profile-meta">
+                <div className="profile-meta-item">
+                  <span>📧</span> {user?.email}
+                </div>
+                <div className="profile-meta-item">
+                  <span>📅</span> Member since {user?.created_at ? formatDate(user.created_at) : 'N/A'}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {message && (
-          <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
+          <div className={`profile-message ${message.includes('success') ? 'success' : 'error'}`}>
+            <span className="alert-icon">{message.includes('success') ? '✅' : '❌'}</span>
             {message}
           </div>
         )}
 
-        <div className="profile-content">
-          <div className="profile-card">
-            <div className="card-header">
-              <h2>Personal Information</h2>
-              {!editing && (
-                <button onClick={() => setEditing(true)} className="btn-edit">
-                  Edit Profile
-                </button>
-              )}
+        {editing ? (
+          /* Edit Form Flash Card */
+          <div className="profile-edit-card">
+            <div className="profile-edit-header">
+              <h2>✏️ Edit Profile</h2>
+              <button onClick={() => setEditing(false)} className="btn-profile-cancel">
+                ❌ Cancel
+              </button>
             </div>
 
-            {editing ? (
-              <form onSubmit={handleSubmit} className="profile-form">
-                <div className="form-group role-locked">
-                  <label>Role <span className="locked-badge">🔒 Locked</span></label>
-                  <input
-                    type="text"
-                    value={formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
-                    disabled
-                    className="role-input-disabled"
-                  />
-                  <small className="role-hint">Role cannot be changed after registration</small>
-                </div>
+            <form onSubmit={handleSubmit} className="profile-form-grid">
+              {/* Role Field - Always Locked */}
+              <div className="profile-form-group" style={{gridColumn: '1 / -1'}}>
+                <label>🔐 Role <span className="locked-badge">🔒 Locked</span></label>
+                <input
+                  type="text"
+                  value={formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
+                  disabled
+                  readOnly
+                  style={{background: '#f3f4f6', cursor: 'not-allowed'}}
+                />
+                <small style={{color: '#6b7280', fontSize: '0.875rem', marginTop: '0.5rem', display: 'block'}}>
+                  Role cannot be changed after registration
+                </small>
+              </div>
 
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    value={formData.full_name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+              {/* Common Fields */}
+              <div className="profile-form-group">
+                <label>👤 Full Name *</label>
+                <input
+                  type="text"
+                  name="full_name"
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    disabled
-                  />
-                </div>
+              <div className="profile-form-group">
+                <label>📧 Email (Locked)</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  disabled
+                  readOnly
+                />
+              </div>
 
-                {formData.role === 'farmer' && (
+              {formData.role === 'farmer' && (
                   <>
-                    <div className="form-group">
-                      <label>Phone</label>
+                    <div className="profile-form-group">
+                      <label>📞 Phone</label>
                       <input
                         type="tel"
                         name="phone"
@@ -187,8 +209,8 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-group span-2">
-                      <label>Address</label>
+                    <div className="profile-form-group" style={{gridColumn: '1 / -1'}}>
+                      <label>🏠 Address</label>
                       <textarea
                         name="address"
                         value={formData.address}
@@ -197,8 +219,8 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label>State</label>
+                    <div className="profile-form-group">
+                      <label>🗺️ State</label>
                       <select
                         name="state"
                         value={formData.state}
@@ -211,8 +233,8 @@ const Profile = () => {
                       </select>
                     </div>
 
-                    <div className="form-group">
-                      <label>District</label>
+                    <div className="profile-form-group">
+                      <label>📍 District</label>
                       <select
                         name="district"
                         value={formData.district}
@@ -226,8 +248,8 @@ const Profile = () => {
                       </select>
                     </div>
 
-                    <div className="form-group">
-                      <label>Taluk</label>
+                    <div className="profile-form-group">
+                      <label>🏘️ Taluk</label>
                       <select
                         name="taluk"
                         value={formData.taluk}
@@ -245,8 +267,8 @@ const Profile = () => {
 
                 {formData.role === 'veterinarian' && (
                   <>
-                    <div className="form-group">
-                      <label>Veterinarian Name</label>
+                    <div className="profile-form-group">
+                      <label>👨‍⚕️ Veterinarian Name *</label>
                       <input
                         type="text"
                         name="vet_name"
@@ -256,8 +278,8 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label>License Number</label>
+                    <div className="profile-form-group">
+                      <label>📜 License Number *</label>
                       <input
                         type="text"
                         name="license_number"
@@ -267,8 +289,8 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label>Phone</label>
+                    <div className="profile-form-group">
+                      <label>📞 Phone</label>
                       <input
                         type="tel"
                         name="phone"
@@ -277,8 +299,8 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label>State</label>
+                    <div className="profile-form-group">
+                      <label>🗺️ State *</label>
                       <select
                         name="state"
                         value={formData.state}
@@ -292,8 +314,8 @@ const Profile = () => {
                       </select>
                     </div>
 
-                    <div className="form-group">
-                      <label>District</label>
+                    <div className="profile-form-group">
+                      <label>📍 District *</label>
                       <select
                         name="district"
                         value={formData.district}
@@ -308,8 +330,8 @@ const Profile = () => {
                       </select>
                     </div>
 
-                    <div className="form-group">
-                      <label>Taluk</label>
+                    <div className="profile-form-group">
+                      <label>🏘️ Taluk *</label>
                       <select
                         name="taluk"
                         value={formData.taluk}
@@ -443,141 +465,135 @@ const Profile = () => {
                   </>
                 )}
 
-                <div className="form-actions">
-                  <button type="submit" className="btn-save" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Changes'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditing(false)}
-                    className="btn-cancel"
-                  >
-                    Cancel
-                  </button>
+              <div className="profile-actions">
+                <button type="submit" className="btn-profile-save" disabled={loading}>
+                  {loading ? '⏳ Saving...' : '💾 Save Changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditing(false)}
+                  className="btn-profile-cancel"
+                >
+                  ❌ Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          /* Profile Details Flash Cards */
+          <div className="profile-details-grid">
+            <div className="profile-detail-card">
+              <h3>📋 Account Information</h3>
+              <div className="profile-detail-row">
+                <span className="profile-detail-label">Email</span>
+                <span className="profile-detail-value">{user?.email}</span>
+              </div>
+              <div className="profile-detail-row">
+                <span className="profile-detail-label">Account Type</span>
+                <span className="profile-detail-value">{user?.auth_provider || 'Local'}</span>
+              </div>
+              <div className="profile-detail-row">
+                <span className="profile-detail-label">Member Since</span>
+                <span className="profile-detail-value">{user?.created_at ? formatDate(user.created_at) : 'N/A'}</span>
+              </div>
+              <button onClick={() => setEditing(true)} className="btn-profile-edit">
+                ✏️ Edit Profile
+              </button>
+            </div>
+
+            {user?.role === 'farmer' && (
+              <div className="profile-detail-card">
+                <h3>👨‍🌾 Farmer Details</h3>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{user?.phone || 'Not provided'}</span>
                 </div>
-              </form>
-            ) : (
-              <div className="profile-details">
-                <div className="detail-item">
-                  <span className="detail-label">Email:</span>
-                  <span className="detail-value">{user?.email}</span>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Address</span>
+                  <span className="profile-detail-value">{user?.address || 'Not provided'}</span>
                 </div>
-
-                {user?.role === 'farmer' && (
-                  <>
-                    <div className="detail-item">
-                      <span className="detail-label">Phone:</span>
-                      <span className="detail-value">{user?.phone || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Address:</span>
-                      <span className="detail-value">{user?.address || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Location:</span>
-                      <span className="detail-value">
-                        {user?.taluk && user?.district && user?.state 
-                          ? `${user.taluk}, ${user.district}, ${user.state}` 
-                          : user?.district && user?.state 
-                          ? `${user.district}, ${user.state}` 
-                          : 'Not provided'}
-                      </span>
-                    </div>
-                  </>
-                )}
-
-                {user?.role === 'veterinarian' && (
-                  <>
-                    <div className="detail-item">
-                      <span className="detail-label">Veterinarian Name:</span>
-                      <span className="detail-value">{user?.vet_name || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">License Number:</span>
-                      <span className="detail-value">{user?.license_number || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Phone:</span>
-                      <span className="detail-value">{user?.phone || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Location:</span>
-                      <span className="detail-value">
-                        {user?.taluk && user?.district && user?.state 
-                          ? `${user.taluk}, ${user.district}, ${user.state}` 
-                          : user?.district && user?.state 
-                          ? `${user.district}, ${user.state}` 
-                          : 'Not provided'}
-                      </span>
-                    </div>
-                  </>
-                )}
-
-                {user?.role === 'distributor' && (
-                  <>
-                    <div className="detail-item">
-                      <span className="detail-label">Distributor Name:</span>
-                      <span className="detail-value">{user?.distributor_name || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Company Name:</span>
-                      <span className="detail-value">{user?.company_name || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">License Number:</span>
-                      <span className="detail-value">{user?.license_number || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">GST Number:</span>
-                      <span className="detail-value">{user?.gst_number || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Phone:</span>
-                      <span className="detail-value">{user?.distributor_phone || user?.phone || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Address:</span>
-                      <span className="detail-value">{user?.address || 'Not provided'}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <span className="detail-label">Location:</span>
-                      <span className="detail-value">
-                        {user?.taluk && user?.district && user?.state 
-                          ? `${user.taluk}, ${user.district}, ${user.state}` 
-                          : user?.district && user?.state 
-                          ? `${user.district}, ${user.state}` 
-                          : 'Not provided'}
-                      </span>
-                    </div>
-                  </>
-                )}
-
-                <div className="detail-item">
-                  <span className="detail-label">Account Type:</span>
-                  <span className="detail-value">{user?.auth_provider || 'Local'}</span>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Location</span>
+                  <span className="profile-detail-value">
+                    {user?.taluk && user?.district && user?.state 
+                      ? `${user.taluk}, ${user.district}, ${user.state}` 
+                      : user?.district && user?.state 
+                      ? `${user.district}, ${user.state}` 
+                      : 'Not provided'}
+                  </span>
                 </div>
+              </div>
+            )}
 
-                <div className="detail-item">
-                  <span className="detail-label">Member Since:</span>
-                  <span className="detail-value">
-                    {user?.created_at ? formatDate(user.created_at) : 'N/A'}
+            {user?.role === 'veterinarian' && (
+              <div className="profile-detail-card">
+                <h3>👨‍⚕️ Veterinarian Details</h3>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Veterinarian Name</span>
+                  <span className="profile-detail-value">{user?.vet_name || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">License Number</span>
+                  <span className="profile-detail-value">{user?.license_number || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{user?.phone || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Location</span>
+                  <span className="profile-detail-value">
+                    {user?.taluk && user?.district && user?.state 
+                      ? `${user.taluk}, ${user.district}, ${user.state}` 
+                      : user?.district && user?.state 
+                      ? `${user.district}, ${user.state}` 
+                      : 'Not provided'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {user?.role === 'distributor' && (
+              <div className="profile-detail-card">
+                <h3>🏢 Distributor Details</h3>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Distributor Name</span>
+                  <span className="profile-detail-value">{user?.distributor_name || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Company Name</span>
+                  <span className="profile-detail-value">{user?.company_name || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">License Number</span>
+                  <span className="profile-detail-value">{user?.license_number || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">GST Number</span>
+                  <span className="profile-detail-value">{user?.gst_number || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{user?.distributor_phone || user?.phone || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Address</span>
+                  <span className="profile-detail-value">{user?.address || 'Not provided'}</span>
+                </div>
+                <div className="profile-detail-row">
+                  <span className="profile-detail-label">Location</span>
+                  <span className="profile-detail-value">
+                    {user?.taluk && user?.district && user?.state 
+                      ? `${user.taluk}, ${user.district}, ${user.state}` 
+                      : user?.district && user?.state 
+                      ? `${user.district}, ${user.state}` 
+                      : 'Not provided'}
                   </span>
                 </div>
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -16,6 +16,14 @@ const AuthorityProfile = () => {
     district: '',
     taluk: ''
   });
+  const [stats, setStats] = useState({
+    totalFarms: 0,
+    totalTreatments: 0,
+    totalAntibiotics: 0,
+    unsafeMRLCases: 0,
+    highRiskFarms: 0,
+    activeVets: 0
+  });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -23,8 +31,56 @@ const AuthorityProfile = () => {
   });
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('profile');
 
-  // Get available districts based on selected state
+  useEffect(() => {
+    fetchProfileData();
+    fetchProfileStats();
+  }, [user]);
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await api.get('/authority/profile');
+      setProfileData({
+        email: response.data.email || user?.email || '',
+        phone: response.data.phone || '',
+        display_name: response.data.display_name || user?.display_name || '',
+        department: response.data.department || '',
+        designation: response.data.designation || '',
+        state: response.data.state || '',
+        district: response.data.district || '',
+        taluk: response.data.taluk || ''
+      });
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
+
+  const fetchProfileStats = async () => {
+    try {
+      const [farmsRes, treatmentsRes, amuRes, alertsRes, vetsRes] = await Promise.all([
+        api.get('/authority/stats/farms'),
+        api.get('/authority/stats/treatments'),
+        api.get('/authority/stats/amu'),
+        api.get('/authority/stats/alerts'),
+        api.get('/authority/stats/veterinarians')
+      ]);
+
+      setStats({
+        totalFarms: farmsRes.data.totalFarms || 0,
+        totalTreatments: treatmentsRes.data.totalTreatments || 0,
+        totalAntibiotics: amuRes.data.totalAntibiotics || 0,
+        unsafeMRLCases: alertsRes.data.unsafeMRLCases || 0,
+        highRiskFarms: alertsRes.data.highRiskFarms || 0,
+        activeVets: vetsRes.data.activeVets || 0
+      });
+    } catch (error) {
+      console.error('Error fetching profile stats:', error);
+    }
+  };
+
   const getDistricts = () => {
     if (profileData.state && indiaData[profileData.state]) {
       return Object.keys(indiaData[profileData.state]);
@@ -32,7 +88,6 @@ const AuthorityProfile = () => {
     return [];
   };
 
-  // Get available taluks based on selected district
   const getTaluks = () => {
     if (profileData.state && profileData.district && 
         indiaData[profileData.state] && 
@@ -41,30 +96,6 @@ const AuthorityProfile = () => {
     }
     return [];
   };
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await api.get('/authority/profile');
-        setProfileData({
-          email: response.data.email || user?.email || '',
-          phone: response.data.phone || '',
-          display_name: response.data.display_name || user?.display_name || '',
-          department: response.data.department || '',
-          designation: response.data.designation || '',
-          state: response.data.state || '',
-          district: response.data.district || '',
-          taluk: response.data.taluk || ''
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
-        setFetchLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [user]);
 
   // Handle state change - reset district and taluk
   const handleStateChange = (e) => {
@@ -91,6 +122,7 @@ const AuthorityProfile = () => {
     try {
       await api.put('/authority/profile', profileData);
       alert('Profile updated successfully!');
+      fetchProfileData();
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('Failed to update profile. Please try again.');
@@ -102,10 +134,9 @@ const AuthorityProfile = () => {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match!');
+      alert('New password and confirm password do not match!');
       return;
     }
-
     setLoading(true);
     try {
       await api.put('/authority/profile/password', {
@@ -116,249 +147,307 @@ const AuthorityProfile = () => {
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error) {
       console.error('Error changing password:', error);
-      alert('Failed to change password. Please check your current password.');
+      alert(error.response?.data?.error || 'Failed to change password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (fetchLoading) {
+    return (
+      <div className="authority-profile">
+        <div className="profile-loading">
+          <div className="spinner-icon">⏳</div>
+          <p>Loading profile data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchLoading) {
+    return (
+      <div className="authority-profile">
+        <div className="profile-loading">
+          <div className="spinner-icon">⏳</div>
+          <p>Loading profile data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="authority-profile">
       <div className="profile-header">
-        <h1>👤 Authority Profile</h1>
-        <p>Manage your account settings and preferences</p>
+        <div className="profile-header-content">
+          <div className="profile-avatar">
+            <div className="avatar-icon">👤</div>
+            <div className="avatar-badge">🏛️</div>
+          </div>
+          <div className="profile-header-info">
+            <h1>{profileData.display_name || 'Authority User'}</h1>
+            <p className="profile-role">Authority Officer</p>
+          </div>
+        </div>
       </div>
 
+      {/* Stats Flash Cards */}
+      <div className="profile-stats-grid">
+        <div className="profile-stat-card">
+          <div className="stat-card-icon">🏡</div>
+          <div className="stat-card-content">
+            <div className="stat-card-value">{stats.totalFarms.toLocaleString()}</div>
+            <div className="stat-card-label">Registered Farms</div>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="stat-card-icon">💊</div>
+          <div className="stat-card-content">
+            <div className="stat-card-value">{stats.totalTreatments.toLocaleString()}</div>
+            <div className="stat-card-label">Total Treatments</div>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="stat-card-icon">🧪</div>
+          <div className="stat-card-content">
+            <div className="stat-card-value">{stats.totalAntibiotics.toLocaleString()}</div>
+            <div className="stat-card-label">Antibiotics Used</div>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="stat-card-icon">⚠️</div>
+          <div className="stat-card-content">
+            <div className="stat-card-value">{stats.unsafeMRLCases.toLocaleString()}</div>
+            <div className="stat-card-label">Unsafe MRL Cases</div>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="stat-card-icon">🚨</div>
+          <div className="stat-card-content">
+            <div className="stat-card-value">{stats.highRiskFarms.toLocaleString()}</div>
+            <div className="stat-card-label">High Risk Farms</div>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="stat-card-icon">👨‍⚕️</div>
+          <div className="stat-card-content">
+            <div className="stat-card-value">{stats.activeVets.toLocaleString()}</div>
+            <div className="stat-card-label">Active Veterinarians</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="profile-tabs">
+        <button 
+          className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
+          onClick={() => setActiveTab('profile')}
+        >
+          <span className="tab-icon">📝</span>
+          Profile Information
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'security' ? 'active' : ''}`}
+          onClick={() => setActiveTab('security')}
+        >
+          <span className="tab-icon">🔒</span>
+          Security Settings
+        </button>
+      </div>
+
+      {/* Profile Content */}
       <div className="profile-content">
-        {fetchLoading ? (
-          <div className="loading-spinner">Loading profile...</div>
+        {activeTab === 'profile' ? (
+          <div className="profile-form-card">
+            <div className="form-card-header">
+              <h2>👤 Personal Information</h2>
+              <p>Manage your profile details and jurisdiction</p>
+            </div>
+            <form onSubmit={handleProfileUpdate} className="profile-form">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>📧 Email Address</label>
+                  <input
+                    type="email"
+                    value={profileData.email}
+                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    disabled
+                    className="input-disabled"
+                  />
+                  <small className="form-hint">Email cannot be changed</small>
+                </div>
+
+                <div className="form-group">
+                  <label>📱 Phone Number</label>
+                  <input
+                    type="tel"
+                    value={profileData.phone}
+                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    placeholder="Enter phone number"
+                    pattern="[0-9]{10}"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>👤 Display Name</label>
+                  <input
+                    type="text"
+                    value={profileData.display_name}
+                    onChange={(e) => setProfileData({ ...profileData, display_name: e.target.value })}
+                    placeholder="Enter display name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>🏛️ Department</label>
+                  <input
+                    type="text"
+                    value={profileData.department}
+                    onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
+                    placeholder="e.g., Animal Husbandry Department"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>💼 Designation</label>
+                  <select
+                    value={profileData.designation}
+                    onChange={(e) => setProfileData({ ...profileData, designation: e.target.value })}
+                  >
+                    <option value="">Select Designation</option>
+                    <option value="District Veterinary Officer">District Veterinary Officer</option>
+                    <option value="Deputy Director">Deputy Director</option>
+                    <option value="Joint Director">Joint Director</option>
+                    <option value="Director">Director</option>
+                    <option value="Commissioner">Commissioner</option>
+                    <option value="Inspector">Inspector</option>
+                    <option value="Compliance Officer">Compliance Officer</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>📍 State</label>
+                  <select
+                    value={profileData.state}
+                    onChange={handleStateChange}
+                  >
+                    <option value="">Select State</option>
+                    {Object.keys(indiaData).map(state => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>🏙️ District</label>
+                  <select
+                    value={profileData.district}
+                    onChange={handleDistrictChange}
+                    disabled={!profileData.state}
+                  >
+                    <option value="">Select District</option>
+                    {getDistricts().map(district => (
+                      <option key={district} value={district}>{district}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>🏘️ Taluk</label>
+                  <select
+                    value={profileData.taluk}
+                    onChange={(e) => setProfileData({ ...profileData, taluk: e.target.value })}
+                    disabled={!profileData.district}
+                  >
+                    <option value="">Select Taluk</option>
+                    {getTaluks().map(taluk => (
+                      <option key={taluk} value={taluk}>{taluk}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  type="submit" 
+                  className="btn-save" 
+                  disabled={loading}
+                >
+                  {loading ? '⏳ Updating...' : '💾 Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
         ) : (
-          <>
-            <div className="profile-sidebar">
-              <div className="profile-avatar">
-                <div className="avatar-circle">
-                  <span className="avatar-initials">
-                    {profileData.display_name ? profileData.display_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'A'}
-                  </span>
-                </div>
-                <h3>{profileData.display_name || 'Authority User'}</h3>
-              </div>
-
-              <div className="profile-info">
-                <h3>Profile Information</h3>
-                <div className="info-item">
-                  <span className="info-label">Email</span>
-                  <span className="info-value">{profileData.email}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Phone</span>
-                  <span className="info-value">{profileData.phone || 'Not provided'}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Department</span>
-                  <span className="info-value">{profileData.department || 'Not specified'}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Designation</span>
-                  <span className="info-value">{profileData.designation || 'Not specified'}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Location</span>
-                  <span className="info-value">
-                    {[profileData.state, profileData.district, profileData.taluk]
-                      .filter(Boolean).join(' → ') || 'Not specified'}
-                  </span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Role</span>
-                  <span className="info-value">Authority</span>
-                </div>
-              </div>
+          <div className="profile-form-card">
+            <div className="form-card-header">
+              <h2>🔒 Change Password</h2>
+              <p>Update your password to keep your account secure</p>
             </div>
-
-            <div className="profile-main">
-              <div className="profile-section">
-                <div className="section-header">
-                  <h2>Edit Profile</h2>
+            <form onSubmit={handlePasswordChange} className="profile-form">
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>🔑 Current Password</label>
+                  <input
+                    type="password"
+                    value={passwordData.currentPassword}
+                    onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                    placeholder="Enter current password"
+                    required
+                  />
                 </div>
-                <form onSubmit={handleProfileUpdate} className="profile-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="display_name">Full Name</label>
-                      <input
-                        type="text"
-                        id="display_name"
-                        value={profileData.display_name}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, display_name: e.target.value }))}
-                        required
-                      />
-                    </div>
 
-                    <div className="form-group">
-                      <label htmlFor="email">Email Address</label>
-                      <input
-                        type="email"
-                        id="email"
-                        value={profileData.email}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
-                        required
-                      />
-                    </div>
-                  </div>
+                <div className="form-group">
+                  <label>🔐 New Password</label>
+                  <input
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                    placeholder="Enter new password"
+                    required
+                    minLength="8"
+                  />
+                  <small className="form-hint">Minimum 8 characters</small>
+                </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="phone">Phone Number</label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        value={profileData.phone}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="department">Department</label>
-                      <input
-                        type="text"
-                        id="department"
-                        value={profileData.department}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, department: e.target.value }))}
-                        placeholder="e.g., Animal Husbandry, Agriculture"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="designation">Designation</label>
-                      <input
-                        type="text"
-                        id="designation"
-                        value={profileData.designation}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, designation: e.target.value }))}
-                        placeholder="e.g., District Officer, Veterinary Inspector"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-section-divider">
-                    <h3>📍 Jurisdiction Location</h3>
-                    <p className="section-hint">Select your area of authority/jurisdiction</p>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="state">State *</label>
-                      <select
-                        id="state"
-                        value={profileData.state}
-                        onChange={handleStateChange}
-                        required
-                      >
-                        <option value="">Select State</option>
-                        {Object.keys(indiaData).map(state => (
-                          <option key={state} value={state}>{state}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="district">District *</label>
-                      <select
-                        id="district"
-                        value={profileData.district}
-                        onChange={handleDistrictChange}
-                        required
-                        disabled={!profileData.state}
-                      >
-                        <option value="">Select District</option>
-                        {getDistricts().map(district => (
-                          <option key={district} value={district}>{district}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="taluk">Taluk *</label>
-                      <select
-                        id="taluk"
-                        value={profileData.taluk}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, taluk: e.target.value }))}
-                        required
-                        disabled={!profileData.district}
-                      >
-                        <option value="">Select Taluk</option>
-                        {getTaluks().map(taluk => (
-                          <option key={taluk} value={taluk}>{taluk}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-actions">
-                    <button type="submit" className="save-button" disabled={loading}>
-                      {loading ? 'Updating...' : 'Update Profile'}
-                    </button>
-                  </div>
-                </form>
+                <div className="form-group">
+                  <label>✅ Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                    placeholder="Confirm new password"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="profile-section">
-                <div className="section-header">
-                  <h2>Change Password</h2>
-                </div>
-                <form onSubmit={handlePasswordChange} className="password-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="currentPassword">Current Password</label>
-                      <input
-                        type="password"
-                        id="currentPassword"
-                        value={passwordData.currentPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="newPassword">New Password</label>
-                      <input
-                        type="password"
-                        id="newPassword"
-                        value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                        required
-                        minLength="6"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="confirmPassword">Confirm New Password</label>
-                      <input
-                        type="password"
-                        id="confirmPassword"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        required
-                        minLength="6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-actions">
-                    <button type="submit" className="save-button" disabled={loading}>
-                      {loading ? 'Changing...' : 'Change Password'}
-                    </button>
-                  </div>
-                </form>
+              <div className="form-actions">
+                <button 
+                  type="submit" 
+                  className="btn-save" 
+                  disabled={loading}
+                >
+                  {loading ? '⏳ Updating...' : '🔒 Change Password'}
+                </button>
               </div>
+            </form>
+
+            <div className="security-tips">
+              <h3>🛡️ Security Tips</h3>
+              <ul>
+                <li>Use a strong password with a mix of letters, numbers, and symbols</li>
+                <li>Never share your password with anyone</li>
+                <li>Change your password regularly</li>
+                <li>Use different passwords for different accounts</li>
+              </ul>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

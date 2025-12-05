@@ -242,17 +242,22 @@ router.post('/', farmerOrVet, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Check minimum gap rule - no new treatment during withdrawal period
+    // Check minimum gap rule - no new treatment during active treatment duration
     const newStartDate = intToDate(start_date);
     const [existingTreatments] = await db.execute(`
-      SELECT a.safe_date FROM treatment_records t
-      JOIN amu_records a ON t.treatment_id = a.treatment_id
-      WHERE t.entity_id = ? AND a.safe_date IS NOT NULL AND a.safe_date > ?
-      ORDER BY a.safe_date DESC LIMIT 1
+      SELECT t.end_date 
+      FROM treatment_records t
+      WHERE t.entity_id = ? 
+        AND t.end_date IS NOT NULL 
+        AND t.end_date >= ?
+      ORDER BY t.end_date DESC 
+      LIMIT 1
     `, [entity_id, newStartDate]);
 
     if (existingTreatments.length > 0) {
-      return res.status(400).json({ error: `Withdrawal period active. New treatment not allowed until ${existingTreatments[0].safe_date}.` });
+      return res.status(400).json({ 
+        error: `This animal/batch is currently undergoing treatment until ${existingTreatments[0].end_date}. Cannot start new treatment during active treatment period.` 
+      });
     }
 
     // For vets, ensure vet_id and vet_name are provided

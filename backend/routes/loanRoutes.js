@@ -168,9 +168,9 @@ router.get('/applications', authMiddleware, authorityMiddleware, async (req, res
               lr.authority_department,
               lr.authority_designation,
               f.farm_name,
-              fm.state,
-              fm.district,
-              fm.taluk,
+              u.state,
+              u.district,
+              u.taluk,
               u.display_name AS farmer_name,
               au.display_name AS action_by_name
        FROM loan_requests lr
@@ -207,10 +207,10 @@ router.get('/applications/:loanId', authMiddleware, authorityMiddleware, async (
               lr.authority_department,
               lr.authority_designation,
               u.display_name AS farmer_name,
-              fm.phone,
-              fm.state,
-              fm.district,
-              fm.taluk,
+              u.phone,
+              u.state,
+              u.district,
+              u.taluk,
               f.farm_name,
               au.display_name AS action_by_name
        FROM loan_requests lr
@@ -275,6 +275,15 @@ router.get('/applications/:loanId', authMiddleware, authorityMiddleware, async (
       }
     });
 
+    // Get violations count (MRL violations - tissue results that exceed limits)
+    const [violationsCount] = await db.query(
+      `SELECT COUNT(DISTINCT amu_id) AS total_violations
+       FROM amu_tissue_results
+       WHERE amu_id IN (SELECT amu_id FROM amu_records WHERE farm_id = ?)
+       AND risk_category = 'UNSAFE'`,
+      [farmId]
+    );
+
     // Get loan history (audit trail)
     const [history] = await db.query(
       `SELECT lrh.history_id,
@@ -298,7 +307,8 @@ router.get('/applications/:loanId', authMiddleware, authorityMiddleware, async (
         totalTreatments: treatmentCount[0].total_treatments,
         medicinesUsed: medicines.map(m => m.medicine),
         riskSummary,
-        totalAmuRecords: riskSummary.safe + riskSummary.borderline + riskSummary.unsafe
+        totalAmuRecords: riskSummary.safe + riskSummary.borderline + riskSummary.unsafe,
+        violations: violationsCount[0].total_violations || 0
       },
       history
     });

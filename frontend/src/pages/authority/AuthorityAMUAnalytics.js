@@ -139,7 +139,7 @@ Safe Date: ${record.withdrawal.safe_date ? new Date(record.withdrawal.safe_date)
 ⚠️ RISK ASSESSMENT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Risk Category: ${record.risk.risk_category || 'N/A'}
-Predicted MRL: ${record.risk.predicted_mrl || 'N/A'}
+Predicted Residual: ${record.risk.predicted_mrl || 'N/A'}
 Risk Percentage: ${record.risk.risk_percent ? `${record.risk.risk_percent}%` : 'N/A'}
 
 🏥 ADDITIONAL DETAILS:
@@ -193,11 +193,6 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
             onClick={fetchAMURecords}
             disabled={loadingRecords}
             style={{
-              padding: '8px 16px',
-              backgroundColor: '#10b981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
               cursor: loadingRecords ? 'not-allowed' : 'pointer',
               fontSize: '0.85rem',
               marginLeft: 'auto'
@@ -288,15 +283,6 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
               species: '',
               risk_category: ''
             })}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#6b7280',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '0.85rem'
-            }}
           >
             Clear Filters
           </button>
@@ -311,7 +297,7 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
             <div className="no-data-flash">
               <div className="no-data-icon">💊</div>
               <p>No AMU records available</p>
-              <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '8px' }}>
+              <p className="no-data-hint">
                 Try adjusting your filters or click refresh to try loading data again
               </p>
             </div>
@@ -320,15 +306,13 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
               {amuRecords.map((record, index) => {
                 const riskClass = record.risk.risk_category === 'Safe' ? 'safe' :
                                  record.risk.risk_category === 'Borderline' ? 'borderline' : 'unsafe';
-                const riskColor = record.risk.risk_category === 'Safe' ? '#10b981' :
-                                 record.risk.risk_category === 'Borderline' ? '#f59e0b' : '#ef4444';
 
                 return (
                   <div key={record.amu_id || index} className="amu-flashcard" onClick={() => handleAMURecordClick(record)}>
                     <div className="amu-flashcard-header">
                       <div className="amu-species-info">
                         <span className="amu-species">{record.species || 'Unknown Species'}</span>
-                        <span className={`amu-risk-badge ${riskClass}`} style={{ backgroundColor: riskColor }}>
+                        <span className={`amu-risk-badge ${riskClass}`}>
                           {record.risk.risk_category || 'Unknown'}
                         </span>
                       </div>
@@ -366,7 +350,7 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
                       </div>
 
                       <div className="amu-risk-section">
-                        <div className="amu-mrl">Predicted MRL: {record.risk.predicted_mrl || 'N/A'}</div>
+                        <div className="amu-mrl">Predicted Residual: {record.risk.predicted_mrl || 'N/A'}</div>
                         <div className="amu-risk-percent">Risk: {record.risk.risk_percent ? `${record.risk.risk_percent}%` : 'N/A'}</div>
                       </div>
 
@@ -451,43 +435,39 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
   return (
     <div className="authority-amu-analytics">
       <div className="analytics-header">
-        <div className="header-content">
-          <div className="header-icon">📊</div>
-          <div className="header-text">
-            <h1>AMU Analytics Dashboard</h1>
-            <p>Comprehensive antimicrobial usage insights and monitoring</p>
+        <h1>📊 AMU Analytics</h1>
+        <p>Antimicrobial usage insights and monitoring</p>
+      </div>
+
+      {/* Quick Stats Flashcards */}
+      <div className="analytics-stats-grid">
+        <div className="stat-flashcard">
+          <div className="stat-icon">💊</div>
+          <div className="stat-content">
+            <div className="stat-value">{amuRecords.length}</div>
+            <div className="stat-label">Total Records</div>
           </div>
         </div>
-
-        <div className="header-controls">
-          <div className="time-range-selector">
-            <label htmlFor="timeRange">Time Period:</label>
-            <select
-              id="timeRange"
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-            >
-              <option value="30">Last 30 Days</option>
-              <option value="60">Last 60 Days</option>
-              <option value="90">Last 90 Days</option>
-              <option value="180">Last 6 Months</option>
-            </select>
+        <div className="stat-flashcard">
+          <div className="stat-icon">🚨</div>
+          <div className="stat-content">
+            <div className="stat-value">{amuRecords.filter(r => r.risk?.risk_category === 'Unsafe').length}</div>
+            <div className="stat-label">Unsafe Records</div>
           </div>
-          <div className="metric-selector">
-            <label htmlFor="metric">View:</label>
-            <select
-              id="metric"
-              value={selectedMetric}
-              onChange={(e) => setSelectedMetric(e.target.value)}
-            >
-              <option value="usage">Usage Analytics</option>
-              <option value="trends">Trend Analysis</option>
-              <option value="risk">Risk Assessment</option>
-            </select>
+        </div>
+        <div className="stat-flashcard">
+          <div className="stat-icon">⚠️</div>
+          <div className="stat-content">
+            <div className="stat-value">{amuRecords.filter(r => r.risk?.risk_category === 'Borderline').length}</div>
+            <div className="stat-label">Borderline</div>
           </div>
-          <button className="export-btn" onClick={() => exportToPDF()}>
-            📄 Export PDF Report
-          </button>
+        </div>
+        <div className="stat-flashcard">
+          <div className="stat-icon">✅</div>
+          <div className="stat-content">
+            <div className="stat-value">{amuRecords.filter(r => r.risk?.risk_category === 'Safe').length}</div>
+            <div className="stat-label">Safe Records</div>
+          </div>
         </div>
       </div>
 
@@ -501,228 +481,150 @@ Veterinarian: ${record.veterinarian_name || 'N/A'}
         </div>
       )}
 
-      <div className="analytics-content">
-        {selectedMetric === 'usage' && (
-          <div className="flash-cards-grid">
-            {/* AMU Flashcards */}
-            {renderAMUFlashcards()}
-
-            {/* Top Medicines Flash Card */}
-            <div className="flash-card">
-              <div className="flash-card-header">
-                <div className="card-icon">💊</div>
-                <h3>Top Medicines Used</h3>
-              </div>
-              <div className="flash-card-content">
-                {analytics.topMedicines && analytics.topMedicines.length > 0 ? (
-                  <div className="medicines-list">
-                    {analytics.topMedicines.slice(0, 5).map((medicine, index) => (
-                      <div key={index} className="medicine-item">
-                        <div className="medicine-rank">#{index + 1}</div>
-                        <div className="medicine-info">
-                          <div className="medicine-name">{medicine.medicine || medicine.name || 'Unknown'}</div>
-                          <div className="medicine-usage">{medicine.usage_count || medicine.count || 0} uses</div>
-                        </div>
-                        <div className="medicine-trend">📈</div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="no-data-flash">
-                    <div className="no-data-icon">💊</div>
-                    <p>No medicine data available</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Treatment Trends Flash Card */}
-            <div className="flash-card wide">
-              <div className="flash-card-header">
-                <div className="card-icon">📈</div>
-                <h3>Monthly Treatment Trends</h3>
-              </div>
-              <div className="flash-card-content">
-                {analytics.monthlyTrends && analytics.monthlyTrends.length > 0 ? (
-                  <div className="trend-visualization">
-                    {analytics.monthlyTrends.slice(-6).map((item, index) => {
-                      const maxValue = Math.max(...analytics.monthlyTrends.map(t => t.count || 0));
-                      const height = maxValue > 0 ? (item.count / maxValue) * 100 : 0;
-                      return (
-                        <div key={index} className="trend-bar">
-                          <div className="trend-bar-fill" style={{ height: `${height}%` }}>
-                            <span className="trend-value">{item.count}</span>
-                          </div>
-                          <span className="trend-label">{item.month}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="no-data-flash">
-                    <div className="no-data-icon">📈</div>
-                    <p>No trend data available</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {selectedMetric === 'trends' && (
-          <div className="flash-cards-grid">
-            {/* Treatment Frequency Flash Card */}
-            <div className="flash-card">
-              <div className="flash-card-header">
-                <div className="card-icon">📊</div>
-                <h3>Treatment Frequency</h3>
-              </div>
-              <div className="flash-card-content">
-                {analytics.treatmentTrends && analytics.treatmentTrends.length > 0 ? (
-                  <div className="frequency-stats">
-                    <div className="freq-main">
-                      <div className="freq-number">
-                        {analytics.treatmentTrends.reduce((sum, item) => sum + (item.count || 0), 0)}
-                      </div>
-                      <div className="freq-label">Total Treatments</div>
-                    </div>
-                    <div className="freq-breakdown">
-                      <div className="freq-item">
-                        <span className="freq-value">
-                          {Math.round(analytics.treatmentTrends.reduce((sum, item) => sum + (item.count || 0), 0) / Math.max(analytics.treatmentTrends.length, 1))}
-                        </span>
-                        <span className="freq-desc">Avg per period</span>
-                      </div>
-                      <div className="freq-item">
-                        <span className="freq-value">
-                          {Math.max(...analytics.treatmentTrends.map(t => t.count || 0))}
-                        </span>
-                        <span className="freq-desc">Peak period</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="no-data-flash">
-                    <div className="no-data-icon">📊</div>
-                    <p>No frequency data available</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Treatment Summary Flash Card */}
-            <div className="flash-card">
-              <div className="flash-card-header">
-                <div className="card-icon">📋</div>
-                <h3>Treatment Summary</h3>
-              </div>
-              <div className="flash-card-content">
-                <div className="summary-metrics">
-                  <div className="metric-circle">
-                    <div className="metric-value">
-                      {analytics.treatmentTrends ? analytics.treatmentTrends.reduce((sum, item) => sum + (item.count || 0), 0) : 0}
-                    </div>
-                    <div className="metric-label">Total</div>
-                  </div>
-                  <div className="metric-circle">
-                    <div className="metric-value">
-                      {analytics.treatmentTrends ? Math.round(analytics.treatmentTrends.reduce((sum, item) => sum + (item.count || 0), 0) / Math.max(analytics.treatmentTrends.length, 1)) : 0}
-                    </div>
-                    <div className="metric-label">Average</div>
-                  </div>
-                  <div className="metric-circle">
-                    <div className="metric-value">
-                      {analytics.treatmentTrends ? Math.max(...analytics.treatmentTrends.map(t => t.count || 0)) : 0}
-                    </div>
-                    <div className="metric-label">Peak</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Monthly Trends Flash Card */}
-            <div className="flash-card wide">
-              <div className="flash-card-header">
-                <div className="card-icon">📈</div>
-                <h3>Monthly Trends</h3>
-              </div>
-              <div className="flash-card-content">
-                {renderTrendChart()}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {selectedMetric === 'risk' && (
-          <div className="flash-cards-grid">
-            {/* AMU Flashcards */}
-            {renderAMUFlashcards()}
-
-            {/* Overdosage Events Flash Card */}
-            <div className="flash-card">
-              <div className="flash-card-header">
-                <div className="card-icon">🚨</div>
-                <h3>Overdosage Events</h3>
-              </div>
-              <div className="flash-card-content">
-                <div className="overdosage-metrics">
-                  <div className="overdosage-main">
-                    <div className="overdosage-number">{analytics.overdosageEvents || 0}</div>
-                    <div className="overdosage-label">Critical Events</div>
-                  </div>
-                  <div className="overdosage-percentage">
-                    {analytics.treatmentTrends && analytics.treatmentTrends.length > 0 ?
-                      Math.round((analytics.overdosageEvents / Math.max(analytics.treatmentTrends.reduce((sum, item) => sum + (item.count || 0), 0), 1)) * 100) : 0
-                    }% of total treatments
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Risk Insights Flash Card */}
-            <div className="flash-card wide">
-              <div className="flash-card-header">
-                <div className="card-icon">🛡️</div>
-                <h3>Risk Assessment Insights</h3>
-              </div>
-              <div className="flash-card-content">
-                <div className="insights-flash-grid">
-                  <div className="insight-flash-card">
-                    <div className="insight-icon">🛡️</div>
-                    <div className="insight-content">
-                      <h4>Safety Score</h4>
-                      <p className="insight-value">
-                        {Math.round((analytics.riskDistribution.safe / Math.max(analytics.riskDistribution.safe + analytics.riskDistribution.borderline + analytics.riskDistribution.unsafe, 1)) * 100)}%
-                      </p>
-                      <p className="insight-desc">of cases are within safe limits</p>
-                    </div>
-                  </div>
-                  <div className="insight-flash-card">
-                    <div className="insight-icon">⚠️</div>
-                    <div className="insight-content">
-                      <h4>Attention Required</h4>
-                      <p className="insight-value">
-                        {analytics.riskDistribution.borderline + analytics.riskDistribution.unsafe}
-                      </p>
-                      <p className="insight-desc">cases need monitoring</p>
-                    </div>
-                  </div>
-                  <div className="insight-flash-card">
-                    <div className="insight-icon">📋</div>
-                    <div className="insight-content">
-                      <h4>Compliance Rate</h4>
-                      <p className="insight-value">
-                        {Math.round((analytics.riskDistribution.safe / Math.max(analytics.riskDistribution.safe + analytics.riskDistribution.borderline + analytics.riskDistribution.unsafe, 1)) * 100)}%
-                      </p>
-                      <p className="insight-desc">overall compliance</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      {/* Filters Flashcard */}
+      <div className="filters-flashcard">
+        <div className="filter-group">
+          <label>State:</label>
+          <select value={filters.state} onChange={(e) => handleFilterChange('state', e.target.value)}>
+            <option value="">All States</option>
+            {getStates().map(state => <option key={state} value={state}>{state}</option>)}
+          </select>
+        </div>
+        <div className="filter-group">
+          <label>District:</label>
+          <select value={filters.district} onChange={(e) => handleFilterChange('district', e.target.value)} disabled={!filters.state}>
+            <option value="">All Districts</option>
+            {getDistricts().map(district => <option key={district} value={district}>{district}</option>)}
+          </select>
+        </div>
+        <div className="filter-group">
+          <label>Species:</label>
+          <select value={filters.species} onChange={(e) => handleFilterChange('species', e.target.value)}>
+            <option value="">All Species</option>
+            <option value="cattle">Cattle</option>
+            <option value="buffalo">Buffalo</option>
+            <option value="goat">Goat</option>
+            <option value="sheep">Sheep</option>
+            <option value="pig">Pig</option>
+            <option value="poultry">Poultry</option>
+          </select>
+        </div>
+        <div className="filter-group">
+          <label>Risk:</label>
+          <select value={filters.risk_category} onChange={(e) => handleFilterChange('risk_category', e.target.value)}>
+            <option value="">All Risks</option>
+            <option value="safe">Safe</option>
+            <option value="borderline">Borderline</option>
+            <option value="unsafe">Unsafe</option>
+          </select>
+        </div>
+        <button className="refresh-btn" onClick={fetchAMURecords} disabled={loadingRecords}>
+          {loadingRecords ? '🔄 Loading...' : '🔄 Refresh'}
+        </button>
       </div>
+
+      <div className="analytics-content">
+
+        {/* Top Medicines Compact Card */}
+        <div className="compact-card">
+          <div className="compact-card-header">
+            <h3>💊 Top Medicines</h3>
+          </div>
+          <div className="compact-card-content">
+            {analytics.topMedicines && analytics.topMedicines.length > 0 ? (
+              <div className="medicines-compact-list">
+                {analytics.topMedicines.slice(0, 5).map((medicine, index) => (
+                  <div key={index} className="medicine-compact-item">
+                    <span className="rank">#{index + 1}</span>
+                    <span className="name">{medicine.medicine || medicine.name || 'Unknown'}</span>
+                    <span className="count">{medicine.usage_count || medicine.count || 0}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-data-hint">No medicine data available</p>
+            )}
+          </div>
+        </div>
+
+        {/* Treatment Trends Compact Card */}
+        <div className="compact-card wide">
+          <div className="compact-card-header">
+            <h3>📈 Monthly Trends</h3>
+          </div>
+          <div className="compact-card-content">
+            {analytics.monthlyTrends && analytics.monthlyTrends.length > 0 ? (
+              <div className="trends-compact-grid">
+                {analytics.monthlyTrends.slice(-6).map((item, index) => (
+                  <div key={index} className="trend-compact-item">
+                    <div className="trend-value">{item.count}</div>
+                    <div className="trend-month">{item.month}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-data-hint">No trend data available</p>
+            )}
+          </div>
+        </div>
+
+        {/* AMU Records Grid */}
+        <div className="compact-card wide">
+          <div className="compact-card-header">
+            <h3>💊 Recent AMU Records ({amuRecords.length})</h3>
+          </div>
+          <div className="compact-card-content">
+            {loadingRecords ? (
+              <p className="no-data-hint">Loading AMU records...</p>
+            ) : !amuRecords || amuRecords.length === 0 ? (
+              <p className="no-data-hint">No AMU records available</p>
+            ) : (
+              <div className="amu-records-grid">
+                {amuRecords.slice(0, 10).map((record, index) => (
+                  <div key={record.amu_id || index} className="amu-record-card">
+                    <div className="amu-record-header">
+                      <span className="amu-species">{record.species || 'Unknown'}</span>
+                      <span className={`amu-risk-badge ${(record.risk?.risk_category || '').toLowerCase()}`}>
+                        {record.risk?.risk_category || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="amu-record-body">
+                      <div className="amu-medicine">{record.medicine || 'Unknown Medicine'}</div>
+                      <div className="amu-location">📍 {record.state || 'N/A'}, {record.district || 'N/A'}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {selectedMetric === 'trends' && (
+        <div className="analytics-content">
+          <div className="compact-card">
+            <div className="compact-card-header">
+              <h3>📊 Treatment Frequency</h3>
+            </div>
+            <div className="compact-card-content">
+              <p className="no-data-hint">Trend analysis coming soon</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedMetric === 'risk' && (
+        <div className="analytics-content">
+          <div className="compact-card">
+            <div className="compact-card-header">
+              <h3>🚨 Risk Assessment</h3>
+            </div>
+            <div className="compact-card-content">
+              <p className="no-data-hint">Risk assessment coming soon</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

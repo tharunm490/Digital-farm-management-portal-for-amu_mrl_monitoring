@@ -352,49 +352,77 @@ const AuthorityMapView = () => {
   return (
     <div className="authority-map-view">
       <div className="map-view-header">
-        <h1>🗺️ Maps & Heatmaps</h1>
-        <p>Detailed geographical insights with farm locations and risk visualization</p>
-        <div className="map-mode-toggle">
+        <h1>🗺️ Farm Locations Map</h1>
+        <p>Geographical distribution and risk visualization</p>
+      </div>
+
+      {/* Stats Flashcards */}
+      <div className="map-stats-grid">
+        <div className="stat-flashcard">
+          <div className="stat-icon">🏡</div>
+          <div className="stat-content">
+            <div className="stat-value">{farms.length}</div>
+            <div className="stat-label">Total Farms</div>
+          </div>
+        </div>
+        <div className="stat-flashcard">
+          <div className="stat-icon">✅</div>
+          <div className="stat-content">
+            <div className="stat-value">{farms.filter(f => f.risk_category === 'safe').length}</div>
+            <div className="stat-label">Safe Farms</div>
+          </div>
+        </div>
+        <div className="stat-flashcard">
+          <div className="stat-icon">⚠️</div>
+          <div className="stat-content">
+            <div className="stat-value">{farms.filter(f => f.risk_category === 'borderline').length}</div>
+            <div className="stat-label">Borderline</div>
+          </div>
+        </div>
+        <div className="stat-flashcard">
+          <div className="stat-icon">🚨</div>
+          <div className="stat-content">
+            <div className="stat-value">{farms.filter(f => f.risk_category === 'unsafe').length}</div>
+            <div className="stat-label">Unsafe Farms</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Compact Filters and Controls */}
+      <div className="map-controls-compact">
+        <div className="mode-toggle-compact">
           <button 
-            className={`mode-btn ${mapMode === 'markers' ? 'active' : ''}`}
+            className={`mode-btn-compact ${mapMode === 'markers' ? 'active' : ''}`}
             onClick={() => toggleMapMode('markers')}
           >
             📍 Markers
           </button>
           <button 
-            className={`mode-btn ${mapMode === 'heatmap' ? 'active' : ''}`}
+            className={`mode-btn-compact ${mapMode === 'heatmap' ? 'active' : ''}`}
             onClick={() => toggleMapMode('heatmap')}
           >
-            🌡️ Heatmap
+            🔥 Heatmap
           </button>
         </div>
-      </div>
-
-      <div className="map-filters">
-        <div className="filter-group">
-          <label>Species:</label>
+        
+        <div className="filters-compact">
           <select value={filters.species} onChange={(e) => handleFilterChange('species', e.target.value)}>
             <option value="">All Species</option>
             <option value="cattle">Cattle</option>
+            <option value="buffalo">Buffalo</option>
             <option value="poultry">Poultry</option>
             <option value="pig">Pig</option>
             <option value="goat">Goat</option>
             <option value="sheep">Sheep</option>
           </select>
-        </div>
 
-        <div className="filter-group">
-          <label>State:</label>
           <select value={filters.state} onChange={(e) => handleFilterChange('state', e.target.value)}>
             <option value="">All States</option>
             {getAllStates().map(state => (
               <option key={state} value={state}>{state}</option>
             ))}
           </select>
-        </div>
 
-        <div className="filter-group">
-          <label>District:</label>
           <select 
             value={filters.district} 
             onChange={(e) => handleFilterChange('district', e.target.value)}
@@ -405,10 +433,7 @@ const AuthorityMapView = () => {
               <option key={district} value={district}>{district}</option>
             ))}
           </select>
-        </div>
 
-        <div className="filter-group">
-          <label>Risk Type:</label>
           <select value={filters.risk_type} onChange={(e) => handleFilterChange('risk_type', e.target.value)}>
             <option value="">All Risks</option>
             <option value="safe">Safe</option>
@@ -418,71 +443,28 @@ const AuthorityMapView = () => {
         </div>
       </div>
 
+      {/* Map Container */}
       <div className="map-container">
-        <div ref={mapRef} className="google-map" style={{ height: '600px', width: '100%', border: '2px solid red', background: '#f0f0f0' }}></div>
-        {!window.google && <div style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'red', fontSize: '20px'}}>Google Maps API Not Loaded</div>}
-        {!window.google?.maps?.visualization && window.google && <div style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'orange', fontSize: '20px'}}>Heatmap Library Not Loaded</div>}
-        {farms.length === 0 && <div style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'blue', fontSize: '20px'}}>No Farm Data Available</div>}
-
-        {selectedFarm && (
-          <div className="farm-details-panel">
-            <div className="panel-header">
-              <h3>{selectedFarm.farm.farm_name}</h3>
-              <button onClick={() => setSelectedFarm(null)}>×</button>
-            </div>
-            <div className="panel-content">
-              <div className="farm-info">
-                <p><strong>Location:</strong> {selectedFarm.farm.state}, {selectedFarm.farm.district}</p>
-                <p><strong>Total AMU Records:</strong> {selectedFarm.farm.total_amu}</p>
-                <p><strong>Unsafe AMU Records:</strong> {selectedFarm.farm.unsafe_amu}</p>
-              </div>
-              <div className="amu-summary">
-                <h4>Top Medicines Used</h4>
-                {selectedFarm.amuSummary.slice(0, 5).map((item, index) => (
-                  <div key={index} className="medicine-item">
-                    <span className="medicine-name">{item.medicine_name}</span>
-                    <span className="medicine-count">{item.count} uses</span>
-                    <span className={`risk-badge ${item.risk_category}`}>{item.risk_category}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        <div ref={mapRef} className="google-map"></div>
       </div>
 
-      <div className="map-legend">
-        {mapMode === 'markers' ? (
-          <>
-            <h3>Marker Legend</h3>
-            <div className="legend-items">
-              <div className="legend-item">
-                <div className="legend-marker safe"></div>
-                <span>Safe</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-marker borderline"></div>
-                <span>Borderline</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-marker unsafe"></div>
-                <span>Unsafe</span>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <h3>Heatmap Legend</h3>
-            <div className="heatmap-legend">
-              <div className="heatmap-gradient"></div>
-              <div className="heatmap-labels">
-                <span>Low Risk</span>
-                <span>High Risk</span>
-              </div>
-            </div>
-            <p className="heatmap-info">Darker areas indicate higher concentration of unsafe AMU practices</p>
-          </>
-        )}
+      {/* Compact Legend */}
+      <div className="map-legend-compact">
+        <span className="legend-title">📍 Legend:</span>
+        <div className="legend-items-compact">
+          <div className="legend-item-compact">
+            <div className="legend-marker safe"></div>
+            <span>Safe</span>
+          </div>
+          <div className="legend-item-compact">
+            <div className="legend-marker borderline"></div>
+            <span>Borderline</span>
+          </div>
+          <div className="legend-item-compact">
+            <div className="legend-marker unsafe"></div>
+            <span>Unsafe</span>
+          </div>
+        </div>
       </div>
     </div>
   );

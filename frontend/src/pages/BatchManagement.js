@@ -5,6 +5,7 @@ import api from '../services/api';
 import { getAllSpecies, getBreedsBySpecies } from '../data/speciesBreeds';
 import { useTranslation } from '../hooks/useTranslation';
 import './BatchManagement.css';
+import './EnhancedModules.css';
 
 const BatchManagement = () => {
   const { farm_id } = useParams();
@@ -185,22 +186,38 @@ const BatchManagement = () => {
   };
 
   return (
-    <div className="batch-management-container">
+    <div className="module-page">
       <Navigation />
 
       <div className="batch-content">
-        <div className="page-header">
-          {farm_id && (
-            <button onClick={() => navigate('/farms')} className="btn-back">← {t('back_to_farms')}</button>
-          )}
-          <div className="header-content">
-            <h1>🐄 {farm_id ? `${t('batches_for')} ${currentFarm?.farm_name || 'Farm'}` : t('animal_batch_management')}</h1>
-            <p className="header-subtitle">{farm_id ? t('manage_batches_farm') : t('manage_livestock')}</p>
+        {/* Enhanced Header */}
+        <div className="module-header">
+          <div className="module-header-card">
+            <div className="module-header-content">
+              {farm_id && (
+                <button onClick={() => navigate('/farms')} className="btn-modern-secondary" style={{marginRight: 'auto'}}>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  {t('back_to_farms')}
+                </button>
+              )}
+              <div className="module-title-section">
+                <div className="module-icon-circle">
+                  🐄
+                </div>
+                <div className="module-title-text">
+                  <h1>{farm_id ? `${t('batches_for')} ${currentFarm?.farm_name || 'Farm'}` : t('animal_batch_management')}</h1>
+                  <p>{farm_id ? t('manage_batches_farm') : t('manage_livestock')}</p>
+                </div>
+              </div>
+              <div className="module-action-buttons">
+                <button onClick={() => setShowForm(!showForm)} className="btn-modern-primary">
+                  {showForm ? '❌ ' + t('cancel') : '➕ ' + t('add_entity')}
+                </button>
+              </div>
+            </div>
           </div>
-          <button onClick={() => setShowForm(!showForm)} className="btn-primary">
-            <span className="btn-icon">+</span>
-            {showForm ? t('cancel') : t('add_entity')}
-          </button>
         </div>
 
         {error && (
@@ -423,74 +440,79 @@ const BatchManagement = () => {
               <p>{t('loading_entities')}</p>
             </div>
           ) : filteredEntities.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">🐄</div>
+            <div className="module-empty-state">
+              <div className="module-empty-icon">🐄</div>
               <h3>{t('no_entities')}</h3>
               <p>{t('start_adding')}</p>
-              <button onClick={() => setShowForm(true)} className="btn-primary">
-                {t('add_first_entity')}
+              <button onClick={() => setShowForm(true)} className="btn-modern-primary">
+                ➕ {t('add_first_entity')}
               </button>
             </div>
           ) : (
-            <div className="entities-grid">
+            <div className="cards-grid">
               {filteredEntities.map((entity) => (
-                <div key={entity.entity_id} className="entity-card modern">
-                  <div className="card-header">
-                    <div className="entity-info">
-                      <div className="entity-type-icon">
-                        {entity.entity_type === 'animal' ? getAnimalIcon(entity.species) : '🐔'}
-                      </div>
-                      <div>
-                        <h3 className="entity-title">
+                <div key={entity.entity_id} className="module-card">
+                  <div className="module-card-header">
+                    <div className="module-card-header-content">
+                      <div className="module-card-title-section">
+                        <h3 className="module-card-title">
+                          {entity.entity_type === 'animal' ? getAnimalIcon(entity.species) : '🐔'}
+                          {' '}
                           {entity.entity_type === 'animal'
                             ? safeValue(entity.tag_id)
                             : safeValue(entity.batch_name)}
                         </h3>
-                        <div className="entity-meta">
-                          <span className={`badge ${entity.entity_type}`}>
-                            {entity.entity_type === 'animal' ? t('individual') : t('batch')}
-                          </span>
-                          <span className="species-badge">
-                            {safeValue(entity.species)}
-                          </span>
-                        </div>
+                        <p className="module-card-subtitle">
+                          {safeValue(entity.species).charAt(0).toUpperCase() + safeValue(entity.species).slice(1)}
+                        </p>
                       </div>
-                    </div>
-
-                    <div className="card-actions">
-                      <button
-                        onClick={() => generateQR(entity.entity_id)}
-                        className="btn-icon primary"
-                        title="Generate QR Code"
-                      >
-                        📱
-                      </button>
+                      <div className="module-card-badge">
+                        ID: #{safeValue(entity.entity_id)}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="card-content">
-                    <div className="entity-details">
-                      <div className="detail-item">
-                        <span className="label">{t('entity_id')}:</span>
-                        <span className="value">#{safeValue(entity.entity_id)}</span>
+                  <div className="module-card-body">
+                    <div className="module-info-grid">
+                      <div className="module-info-item">
+                        <div className="module-info-icon">🏡</div>
+                        <div className="module-info-content">
+                          <div className="module-info-label">{t('farm')}</div>
+                          <div className="module-info-value">{safeValue(entity.farm_name)}</div>
+                        </div>
                       </div>
 
-                      <div className="detail-item">
-                        <span className="label">{t('farm')}:</span>
-                        <span className="value">{safeValue(entity.farm_name)}</span>
-                      </div>
-
-                      <div className="detail-item">
-                        <span className="label">{t('product')}:</span>
-                        <span className="value">{safeValue(entity.matrix)}</span>
+                      <div className="module-info-item">
+                        <div className="module-info-icon">🥛</div>
+                        <div className="module-info-content">
+                          <div className="module-info-label">{t('product')}</div>
+                          <div className="module-info-value">{safeValue(entity.matrix)}</div>
+                        </div>
                       </div>
 
                       {entity.entity_type === 'batch' && entity.batch_count && (
-                        <div className="detail-item">
-                          <span className="label">{t('count')}:</span>
-                          <span className="value">{safeValue(entity.batch_count)} {t('animals')}</span>
+                        <div className="module-info-item">
+                          <div className="module-info-icon">🔢</div>
+                          <div className="module-info-content">
+                            <div className="module-info-label">{t('count')}</div>
+                            <div className="module-info-value">{safeValue(entity.batch_count)} {t('animals')}</div>
+                          </div>
                         </div>
                       )}
+
+                      <div className="module-info-item">
+                        <div className="module-info-icon">📱</div>
+                        <div className="module-info-content">
+                          <div className="module-info-label">{t('qr_code')}</div>
+                          <button
+                            onClick={() => generateQR(entity.entity_id)}
+                            className="btn-modern-secondary"
+                            style={{marginTop: '0.5rem', padding: '0.5rem 1rem', fontSize: '0.875rem'}}
+                          >
+                            Generate QR
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Treatment Requests Section */}
@@ -502,9 +524,9 @@ const BatchManagement = () => {
                       return (
                         <>
                           {entityWithdrawal && (
-                            <div className="withdrawal-warning">
+                            <div className="withdrawal-warning" style={{marginTop: '1rem', padding: '1rem', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', borderRadius: '12px', border: '2px solid #fcd34d'}}>
                               <span className="warning-icon">⚠️</span>
-                              <span className="warning-text">
+                              <span className="warning-text" style={{color: '#92400e', fontWeight: '600'}}>
                                 {t('withdrawal_period_active')} {new Date(entityWithdrawal.safe_date).toLocaleDateString()}. 
                                 {t('new_requests_blocked')}.
                               </span>
@@ -512,38 +534,40 @@ const BatchManagement = () => {
                           )}
                           
                           {entityRequests.length > 0 && (
-                            <div className="treatment-requests-section">
-                              <div className="requests-header">
-                                <h4>🩺 {t('treatment_requests')}</h4>
+                            <div className="treatment-requests-section" style={{marginTop: '1rem'}}>
+                              <div className="requests-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem'}}>
+                                <h4 style={{margin: 0, fontSize: '1rem', fontWeight: '700'}}>🩺 {t('treatment_requests')}</h4>
                                 <button
                                   onClick={() => setExpandedRequests(prev => ({ ...prev, [entity.entity_id]: !prev[entity.entity_id] }))}
-                                  className="btn-toggle"
+                                  className="btn-modern-secondary"
+                                  style={{padding: '0.5rem 1rem', fontSize: '0.875rem'}}
                                 >
                                   {isExpanded ? t('hide_history') : t('view_history')}
                                 </button>
                               </div>
-                              <div className="request-summary">
-                                <span className="request-count">{entityRequests.length} {t('requests_sent')}</span>
-                                <span className="assigned-vets">
+                              <div className="request-summary" style={{padding: '0.75rem', background: '#f3f4f6', borderRadius: '8px', marginBottom: '0.75rem'}}>
+                                <span className="request-count" style={{fontWeight: '700', color: '#374151'}}>{entityRequests.length} {t('requests_sent')}</span>
+                                <br />
+                                <span className="assigned-vets" style={{fontSize: '0.875rem', color: '#6b7280'}}>
                                   {t('assigned_to')} {[...new Set(entityRequests.map(req => req.vet_name || req.vet_user_name))].join(', ')}
                                 </span>
                               </div>
                               {isExpanded && (
-                                <div className="requests-details">
+                                <div className="requests-details" style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
                                   {entityRequests.map((request) => (
-                                    <div key={request.request_id} className="treatment-request-item">
-                                      <div className="request-status">
-                                        <span className={`status-badge ${request.status}`}>
+                                    <div key={request.request_id} className="treatment-request-item" style={{padding: '1rem', background: 'white', borderRadius: '8px', border: '2px solid #e5e7eb'}}>
+                                      <div className="request-status" style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                        <span className={`status-chip ${request.status}`}>
                                           {t(request.status.toLowerCase())}
                                         </span>
-                                        <span className="request-date">
+                                        <span className="request-date" style={{fontSize: '0.875rem', color: '#6b7280'}}>
                                           {new Date(request.created_at).toLocaleDateString()}
                                         </span>
                                       </div>
-                                      <div className="request-symptoms">
+                                      <div className="request-symptoms" style={{fontSize: '0.875rem', marginBottom: '0.5rem'}}>
                                         <strong>{t('symptoms')}:</strong> {request.symptoms}
                                       </div>
-                                      <div className="assigned-vet">
+                                      <div className="assigned-vet" style={{fontSize: '0.875rem'}}>
                                         <strong>{t('assigned_vet')}:</strong> Dr. {request.vet_name || request.vet_user_name}
                                       </div>
                                     </div>
@@ -557,20 +581,16 @@ const BatchManagement = () => {
                     })()}
                   </div>
 
-                  <div className="card-footer">
+                  <div className="module-card-footer">
                     <button
-                      onClick={() =>
-                        navigate(`/treatments/entity/${entity.entity_id}`)
-                      }
-                      className="btn-outline"
+                      onClick={() => navigate(`/treatments/entity/${entity.entity_id}`)}
+                      className="btn-card-action primary"
                     >
                       💊 {t('treatments')}
                     </button>
                     <button
-                      onClick={() =>
-                        navigate(`/vaccinations/entity/${entity.entity_id}`)
-                      }
-                      className="btn-outline"
+                      onClick={() => navigate(`/vaccinations/entity/${entity.entity_id}`)}
+                      className="btn-card-action secondary"
                     >
                       💉 {t('vaccinations')}
                     </button>

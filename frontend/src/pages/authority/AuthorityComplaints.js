@@ -111,11 +111,44 @@ const AuthorityComplaints = () => {
   return (
     <div className="authority-complaints">
       <div className="complaints-header">
-        <h1>🚨 Complaints & Alerts</h1>
+        <h1>🚨 Alerts & Compliance</h1>
         <p>Risk Monitoring & Compliance Alerts</p>
       </div>
 
-      <div className="filters-section">
+      {/* Stats Flashcards */}
+      <div className="alerts-stats-grid">
+        <div className="alert-stat-card">
+          <div className="stat-icon">🚨</div>
+          <div className="stat-content">
+            <div className="stat-value">{alerts.filter(a => getSeverityLevel(a) === 'high').length}</div>
+            <div className="stat-label">High Priority</div>
+          </div>
+        </div>
+        <div className="alert-stat-card">
+          <div className="stat-icon">⚠️</div>
+          <div className="stat-content">
+            <div className="stat-value">{alerts.filter(a => getSeverityLevel(a) === 'medium').length}</div>
+            <div className="stat-label">Medium Priority</div>
+          </div>
+        </div>
+        <div className="alert-stat-card">
+          <div className="stat-icon">ℹ️</div>
+          <div className="stat-content">
+            <div className="stat-value">{alerts.filter(a => getSeverityLevel(a) === 'low').length}</div>
+            <div className="stat-label">Low Priority</div>
+          </div>
+        </div>
+        <div className="alert-stat-card">
+          <div className="stat-icon">📊</div>
+          <div className="stat-content">
+            <div className="stat-value">{alerts.length}</div>
+            <div className="stat-label">Total Alerts</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Flashcard */}
+      <div className="filters-flashcard">
         <div className="filter-group">
           <label>Alert Type:</label>
           <select
@@ -141,7 +174,6 @@ const AuthorityComplaints = () => {
             <option value="Tamil Nadu">Tamil Nadu</option>
             <option value="Andhra Pradesh">Andhra Pradesh</option>
             <option value="Telangana">Telangana</option>
-            {/* Add more states as needed */}
           </select>
         </div>
 
@@ -175,107 +207,64 @@ const AuthorityComplaints = () => {
         </div>
       </div>
 
-      <div className="alerts-summary">
-        <div className="summary-stats">
-          <div className="stat-item">
-            <span className="stat-number">{alerts.filter(a => getSeverityLevel(a) === 'high').length}</span>
-            <span className="stat-label">High Priority</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{alerts.filter(a => getSeverityLevel(a) === 'medium').length}</span>
-            <span className="stat-label">Medium Priority</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{alerts.filter(a => getSeverityLevel(a) === 'low').length}</span>
-            <span className="stat-label">Low Priority</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{alerts.length}</span>
-            <span className="stat-label">Total Alerts</span>
-          </div>
+      {/* Alerts Grid */}
+      {alerts.length === 0 ? (
+        <div className="no-alerts-flashcard">
+          <div className="no-alerts-icon">✅</div>
+          <h3>No alerts found</h3>
+          <p>All systems are running smoothly. No alerts match your current filters.</p>
         </div>
-      </div>
-
-      <div className="alerts-list">
-        {alerts.length === 0 ? (
-          <div className="no-alerts-flash">
-            <div className="no-alerts-icon">✅</div>
-            <h3>No alerts found</h3>
-            <p>All systems are running smoothly. No alerts match your current filters.</p>
-          </div>
-        ) : (
-          <div className="alerts-flash-grid">
-            {alerts.map((alert) => (
-              <div
-                key={alert.notification_id || alert.id}
-                className={`alert-flash-card ${getSeverityLevel(alert)} ${alert.is_read ? 'reviewed' : ''}`}
-                onClick={() => setSelectedAlert(selectedAlert?.notification_id === alert.notification_id ? null : alert)}
-              >
-                <div className="alert-flash-header">
-                  <div className="alert-flash-icon">
-                    {getAlertIcon(alert.subtype)}
-                  </div>
-                  <div className="alert-flash-meta">
-                    <span
-                      className="severity-flash-badge"
-                      style={{ backgroundColor: getSeverityColor(alert) }}
-                    >
-                      {getSeverityLevel(alert).toUpperCase()}
-                    </span>
-                    <span className="alert-flash-date">
-                      {new Date(alert.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
+      ) : (
+        <div className="alerts-grid">
+          {alerts.map((alert) => (
+            <div
+              key={alert.notification_id || alert.id}
+              className="alert-card"
+              onClick={() => setSelectedAlert(selectedAlert?.notification_id === alert.notification_id ? null : alert)}
+            >
+              <div className="alert-header">
+                <div className="alert-icon">
+                  {getAlertIcon(alert.subtype)}
                 </div>
-
-                <div className="alert-flash-content">
-                  <h3 className="alert-flash-title">
-                    {alert.farm_name || 'Unknown Farm'} - {alert.species || 'Unknown Species'}
-                  </h3>
-                  <p className="alert-flash-location">
-                    📍 {alert.state || 'Unknown State'}, {alert.district || 'Unknown District'}
-                  </p>
-                  <p className="alert-flash-message">
-                    {formatAlertMessage(alert)}
-                  </p>
-                </div>
-
-                <div className="alert-flash-details">
-                  <div className="detail-flash-item">
-                    <span className="detail-flash-label">Vet:</span>
-                    <span className="detail-flash-value">{alert.vet_name || 'N/A'}</span>
-                  </div>
-                  <div className="detail-flash-item">
-                    <span className="detail-flash-label">Risk:</span>
-                    <span className="detail-flash-value">{alert.risk_category || 'N/A'}</span>
-                  </div>
-                  <div className="detail-flash-item">
-                    <span className="detail-flash-label">Farm ID:</span>
-                    <span className="detail-flash-value">{alert.farm_id}</span>
-                  </div>
-                </div>
-
-                <div className="alert-flash-actions">
-                  {!alert.is_read && (
-                    <button
-                      className="review-flash-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        markAsReviewed(alert.notification_id || alert.id);
-                      }}
-                    >
-                      ✓ Mark as Reviewed
-                    </button>
-                  )}
-                  {alert.is_read && (
-                    <span className="reviewed-flash-badge">✓ Reviewed</span>
-                  )}
+                <div className="alert-meta">
+                  <span className={`severity-badge ${getSeverityLevel(alert)}`}>
+                    {getSeverityLevel(alert).toUpperCase()}
+                  </span>
+                  <span className="alert-date">
+                    {new Date(alert.created_at).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+
+              <div className="alert-content">
+                <h3 className="alert-title">
+                  {alert.farm_name || 'Unknown Farm'}
+                </h3>
+                <p className="alert-location">
+                  📍 {alert.state || 'Unknown State'}, {alert.district || 'Unknown District'}
+                </p>
+                <p className="alert-species">
+                  🐄 {alert.species || 'Unknown Species'}
+                </p>
+                <p className="alert-message">
+                  {formatAlertMessage(alert)}
+                </p>
+              </div>
+
+              <div className="alert-footer">
+                <div className="alert-detail">
+                  <span className="label">Vet:</span>
+                  <span className="value">{alert.vet_name || 'N/A'}</span>
+                </div>
+                <div className="alert-detail">
+                  <span className="label">Risk:</span>
+                  <span className={`value risk-${alert.risk_category}`}>{alert.risk_category || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {selectedAlert && (
         <div className="alert-modal-overlay" onClick={() => setSelectedAlert(null)}>

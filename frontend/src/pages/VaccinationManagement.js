@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import api from '../services/api';
 import './VaccinationManagement.css';
+import './EnhancedModules.css';
 
 const VaccinationManagement = () => {
   const [entities, setEntities] = useState([]);
@@ -93,90 +94,128 @@ const VaccinationManagement = () => {
   };
 
   return (
-    <div className="vaccination-page">
+    <div className="module-page">
       <Navigation />
-      <div className="vaccination-container">
-        <div className="vaccination-header">
-          <h1>💉 Vaccination Management</h1>
+      
+      {/* Enhanced Header */}
+      <div className="module-header">
+        <div className="module-header-card">
+          <div className="module-header-content">
+            <div className="module-title-section">
+              <div className="module-icon-circle" style={{background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'}}>
+                💉
+              </div>
+              <div className="module-title-text">
+                <h1>Vaccination Management</h1>
+                <p>Track and manage vaccination schedules</p>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="vaccination-container" style={{maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem'}}>
 
         {error && (
-          <div className="error-message">
-            {error}
+          <div style={{background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)', padding: '1rem 1.5rem', borderRadius: '16px', border: '2px solid #fca5a5', display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem'}}>
+            <span style={{fontSize: '1.5rem'}}>❌</span>
+            <p style={{color: '#991b1b', fontWeight: '600', margin: 0}}>{error}</p>
           </div>
         )}
 
         {!entity_id && (
-          <div className="select-entity-prompt">
-            <div className="prompt-content">
-              <div className="prompt-icon">💉</div>
-              <h2>Select an Animal or Batch</h2>
-              <p>Please select an animal or batch to view vaccination schedules and history.</p>
-              <div className="entity-selector">
-                <label>Select Animal/Batch:</label>
-                <select
-                  onChange={(e) => navigate(`/vaccinations/entity/${e.target.value}`)}
-                  className="form-control"
-                >
-                  <option value="">-- Select Entity --</option>
-                  {entities.map(entity => (
-                    <option key={entity.entity_id} value={entity.entity_id}>
-                      {entity.entity_type === 'animal' ? entity.tag_id : entity.batch_name}
-                      ({entity.species}) - {entity.farm_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <div className="module-empty-state">
+            <div className="module-empty-icon">💉</div>
+            <h3>Select an Animal or Batch</h3>
+            <p>Please select an animal or batch to view vaccination schedules and history.</p>
+            <div className="filter-field" style={{maxWidth: '400px', marginTop: '2rem'}}>
+              <label>Select Animal/Batch:</label>
+              <select
+                onChange={(e) => navigate(`/vaccinations/entity/${e.target.value}`)}
+                className="form-control"
+              >
+                <option value="">-- Select Entity --</option>
+                {entities.map(entity => (
+                  <option key={entity.entity_id} value={entity.entity_id}>
+                    {entity.entity_type === 'animal' ? entity.tag_id : entity.batch_name}
+                    ({entity.species}) - {entity.farm_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         )}
 
         {entity_id && (
           <div className="vaccination-content">
-            <h2>
-              Vaccination Information for {selectedEntity?.entity_type === 'animal'
-                ? selectedEntity?.tag_id
-                : selectedEntity?.batch_name}
-            </h2>
+            <div style={{background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9))', backdropFilter: 'blur(20px)', borderRadius: '24px', padding: '2rem', marginBottom: '2rem', boxShadow: '0 8px 32px rgba(0,0,0,0.08)'}}>
+              <h2 style={{fontSize: '1.75rem', fontWeight: '800', color: '#1f2937', marginBottom: '0.5rem'}}>
+                Vaccination Information for {selectedEntity?.entity_type === 'animal'
+                  ? selectedEntity?.tag_id
+                  : selectedEntity?.batch_name}
+              </h2>
+              <p style={{color: '#6b7280', fontSize: '1rem'}}>
+                {selectedEntity?.species} • {selectedEntity?.farm_name}
+              </p>
+            </div>
 
             {vaccineTreatments.length === 0 && vaccinationHistory.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon">💉</div>
+              <div className="module-empty-state">
+                <div className="module-empty-icon">💉</div>
                 <h3>No vaccination information found</h3>
                 <p>This animal/batch has no vaccination schedules or history.</p>
               </div>
             ) : (
               <>
                 {vaccineTreatments.length > 0 && (
-                  <div className="vaccine-schedules-section">
-                    <div className="section-header">
-                      <h2>Vaccination Schedules</h2>
-                    </div>
-                    <div className="vaccine-schedule-cards">
+                  <div className="vaccine-schedules-section" style={{marginBottom: '2rem'}}>
+                    <h2 style={{fontSize: '1.5rem', fontWeight: '800', color: '#1f2937', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                      <span>📅</span> Vaccination Schedules
+                    </h2>
+                    <div className="cards-grid">
                       {vaccineTreatments.map(treatment => (
-                        <div key={treatment.treatment_id} className="vaccine-schedule-card">
-                          <div className="schedule-header">
-                            <h3>{treatment.medicine}</h3>
-                            <span className={`schedule-status ${new Date() > new Date(treatment.vaccine_end_date) ? 'completed' : 'active'}`}>
-                              {new Date() > new Date(treatment.vaccine_end_date) ? 'Completed' : 'Active'}
-                            </span>
+                        <div key={treatment.treatment_id} className="module-card">
+                          <div className="module-card-header">
+                            <div className="module-card-header-content">
+                              <div className="module-card-title-section">
+                                <h3 className="module-card-title">💉 {treatment.medicine}</h3>
+                                <p className="module-card-subtitle">Vaccination Schedule</p>
+                              </div>
+                              <div className={`status-chip ${new Date() > new Date(treatment.vaccine_end_date) ? 'safe' : 'pending'}`}>
+                                {new Date() > new Date(treatment.vaccine_end_date) ? '✅ Completed' : '⏳ Active'}
+                              </div>
+                            </div>
                           </div>
-                          <div className="schedule-details">
-                            <div className="detail-row">
-                              <span className="label">Interval:</span>
-                              <span className="value">{treatment.vaccine_interval_days} days</span>
-                            </div>
-                            <div className="detail-row">
-                              <span className="label">Total Period:</span>
-                              <span className="value">{treatment.vaccine_total_months} months</span>
-                            </div>
-                            <div className="detail-row">
-                              <span className="label">End Date:</span>
-                              <span className="value">{treatment.vaccine_end_date ? formatDate(treatment.vaccine_end_date) : 'N/A'}</span>
-                            </div>
-                            <div className="detail-row">
-                              <span className="label">Next Due:</span>
-                              <span className="value">{treatment.next_due_date ? formatDate(treatment.next_due_date) : 'N/A'}</span>
+                          <div className="module-card-body">
+                            <div className="module-info-grid">
+                              <div className="module-info-item">
+                                <div className="module-info-icon">⏱️</div>
+                                <div className="module-info-content">
+                                  <div className="module-info-label">Interval</div>
+                                  <div className="module-info-value">{treatment.vaccine_interval_days} days</div>
+                                </div>
+                              </div>
+                              <div className="module-info-item">
+                                <div className="module-info-icon">📆</div>
+                                <div className="module-info-content">
+                                  <div className="module-info-label">Total Period</div>
+                                  <div className="module-info-value">{treatment.vaccine_total_months} months</div>
+                                </div>
+                              </div>
+                              <div className="module-info-item">
+                                <div className="module-info-icon">🏁</div>
+                                <div className="module-info-content">
+                                  <div className="module-info-label">End Date</div>
+                                  <div className="module-info-value">{treatment.vaccine_end_date ? formatDate(treatment.vaccine_end_date) : 'N/A'}</div>
+                                </div>
+                              </div>
+                              <div className="module-info-item">
+                                <div className="module-info-icon">📌</div>
+                                <div className="module-info-content">
+                                  <div className="module-info-label">Next Due</div>
+                                  <div className="module-info-value">{treatment.next_due_date ? formatDate(treatment.next_due_date) : 'N/A'}</div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -187,18 +226,20 @@ const VaccinationManagement = () => {
 
                 {vaccinationHistory.length > 0 && (
                   <div className="vaccination-history-section">
-                    <div className="section-header">
-                      <h2>Scheduled Vaccination History</h2>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem'}}>
+                      <h2 style={{fontSize: '1.5rem', fontWeight: '800', color: '#1f2937', margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                        <span>📋</span> Scheduled Vaccination History
+                      </h2>
                       <button
                         onClick={() => setShowHistorySection(!showHistorySection)}
-                        className="btn-secondary"
+                        className="btn-modern-secondary"
                       >
                         {showHistorySection ? 'Hide History' : 'Show History'}
                       </button>
                     </div>
 
                     {showHistorySection && (
-                      <div className="vaccination-history-list">
+                      <div className="cards-grid">
                         {vaccinationHistory.map((vacc, index) => {
                           const today = new Date();
                           const nextDue = new Date(vacc.next_due_date);
@@ -206,62 +247,82 @@ const VaccinationManagement = () => {
                           const isDueToday = nextDue.toDateString() === today.toDateString();
                           const isCompleted = new Date(vacc.vaccine_end_date) <= today;
 
-                          let status = 'active';
-                          if (isCompleted) status = 'completed';
-                          else if (isOverdue) status = 'overdue';
-                          else if (isDueToday) status = 'due-today';
+                          let statusType = 'safe';
+                          let statusText = '⏳ Active';
+                          let statusIcon = '⏳';
+                          if (isCompleted) { statusType = 'safe'; statusText = '✅ Completed'; statusIcon = '✅'; }
+                          else if (isOverdue) { statusType = 'unsafe'; statusText = '❌ Overdue'; statusIcon = '❌'; }
+                          else if (isDueToday) { statusType = 'pending'; statusText = '⚠️ Due Today'; statusIcon = '⚠️'; }
 
                           return (
-                            <div key={vacc.vacc_id} className={`history-item ${status}`}>
-                              <div className="history-header">
-                                <span className="dose-number">Dose {index + 1}</span>
-                                <span className={`status-indicator ${status}`}>
-                                  {status === 'completed' && '✅ Completed'}
-                                  {status === 'overdue' && '❌ Overdue'}
-                                  {status === 'due-today' && '⚠️ Due Today'}
-                                  {status === 'active' && '⏳ Active'}
-                                </span>
-                              </div>
-                              <div className="history-details">
-                                <div className="detail-row">
-                                  <span className="label">Vaccine:</span>
-                                  <span className="value">{vacc.vaccine_name}</span>
-                                </div>
-                                <div className="detail-row">
-                                  <span className="label">Given Date:</span>
-                                  <span className="value">{formatDate(vacc.given_date)}</span>
-                                </div>
-                                <div className="detail-row">
-                                  <span className="label">Next Due:</span>
-                                  <span className="value">{formatDate(vacc.next_due_date)}</span>
-                                </div>
-                                {!isCompleted && (
-                                  <div className="detail-row">
-                                    <span className="label">Days Remaining:</span>
-                                    <span className="value">
-                                      {Math.max(0, Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24)))} days
-                                    </span>
+                            <div key={vacc.vacc_id} className="module-card">
+                              <div className="module-card-header">
+                                <div className="module-card-header-content">
+                                  <div className="module-card-title-section">
+                                    <h3 className="module-card-title">
+                                      💉 Dose {index + 1}
+                                    </h3>
+                                    <p className="module-card-subtitle">{vacc.vaccine_name}</p>
                                   </div>
-                                )}
-                                <div className="detail-row">
-                                  <span className="label">Medicine:</span>
-                                  <span className="value">{vacc.medicine}</span>
-                                </div>
-                                <div className="detail-row">
-                                  <span className="label">Medication Type:</span>
-                                  <span className="value">{vacc.medication_type}</span>
+                                  <div className={`status-chip ${statusType}`}>
+                                    {statusText}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="history-actions">
+                              <div className="module-card-body">
+                                <div className="module-info-grid">
+                                  <div className="module-info-item">
+                                    <div className="module-info-icon">💊</div>
+                                    <div className="module-info-content">
+                                      <div className="module-info-label">Medicine</div>
+                                      <div className="module-info-value">{vacc.medicine}</div>
+                                    </div>
+                                  </div>
+                                  <div className="module-info-item">
+                                    <div className="module-info-icon">📅</div>
+                                    <div className="module-info-content">
+                                      <div className="module-info-label">Given Date</div>
+                                      <div className="module-info-value">{formatDate(vacc.given_date)}</div>
+                                    </div>
+                                  </div>
+                                  <div className="module-info-item">
+                                    <div className="module-info-icon">📌</div>
+                                    <div className="module-info-content">
+                                      <div className="module-info-label">Next Due</div>
+                                      <div className="module-info-value">{formatDate(vacc.next_due_date)}</div>
+                                    </div>
+                                  </div>
+                                  {!isCompleted && (
+                                    <div className="module-info-item">
+                                      <div className="module-info-icon">⏰</div>
+                                      <div className="module-info-content">
+                                        <div className="module-info-label">Days Remaining</div>
+                                        <div className="module-info-value">
+                                          {Math.max(0, Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24)))} days
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div className="module-info-item">
+                                    <div className="module-info-icon">🏷️</div>
+                                    <div className="module-info-content">
+                                      <div className="module-info-label">Type</div>
+                                      <div className="module-info-value">{vacc.medication_type}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="module-card-footer">
                                 <button
                                   onClick={() => markVaccinationDone(vacc.vacc_id)}
-                                  className="btn-vaccine"
+                                  className={`btn-card-action ${index === 0 && !isCompleted && today >= nextDue ? 'primary' : 'secondary'}`}
                                   disabled={index !== 0 || isCompleted || today < nextDue}
+                                  style={{width: '100%'}}
                                 >
-                                  {isCompleted ? 'Cycle Completed' :
-                                   index !== 0 ? 'Not Next Dose' :
-                                   today < nextDue ? 'Not Due Yet' :
-                                   'Mark as Done'}
+                                  {isCompleted ? '✅ Cycle Completed' :
+                                   index !== 0 ? '⏭️ Not Next Dose' :
+                                   today < nextDue ? '⏳ Not Due Yet' :
+                                   '✅ Mark as Done'}
                                 </button>
                               </div>
                             </div>

@@ -92,6 +92,24 @@ const TreatmentRequestManagement = () => {
     }
   };
 
+  const getProductImage = (species) => {
+    const normalizedSpecies = species?.toLowerCase();
+    // Milk producing animals
+    if (['cattle', 'buffalo', 'goat', 'sheep'].includes(normalizedSpecies)) {
+      return '🥛'; // Milk
+    }
+    // Egg producing animals
+    if (['poultry', 'chicken', 'duck'].includes(normalizedSpecies)) {
+      return '🥚'; // Egg
+    }
+    // Meat producing animals
+    if (['pig', 'pigs'].includes(normalizedSpecies)) {
+      return '🥩'; // Meat
+    }
+    // Default to meat for other animals
+    return '🥩'; // Meat
+  };
+
   if (!user) {
     return (
       <div className="treatment-requests-container">
@@ -133,16 +151,31 @@ const TreatmentRequestManagement = () => {
           <>
             <div className="section">
               <h3>{t('treatments')}</h3>
-              <div className="items-list">
+              <div className="treatment-grid">
                 {treatments.length === 0 ? (
-                  <p>{t('no_treatments_found')}</p>
+                  <p className="empty-message">{t('no_treatments_found')}</p>
                 ) : (
                   treatments.map((treatment, index) => (
-                    <div key={treatment.id || `treatment-${index}`} className="item-card">
-                      <p><strong>{t('medicine')}:</strong> {treatment.medicine}</p>
-                      <p><strong>{t('animal')}:</strong> {treatment.species} - {treatment.tag_id}</p>
-                      <p><strong>{t('dose')}:</strong> {treatment.dose_amount} {treatment.dose_unit}</p>
-                      <p><strong>{t('status')}:</strong> {treatment.status}</p>
+                    <div key={treatment.id || `treatment-${index}`} className="treatment-flash-card">
+                      <div className="treatment-card-header">
+                        <span className="medicine-icon">💊</span>
+                        <h4>{treatment.medicine}</h4>
+                      </div>
+                      <div className="treatment-card-body">
+                        <div className="treatment-info-row">
+                          <span className="info-icon">🐄</span>
+                          <span className="info-text">{treatment.species} - {treatment.tag_id}</span>
+                        </div>
+                        <div className="treatment-info-row">
+                          <span className="info-icon">💉</span>
+                          <span className="info-text">{treatment.dose_amount} {treatment.dose_unit}</span>
+                        </div>
+                        <div className="treatment-card-footer">
+                          <span className={`treatment-status ${treatment.status}`}>
+                            {treatment.status}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   ))
                 )}
@@ -184,32 +217,13 @@ const TreatmentRequestManagement = () => {
                         <div className="farmer-contact-card">
                           <div className="contact-header">
                             <span className="contact-icon">👨‍🌾</span>
-                            <h4>{t('farmer_details') || 'Farmer Details'}</h4>
+                            <h4>{t('farmer_details') || 'Farmer'}</h4>
                           </div>
-                          <div className="contact-info">
-                            <div className="contact-item">
-                              <span className="icon">👤</span>
-                              <span className="label">{t('name') || 'Name'}:</span>
-                              <span className="value">{request.farmer_name || 'N/A'}</span>
-                            </div>
-                            <div className="contact-item">
-                              <span className="icon">📞</span>
-                              <span className="label">{t('phone') || 'Phone'}:</span>
-                              <span className="value phone-link">
-                                {request.farmer_phone ? (
-                                  <a href={`tel:${request.farmer_phone}`}>{request.farmer_phone}</a>
-                                ) : 'N/A'}
-                              </span>
-                            </div>
-                            <div className="contact-item">
-                              <span className="icon">📧</span>
-                              <span className="label">{t('email') || 'Email'}:</span>
-                              <span className="value email-link">
-                                {request.farmer_email ? (
-                                  <a href={`mailto:${request.farmer_email}`}>{request.farmer_email}</a>
-                                ) : 'N/A'}
-                              </span>
-                            </div>
+                          <div className="contact-info-compact">
+                            <div className="info-line">👤 {request.farmer_name || 'N/A'}</div>
+                            {request.farmer_phone && (
+                              <div className="info-line">📞 <a href={`tel:${request.farmer_phone}`}>{request.farmer_phone}</a></div>
+                            )}
                           </div>
                         </div>
 
@@ -217,37 +231,10 @@ const TreatmentRequestManagement = () => {
                         <div className="farm-location-card">
                           <div className="location-header">
                             <span className="location-icon">🏡</span>
-                            <h4>{t('farm_location') || 'Farm Location'}</h4>
+                            <h4>{request.farm_name || 'Farm'}</h4>
                           </div>
-                          <div className="location-info">
-                            <div className="location-item">
-                              <span className="icon">🏠</span>
-                              <span className="label">{t('farm_name') || 'Farm'}:</span>
-                              <span className="value">{request.farm_name || 'N/A'}</span>
-                            </div>
-                            <div className="location-item">
-                              <span className="icon">📍</span>
-                              <span className="label">{t('address') || 'Address'}:</span>
-                              <span className="value">
-                                {[request.farmer_taluk, request.farmer_district, request.farmer_state]
-                                  .filter(Boolean).join(', ') || 'N/A'}
-                              </span>
-                            </div>
-                            {request.latitude && request.longitude && (
-                              <div className="location-item">
-                                <span className="icon">🗺️</span>
-                                <span className="label">{t('coordinates') || 'GPS'}:</span>
-                                <span className="value map-link">
-                                  <a 
-                                    href={`https://www.google.com/maps?q=${request.latitude},${request.longitude}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {t('view_on_map') || 'View on Map'} 📍
-                                  </a>
-                                </span>
-                              </div>
-                            )}
+                          <div className="contact-info-compact">
+                            <div className="info-line">📍 {[request.farmer_taluk, request.farmer_district].filter(Boolean).join(', ') || 'N/A'}</div>
                           </div>
                         </div>
 
@@ -257,13 +244,8 @@ const TreatmentRequestManagement = () => {
                             <span className="symptoms-icon">🏥</span>
                             <h4>{t('symptoms') || 'Symptoms'}</h4>
                           </div>
-                          <div className="symptoms-content">
-                            <p>{request.symptoms || 'No symptoms provided'}</p>
-                          </div>
-                          <div className="request-meta">
-                            <span className="meta-item">
-                              📅 {t('requested') || 'Requested'}: {new Date(request.created_at).toLocaleDateString()}
-                            </span>
+                          <div className="symptoms-content-compact">
+                            {request.symptoms || 'No symptoms provided'}
                           </div>
                         </div>
                       </div>

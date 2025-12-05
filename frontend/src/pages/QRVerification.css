@@ -1,458 +1,118 @@
-.verification-page {
-  min-height: 100vh;
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #f0f4f0 0%, #e8f0e8 100%);
-}
+/* QR Verification Page - Modern Flash Card Design */
+/* This page uses inline Tailwind classes extensively */
+/* These styles provide additional enhancements */
 
-.page-header {
-  text-align: center;
-  margin-bottom: 50px;
-}
-
-.page-header h1 {
-  font-size: 42px;
-  color: #2d5016;
-  margin-bottom: 12px;
-  font-weight: 800;
-}
-
-.page-header p {
-  font-size: 18px;
-  color: #666;
-  font-weight: 400;
-}
-
-.verification-input {
-  max-width: 650px;
-  margin: 0 auto 40px;
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.verification-input form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.verification-input .form-group label {
-  display: block;
-  margin-bottom: 10px;
-  color: #333;
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.verification-input input {
-  width: 100%;
-  padding: 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  background: #f8f9fa;
-}
-
-.verification-input input:focus {
-  outline: none;
-  border-color: #4a7c2c;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(74, 124, 44, 0.1);
-}
-
-.verification-input .error {
-  color: #c33;
-  background: #fee;
-  padding: 14px;
-  border-radius: 10px;
-  font-size: 14px;
-  border-left: 4px solid #c33;
-}
-
-.verification-results {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.status-banner {
-  display: flex;
-  align-items: center;
-  padding: 40px;
-  border-radius: 16px;
-  margin-bottom: 35px;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
-  animation: fadeIn 0.5s ease;
+/* Smooth animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Toast notification animation */
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Card entrance animations */
+.verification-card-enter {
+  animation: scaleIn 0.4s ease-out;
+}
+
+/* Pulse animation for status badges */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Bounce animation for status icon */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
     transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
 }
 
-.status-banner.status-pass {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  color: white;
+.animate-bounce {
+  animation: bounce 1s infinite;
 }
 
-.status-banner.status-fail {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  color: white;
+/* Delay animation classes */
+.delay-75 {
+  animation-delay: 75ms;
 }
 
-.status-icon {
-  font-size: 72px;
-  margin-right: 30px;
+/* Backdrop blur support */
+.backdrop-blur-lg {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-.status-content h2 {
-  font-size: 40px;
-  margin-bottom: 12px;
-  font-weight: 800;
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.status-content p {
-  font-size: 18px;
-  opacity: 0.95;
-  font-weight: 400;
-}
-
-.card {
-  background: white;
-  padding: 35px;
-  border-radius: 16px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.card h2 {
-  color: #2d5016;
-  font-size: 26px;
-  margin-bottom: 25px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.detail-item,
-.withdrawal-item,
-.ml-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%);
-  border-radius: 10px;
-  border-left: 3px solid #4a7c2c;
-  transition: all 0.3s ease;
-}
-
-.detail-item:hover,
-.withdrawal-item:hover,
-.ml-item:hover {
-  background: linear-gradient(135deg, #e8f0e8 0%, #f0f4f0 100%);
-  transform: translateX(5px);
-}
-
-.detail-item .label,
-.withdrawal-item .label,
-.ml-item .label {
-  font-weight: 600;
-  color: #555;
-  font-size: 14px;
-}
-
-.detail-item .value,
-.withdrawal-item .value,
-.ml-item .value {
-  color: #333;
-  font-weight: 600;
-  text-align: right;
-  font-size: 15px;
-}
-
-.amu-records {
-  display: grid;
-  gap: 24px;
-  margin-top: 20px;
-}
-
-.amu-card {
-  background: linear-gradient(135deg, #f8faf8 0%, #f0f4f0 100%);
-  padding: 28px;
-  border-radius: 12px;
-  border-left: 5px solid #4a7c2c;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.amu-card:hover {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-3px);
-}
-
-.amu-card h3 {
-  color: #2d5016;
-  margin-bottom: 18px;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.amu-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-}
-
-.amu-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.amu-item .value.mrl-safe {
-  color: #4CAF50;
-  font-weight: 700;
-}
-
-.amu-item .value.mrl-borderline {
-  color: #FF9800;
-  font-weight: 700;
-}
-
-.amu-item .value.mrl-unsafe {
-  color: #f44336;
-  font-weight: 700;
-}
-
-.withdrawal-info,
-.ml-prediction {
-  display: grid;
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.withdrawal-item .value.positive {
-  color: #4CAF50;
-  font-weight: 700;
-}
-
-.withdrawal-item .value.negative {
-  color: #f44336;
-  font-weight: 700;
-}
-
-.withdrawal-item .value.pass {
-  color: #4CAF50;
-  font-weight: 700;
-  font-size: 17px;
-}
-
-.withdrawal-item .value.fail {
-  color: #f44336;
-  font-weight: 700;
-  font-size: 17px;
-}
-
-.tamper-proof {
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border-left: 5px solid #4CAF50;
-}
-
-.tamper-status {
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.tamper-icon {
-  font-size: 56px;
-  color: #4CAF50;
-  margin-right: 25px;
-  background: white;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-weight: 700;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
-}
-
-.tamper-message p {
-  font-size: 20px;
-  color: #2c3e50;
-  margin-bottom: 6px;
-  font-weight: 700;
-}
-
-.tamper-message small {
-  color: #666;
-  font-size: 15px;
-}
-
-.error-card {
-  max-width: 650px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 50px 40px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.error-card h2 {
-  color: #f44336;
-  margin-bottom: 16px;
-  font-size: 32px;
-  font-weight: 700;
-}
-
-.error-card p {
-  color: #666;
-  font-size: 16px;
-}
-
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: #999;
-  font-style: italic;
-  font-size: 16px;
-}
-
-.loading {
-  text-align: center;
-  padding: 60px;
-  font-size: 20px;
-  color: #4a7c2c;
-  font-weight: 600;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .detail-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+/* Enhanced print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-full-width {
+    width: 100% !important;
+    max-width: none !important;
   }
 }
 
+/* Responsive enhancements */
 @media (max-width: 768px) {
-  .verification-page {
-    padding: 30px 15px;
-  }
-  
-  .page-header h1 {
-    font-size: 32px;
-  }
-  
-  .page-header p {
-    font-size: 16px;
-  }
-  
-  .verification-input {
-    padding: 30px 25px;
-  }
-  
-  .status-banner {
-    flex-direction: column;
-    text-align: center;
-    padding: 30px 25px;
-  }
-  
-  .status-icon {
-    margin-right: 0;
-    margin-bottom: 20px;
-    font-size: 64px;
-  }
-  
-  .status-content h2 {
-    font-size: 32px;
-  }
-  
-  .card {
-    padding: 28px 22px;
-  }
-  
-  .card h2 {
-    font-size: 22px;
-  }
-  
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .amu-details {
-    grid-template-columns: 1fr;
-  }
-  
-  .tamper-status {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .tamper-icon {
-    margin-right: 0;
-    margin-bottom: 20px;
+  /* Stack cards vertically on mobile */
+  .grid-responsive {
+    grid-template-columns: 1fr !important;
   }
 }
 
 @media (max-width: 480px) {
-  .verification-page {
-    padding: 20px 10px;
-  }
-  
-  .page-header h1 {
-    font-size: 28px;
-  }
-  
-  .verification-input {
-    padding: 25px 20px;
-  }
-  
-  .status-banner {
-    padding: 25px 20px;
-  }
-  
-  .status-content h2 {
-    font-size: 28px;
-  }
-  
-  .card {
-    padding: 22px 18px;
-  }
-  
-  .amu-card {
-    padding: 22px;
-  }
-  
-  .error-card {
-    padding: 35px 25px;
+  /* Reduce padding on very small screens */
+  .mobile-compact {
+    padding: 1rem !important;
   }
 }
