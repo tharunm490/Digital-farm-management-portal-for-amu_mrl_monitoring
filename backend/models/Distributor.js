@@ -80,7 +80,7 @@ const DistributorVerificationLog = {
   // Get verification logs by distributor
   getByDistributorId: async (distributor_id, limit = 50) => {
     const [rows] = await db.query(`
-      SELECT dvl.*, q.qr_code, e.tag_number, e.species, f.farm_name
+      SELECT dvl.*, q.qr_hash, e.tag_id, e.batch_name, e.species, f.farm_name
       FROM distributor_verification_logs dvl
       LEFT JOIN qr_records q ON dvl.qr_id = q.qr_id
       LEFT JOIN animals_or_batches e ON dvl.entity_id = e.entity_id
@@ -95,7 +95,7 @@ const DistributorVerificationLog = {
   // Get verification log by ID
   getById: async (log_id) => {
     const [rows] = await db.query(`
-      SELECT dvl.*, q.qr_code, e.tag_number, e.species, d.distributor_name, d.company_name
+      SELECT dvl.*, q.qr_hash, e.tag_id, e.batch_name, e.species, d.distributor_name, d.company_name
       FROM distributor_verification_logs dvl
       LEFT JOIN qr_records q ON dvl.qr_id = q.qr_id
       LEFT JOIN animals_or_batches e ON dvl.entity_id = e.entity_id
@@ -123,7 +123,7 @@ const DistributorVerificationLog = {
   // Get recent verifications across all distributors (for authority view)
   getRecent: async (limit = 100) => {
     const [rows] = await db.query(`
-      SELECT dvl.*, q.qr_code, e.tag_number, e.species, d.distributor_name, d.company_name
+      SELECT dvl.*, q.qr_hash, e.tag_id, e.batch_name, e.species, d.distributor_name, d.company_name
       FROM distributor_verification_logs dvl
       LEFT JOIN qr_records q ON dvl.qr_id = q.qr_id
       LEFT JOIN animals_or_batches e ON dvl.entity_id = e.entity_id

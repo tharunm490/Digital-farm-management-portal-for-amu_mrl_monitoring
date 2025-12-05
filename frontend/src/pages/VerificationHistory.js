@@ -51,7 +51,8 @@ const VerificationHistory = () => {
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       return (
-        v.tag_number?.toLowerCase().includes(search) ||
+        v.tag_id?.toLowerCase().includes(search) ||
+        v.batch_name?.toLowerCase().includes(search) ||
         v.species?.toLowerCase().includes(search) ||
         v.farm_name?.toLowerCase().includes(search)
       );
@@ -177,7 +178,7 @@ const VerificationHistory = () => {
               <div key={v.log_id} className={`verification-card ${v.verification_status}`}>
                 <div className="card-header">
                   <div className="entity-info">
-                    <span className="tag-number">{v.tag_number || `Entity #${v.entity_id}`}</span>
+                    <span className="tag-number">{v.tag_id || v.batch_name || `Entity #${v.entity_id}`}</span>
                     <span className="species-badge">{v.species || 'Unknown'}</span>
                   </div>
                   <div className="status-badges">

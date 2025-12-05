@@ -1,4 +1,4 @@
-/* Navigation Styles - Professional Green & White Theme */
+/* Navigation Styles - Professional Green & White Theme - Fully Responsive */
 .navigation {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
@@ -6,14 +6,13 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  width: 100%;
+  z-index: 9999;
   border-bottom: 3px solid #ffffff;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  width: 100%;
   margin: 0;
   padding: 0;
-  overflow: visible !important;
 }
 
 .nav-container {
@@ -22,10 +21,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 2rem;
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
   position: relative;
-  flex-wrap: wrap;
-  overflow: visible !important;
   box-sizing: border-box;
   margin: 0;
 }
@@ -37,12 +34,13 @@
   gap: 0.5rem;
   text-decoration: none;
   color: #ffffff;
-  font-size: 1.35rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
   font-weight: 700;
   transition: all 0.3s ease;
   padding: 0.5rem;
   border-radius: 12px;
   flex-shrink: 0;
+  z-index: 10000;
 }
 
 .nav-brand:hover {
@@ -52,13 +50,13 @@
 }
 
 .brand-icon {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   color: #ffffff;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .brand-name {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   letter-spacing: -0.5px;
   color: #ffffff;
 }
@@ -75,7 +73,7 @@
   padding: 12px 10px;
   transition: all 0.3s ease;
   position: relative;
-  z-index: 1002;
+  z-index: 10001;
 }
 
 .mobile-menu-toggle:hover {
@@ -85,7 +83,7 @@
 }
 
 .mobile-menu-toggle.open {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .hamburger-line {

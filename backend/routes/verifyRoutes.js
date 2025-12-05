@@ -12,12 +12,41 @@ const path = require('path');
 // Load dosage data
 const dosageData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dosage_reference_full_extended_with_mrl.json'), 'utf8'));
 
-// GET /api/verify/:entity_id - Complete entity verification data (Public - no auth required for QR scanning)
-router.get('/:entity_id', async (req, res) => {
+// GET /api/verify/:identifier - Support both entity_id and qr_hash
+router.get('/:identifier', async (req, res) => {
   try {
-    const { entity_id } = req.params;
+    const { identifier } = req.params;
+    let entity_id;
+    let qr_id;
 
-    console.log('Verifying entity ID:', entity_id);
+    console.log('Verifying identifier:', identifier);
+
+    // Check if identifier is a QR hash (longer than typical entity_id)
+    if (identifier.length > 10) {
+      // Lookup by QR hash
+      const [qrRecords] = await db.query(
+        'SELECT qr_id, entity_id FROM qr_records WHERE qr_hash = ? OR qr_payload = ?',
+        [identifier, identifier]
+      );
+
+      if (qrRecords.length === 0) {
+        return res.status(404).json({ error: 'QR code not found' });
+      }
+
+      entity_id = qrRecords[0].entity_id;
+      qr_id = qrRecords[0].qr_id;
+      console.log('Found entity via QR hash:', entity_id, 'QR ID:', qr_id);
+    } else {
+      // Treat as entity_id
+      entity_id = identifier;
+      
+      // Try to get qr_id if exists
+      const [qrRecords] = await db.query(
+        'SELECT qr_id FROM qr_records WHERE entity_id = ? LIMIT 1',
+        [entity_id]
+      );
+      qr_id = qrRecords.length > 0 ? qrRecords[0].qr_id : null;
+    }
 
     // Fetch entity details
     const entity = await Entity.getById(entity_id);
@@ -87,6 +116,7 @@ router.get('/:entity_id', async (req, res) => {
 
     // Prepare response
     const response = {
+      qr_id: qr_id,
       entity_details: {
         entity_id: entity.entity_id,
         entity_type: entity.entity_type,
@@ -137,7 +167,9 @@ router.get('/:entity_id', async (req, res) => {
         days_remaining: daysRemaining,
         days_from_withdrawal: daysFromWithdrawal,
         status: withdrawalStatus,
-        mrl_pass: mrlPass
+        mrl_pass: mrlPass,
+        is_withdrawal_safe: mrlPass, // For distributor verification
+        risk_category: latestAMU ? latestAMU.risk_category : 'safe'
       },
       tamper_proof: {
         verified: true,
@@ -307,4 +339,93 @@ router.get('/:entity_id', async (req, res) => {
   }
 });
 
+// POST /api/verify/action - Save distributor verification decision
+router.post('/action', async (req, res) => {
+  try {
+    const { qr_id, entity_id, verification_status, reason, distributor_id } = req.body;
+
+    // Validate required fields
+    if (!qr_id || !entity_id || !verification_status) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: qr_id, entity_id, and verification_status are required.' 
+      });
+    }
+
+    if (!['accepted', 'rejected'].includes(verification_status)) {
+      return res.status(400).json({ 
+        error: 'Invalid verification_status. Must be "accepted" or "rejected".' 
+      });
+    }
+
+    if (!distributor_id) {
+      return res.status(400).json({ 
+        error: 'Distributor ID is required. Please ensure you are logged in.' 
+      });
+    }
+
+    // Check for duplicate verification
+    const [existing] = await db.query(
+      'SELECT log_id FROM distributor_verification_logs WHERE distributor_id = ? AND qr_id = ?',
+      [distributor_id, qr_id]
+    );
+
+    if (existing.length > 0) {
+      return res.status(400).json({ 
+        error: 'This batch is already verified by you.' 
+      });
+    }
+
+    // Get latest AMU record to determine withdrawal safety
+    const [amuRecords] = await db.query(
+      `SELECT safe_date, risk_category, predicted_withdrawal_days
+       FROM amu_records 
+       WHERE entity_id = ? 
+       ORDER BY created_at DESC 
+       LIMIT 1`,
+      [entity_id]
+    );
+
+    let is_withdrawal_safe = true;
+    let safe_date = null;
+
+    if (amuRecords.length > 0) {
+      safe_date = amuRecords[0].safe_date;
+      const safeDateObj = new Date(safe_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      safeDateObj.setHours(0, 0, 0, 0);
+      
+      is_withdrawal_safe = safeDateObj <= today;
+    }
+
+    // Insert verification log
+    const [result] = await db.query(
+      `INSERT INTO distributor_verification_logs 
+       (distributor_id, qr_id, entity_id, verification_status, is_withdrawal_safe, safe_date, reason) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [distributor_id, qr_id, entity_id, verification_status, is_withdrawal_safe, safe_date, reason || null]
+    );
+
+    res.status(201).json({ 
+      message: 'Verification recorded successfully',
+      log_id: result.insertId,
+      verification_status,
+      is_withdrawal_safe,
+      safe_date
+    });
+
+  } catch (error) {
+    console.error('Error saving verification action:', error);
+    
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ 
+        error: 'This batch is already verified by you.' 
+      });
+    }
+    
+    res.status(500).json({ error: 'Failed to save verification action', details: error.message });
+  }
+});
+
 module.exports = router;
+

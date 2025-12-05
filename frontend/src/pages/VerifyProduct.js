@@ -7,9 +7,10 @@ import './VerifyProduct.css';
 const VerifyProduct = () => {
   const { qr_hash } = useParams();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   
   const [productData, setProductData] = useState(null);
+  const [distributorProfile, setDistributorProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [alreadyVerified, setAlreadyVerified] = useState(false);
@@ -29,11 +30,31 @@ const VerifyProduct = () => {
   }, [qr_hash]);
 
   useEffect(() => {
+    // Fetch distributor profile when user is logged in as distributor
+    if (user?.role === 'distributor') {
+      fetchDistributorProfile();
+    }
+  }, [user]);
+
+  useEffect(() => {
     // Check if already verified when user is logged in
-    if (isAuthenticated && user?.role === 'distributor' && productData) {
+    if (user?.role === 'distributor' && productData && distributorProfile) {
       checkAlreadyVerified();
     }
-  }, [isAuthenticated, user, productData]);
+  }, [user, productData, distributorProfile]);
+
+  const fetchDistributorProfile = async () => {
+    try {
+      const response = await api.get('/distributor/profile');
+      setDistributorProfile(response.data);
+    } catch (err) {
+      console.error('Failed to fetch distributor profile:', err);
+      // Profile might not exist yet - redirect to setup
+      if (err.response?.status === 404) {
+        navigate('/distributor/profile');
+      }
+    }
+  };
 
   const fetchProductData = async (hash) => {
     try {
@@ -43,7 +64,8 @@ const VerifyProduct = () => {
       setAlreadyVerified(false);
       setSubmitted(false);
       
-      const response = await api.get(`/distributor/verify-product/${hash}`);
+      // Use verify endpoint with QR hash
+      const response = await api.get(`/verify/${hash}`);
       setProductData(response.data);
       setShowScanner(false);
       
@@ -63,6 +85,8 @@ const VerifyProduct = () => {
   };
 
   const checkAlreadyVerified = async () => {
+    if (!productData?.qr_id) return;
+    
     try {
       const response = await api.get(`/distributor/check-verification/${productData.qr_id}`);
       if (response.data.verified) {
@@ -75,14 +99,20 @@ const VerifyProduct = () => {
   };
 
   const handleVerification = async (status) => {
-    if (!isAuthenticated) {
+    if (!user) {
       // Redirect to login with return URL
       navigate(`/login?redirect=/verify-product/${qr_hash}&role=distributor`);
       return;
     }
 
     if (user?.role !== 'distributor') {
-      setError('Only distributors can verify products. Please login as a distributor.');
+      setError('Access restricted — this section is only for registered distributors.');
+      return;
+    }
+
+    if (!distributorProfile) {
+      setError('Please complete your profile setup first.');
+      navigate('/distributor/profile');
       return;
     }
 
@@ -94,11 +124,12 @@ const VerifyProduct = () => {
     try {
       setSubmitting(true);
       
-      const response = await api.post('/distributor/verify-product', {
+      const response = await api.post('/verify/action', {
         qr_id: productData.qr_id,
-        entity_id: productData.entity_id,
+        entity_id: productData.entity_details.entity_id,
         verification_status: status,
-        reason: status === 'rejected' ? rejectReason : null
+        reason: status === 'rejected' ? rejectReason : null,
+        distributor_id: distributorProfile.distributor_id
       });
       
       setSubmitted(true);
@@ -215,25 +246,27 @@ const VerifyProduct = () => {
         {error && <div className="error-message">{error}</div>}
 
         {/* Withdrawal Status Banner */}
-        <div className={`withdrawal-banner ${productData?.withdrawal_status?.is_safe ? 'safe' : 'unsafe'}`}>
+        <div className={`withdrawal-banner ${productData?.withdrawal_info?.is_withdrawal_safe ? 'safe' : 'unsafe'}`}>
           <div className="banner-icon">
-            {productData?.withdrawal_status?.is_safe ? '✅' : '⚠️'}
+            {productData?.withdrawal_info?.is_withdrawal_safe ? '✅' : '⚠️'}
           </div>
           <div className="banner-content">
             <h2>
-              {productData?.withdrawal_status?.is_safe 
+              {productData?.withdrawal_info?.is_withdrawal_safe 
                 ? 'SAFE FOR CONSUMPTION' 
                 : 'WITHDRAWAL PERIOD ACTIVE'}
             </h2>
-            {!productData?.withdrawal_status?.is_safe && (
+            {!productData?.withdrawal_info?.is_withdrawal_safe && (
               <p>
-                <strong>{productData?.withdrawal_status?.days_remaining} days remaining</strong> 
-                until safe date ({formatDate(productData?.withdrawal_status?.safe_date)})
+                <strong>{productData?.withdrawal_info?.days_remaining} days remaining</strong> 
+                until safe date ({formatDate(productData?.withdrawal_info?.safe_date)})
               </p>
             )}
-            {productData?.withdrawal_status?.medicine_name && (
+            {productData?.withdrawal_info?.risk_category && (
               <p className="medicine-info">
-                Last treatment: {productData?.withdrawal_status?.medicine_name}
+                Risk Category: <span className={`risk-badge risk-${productData.withdrawal_info.risk_category}`}>
+                  {productData.withdrawal_info.risk_category}
+                </span>
               </p>
             )}
           </div>
@@ -244,20 +277,20 @@ const VerifyProduct = () => {
           <h3>🐄 Product Information</h3>
           <div className="info-grid">
             <div className="info-item">
-              <span className="info-label">Tag Number</span>
-              <span className="info-value">{productData?.product_info?.tag_number || 'N/A'}</span>
+              <span className="info-label">Tag/Batch</span>
+              <span className="info-value">{productData?.entity_details?.tag_id || productData?.entity_details?.batch_name || 'N/A'}</span>
             </div>
             <div className="info-item">
               <span className="info-label">Species</span>
-              <span className="info-value">{productData?.product_info?.species || 'N/A'}</span>
+              <span className="info-value">{productData?.entity_details?.species || 'N/A'}</span>
             </div>
             <div className="info-item">
-              <span className="info-label">Breed</span>
-              <span className="info-value">{productData?.product_info?.breed || 'N/A'}</span>
+              <span className="info-label">Matrix</span>
+              <span className="info-value">{productData?.entity_details?.matrix || 'N/A'}</span>
             </div>
             <div className="info-item">
               <span className="info-label">Type</span>
-              <span className="info-value">{productData?.product_info?.entity_type || 'N/A'}</span>
+              <span className="info-value">{productData?.entity_details?.entity_type || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -266,36 +299,31 @@ const VerifyProduct = () => {
         <div className="info-section">
           <h3>🏠 Farm Information</h3>
           <div className="info-grid">
-            <div className="info-item">
-              <span className="info-label">Farm Name</span>
-              <span className="info-value">{productData?.farm_info?.farm_name || 'N/A'}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">Farmer</span>
-              <span className="info-value">{productData?.farm_info?.farmer_name || 'N/A'}</span>
-            </div>
             <div className="info-item full-width">
-              <span className="info-label">Location</span>
-              <span className="info-value">{productData?.farm_info?.location || 'N/A'}</span>
+              <span className="info-label">Farm Name</span>
+              <span className="info-value">{productData?.entity_details?.farm_name || 'N/A'}</span>
             </div>
           </div>
         </div>
 
-        {/* Recent Treatments */}
-        {productData?.recent_treatments?.length > 0 && (
+        {/* Treatment Records */}
+        {productData?.treatment_records?.length > 0 && (
           <div className="info-section treatments-section">
-            <h3>💊 Recent Treatments</h3>
+            <h3>💊 Treatment Records</h3>
             <div className="treatments-list">
-              {productData.recent_treatments.map((t, idx) => (
+              {productData.treatment_records.map((t, idx) => (
                 <div key={idx} className="treatment-item">
-                  <div className="treatment-date">{formatDate(t.treatment_date)}</div>
-                  <div className="treatment-details">
-                    <strong>{t.medicine_name}</strong>
-                    {t.dosage && <span> - {t.dosage}</span>}
-                    {t.diagnosis && <p className="treatment-diagnosis">{t.diagnosis}</p>}
+                  <div className="treatment-header">
+                    <strong>{t.active_ingredient || 'N/A'}</strong>
+                    {t.safe_date && new Date(t.safe_date) <= new Date() && (
+                      <span className="safe-badge">✓ SAFE</span>
+                    )}
                   </div>
-                  <div className="treatment-withdrawal">
-                    Withdrawal: {t.withdrawal_period || 'N/A'} days
+                  <div className="treatment-grid">
+                    {t.start_date && <p><strong>Start:</strong> {formatDate(t.start_date)}</p>}
+                    {t.safe_date && <p><strong>Safe Date:</strong> {formatDate(t.safe_date)}</p>}
+                    {t.predicted_withdrawal_days && <p><strong>Withdrawal:</strong> {t.predicted_withdrawal_days} days</p>}
+                    {t.risk_category && <p><strong>Risk:</strong> <span className={`risk-${t.risk_category}`}>{t.risk_category}</span></p>}
                   </div>
                 </div>
               ))}
@@ -334,11 +362,11 @@ const VerifyProduct = () => {
         {/* Action Buttons */}
         {!alreadyVerified && !submitted && (
           <div className="action-section">
-            {!isAuthenticated ? (
+            {!user ? (
               <div className="login-prompt">
                 <p>Please login as a distributor to verify this product</p>
                 <button 
-                  onClick={() => navigate(`/login?redirect=/verify-product/${qr_hash}&role=distributor`)}
+                  onClick={() => navigate(`/login?redirect=/verify-product/${qr_hash || productData?.qr_id}&role=distributor`)}
                   className="btn-login"
                 >
                   Login as Distributor →
@@ -346,32 +374,42 @@ const VerifyProduct = () => {
               </div>
             ) : user?.role !== 'distributor' ? (
               <div className="role-mismatch">
-                <p>⚠️ You are logged in as <strong>{user?.role}</strong>. Only distributors can verify products.</p>
+                <p>⚠️ Access restricted — this section is only for registered distributors.</p>
+                <p>You are logged in as <strong>{user?.role}</strong>.</p>
               </div>
             ) : (
-              <div className="verification-buttons">
-                <button 
-                  onClick={() => handleVerification('accepted')}
-                  className="btn-accept"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Processing...' : '✅ ACCEPT PRODUCT'}
-                </button>
-                <button 
-                  onClick={() => setShowRejectModal(true)}
-                  className="btn-reject"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Processing...' : '❌ REJECT PRODUCT'}
-                </button>
-              </div>
-            )}
-            
-            {!productData?.withdrawal_status?.is_safe && isAuthenticated && user?.role === 'distributor' && (
-              <div className="warning-note">
-                <strong>⚠️ Warning:</strong> This product is within its withdrawal period. 
-                Accepting it will be logged as a potential compliance issue.
-              </div>
+              <>
+                <div className="verification-buttons">
+                  <button 
+                    onClick={() => handleVerification('accepted')}
+                    className="btn-accept"
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Processing...' : '✔ ACCEPT'}
+                  </button>
+                  <button 
+                    onClick={() => setShowRejectModal(true)}
+                    className="btn-reject"
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Processing...' : '❌ REJECT'}
+                  </button>
+                </div>
+                
+                {!productData?.withdrawal_info?.is_withdrawal_safe && (
+                  <div className="warning-note">
+                    <strong>⚠️ Warning:</strong> This product is within its withdrawal period. 
+                    Safe date is {formatDate(productData?.withdrawal_info?.safe_date)}. 
+                    Consider rejecting until withdrawal period completes.
+                  </div>
+                )}
+                
+                {productData?.withdrawal_info?.is_withdrawal_safe && (
+                  <div className="success-note">
+                    <strong>✓ Safe:</strong> This product has completed its withdrawal period and is safe for consumption.
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
