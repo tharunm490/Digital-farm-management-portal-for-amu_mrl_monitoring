@@ -368,15 +368,20 @@ router.get("/google", (req, res, next) => {
 router.get("/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: process.env.FRONTEND_URL + "/login?error=google_failed"
+    failureRedirect: (process.env.FRONTEND_URL || "http://localhost:3000") + "/login?error=google_failed"
   }),
   async (req, res) => {
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    
     try {
       if (!req.user) {
-        return res.redirect(process.env.FRONTEND_URL + "/login?error=no_user");
+        console.error("❌ No user in Google callback");
+        return res.redirect(frontendUrl + "/login?error=no_user");
       }
 
       const selectedRole = req.query.state || req.user.intendedRole;
+      console.log("✅ Google OAuth callback - Role:", selectedRole, "Email:", req.user.email);
+      
       const existingUser = await User.findByGoogleUID(req.user.google_uid);
 
       // ================================================================
@@ -387,7 +392,7 @@ router.get("/google/callback",
         if (existingUser.role !== selectedRole) {
           // ROLE MISMATCH - DENY ACCESS
           return res.redirect(
-            `${process.env.FRONTEND_URL}/login?error=role_mismatch&registered_role=${existingUser.role}&attempted_role=${selectedRole}`
+            `${frontendUrl}/login?error=role_mismatch&registered_role=${existingUser.role}&attempted_role=${selectedRole}`
           );
         }
         
@@ -402,7 +407,7 @@ router.get("/google/callback",
           { expiresIn: "24h" }
         );
 
-        return res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+        return res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
       }
 
       // New user - create with selected role (role is now LOCKED)
@@ -452,11 +457,11 @@ router.get("/google/callback",
         { expiresIn: "24h" }
       );
 
-      return res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}&newUser=true`);
+      return res.redirect(`${frontendUrl}/auth/callback?token=${token}&newUser=true`);
 
     } catch (err) {
-      console.error("Google callback error:", err);
-      return res.redirect(process.env.FRONTEND_URL + "/login?error=callback_error");
+      console.error("❌ Google callback error:", err);
+      return res.redirect(frontendUrl + "/login?error=callback_error");
     }
   }
 );

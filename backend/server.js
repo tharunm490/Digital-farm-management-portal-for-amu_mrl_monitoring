@@ -56,7 +56,14 @@ if (hotspotIp) {
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // allow mobile, curl, postman
+    
+    // Check if origin matches allowed origins
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    // Allow any Vercel deployment URL for this project
+    if (origin && origin.match(/^https:\/\/digital-farm-management-portal.*\.vercel\.app$/)) {
+      return callback(null, true);
+    }
 
     console.log("❌ BLOCKED ORIGIN:", origin);
     return callback(new Error("Not allowed by CORS"));
