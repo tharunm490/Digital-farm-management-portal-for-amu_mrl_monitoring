@@ -53,7 +53,7 @@ module.exports = function(passport) {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        callbackURL: '/api/auth/google/callback',  // Relative URL - works on any domain
         passReqToCallback: true
       },
       async (req, accessToken, refreshToken, profile, done) => {
