@@ -50,10 +50,14 @@ module.exports = function(passport) {
   // GOOGLE STRATEGY - FOR AUTHORITY AND VETERINARIAN ONLY
   // ================================================================
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    // Construct absolute callback URL for production
+    const callbackURL = process.env.GOOGLE_CALLBACK_URL || 
+                        (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/auth/google/callback` : '/api/auth/google/callback');
+    
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: '/api/auth/google/callback',  // Relative URL - works on any domain
+        callbackURL: callbackURL,
         passReqToCallback: true
       },
       async (req, accessToken, refreshToken, profile, done) => {
