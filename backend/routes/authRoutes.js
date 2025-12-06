@@ -82,23 +82,13 @@ const verifyCaptcha = (captchaId, captchaInput) => {
 // ======================================================
 router.post("/farmer/register", async (req, res) => {
   try {
-    const { display_name, aadhaar_number, phone, email, state, district, taluk, captchaId, captchaInput } = req.body;
+    const { display_name, aadhaar_number, phone, email, state, district, taluk } = req.body;
 
     // Validate required fields
     if (!display_name || !aadhaar_number || !phone || !state || !district) {
       return res.status(400).json({ 
         error: "Missing required fields. Name, Aadhaar, Phone, State, and District are required." 
       });
-    }
-
-    // Validate CAPTCHA
-    if (!captchaId || !captchaInput) {
-      return res.status(400).json({ error: "Please complete the CAPTCHA verification." });
-    }
-    
-    const captchaResult = verifyCaptcha(captchaId, captchaInput);
-    if (!captchaResult.valid) {
-      return res.status(400).json({ error: captchaResult.error });
     }
 
     // Validate Aadhaar format (12 digits)

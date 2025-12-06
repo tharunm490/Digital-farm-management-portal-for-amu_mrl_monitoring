@@ -16,18 +16,13 @@ const Register = () => {
     taluk: '',
     address: ''
   });
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpTimer, setOtpTimer] = useState(0);
-  const [registrationComplete, setRegistrationComplete] = useState(false);
-  
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { registerFarmer, sendOTP, verifyOTP } = useAuth();
+  const { registerFarmer } = useAuth();
 
   const states = getAllStates();
   const districts = formData.state ? getDistrictsByState(formData.state) : [];
@@ -41,16 +36,7 @@ const Register = () => {
     }
   }, [searchParams]);
 
-  // OTP resend timer
-  useEffect(() => {
-    let interval;
-    if (otpTimer > 0) {
-      interval = setInterval(() => {
-        setOtpTimer(prev => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [otpTimer]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -106,60 +92,17 @@ const Register = () => {
         taluk: formData.taluk || null,
         address: formData.address || null
       });
-      setRegistrationComplete(true);
-      setSuccess('Registration successful! Please verify your phone number to login.');
+      setSuccess('Registration successful! Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login?registered=true');
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
 
-  // Step 2: Send OTP to verify phone
-  const handleSendOTP = async () => {
-    setError('');
-    setSuccess('');
-    setLoading(true);
-    
-    try {
-      await sendOTP(formData.aadhaar_number, formData.phone);
-      setOtpSent(true);
-      setOtpTimer(300); // 5 minutes
-      setSuccess('OTP sent to your registered phone number');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to send OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // Step 3: Verify OTP and login
-  const handleVerifyOTP = async () => {
-    setError('');
-    setSuccess('');
-    
-    if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      await verifyOTP(formData.aadhaar_number, formData.phone, otp);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.error || 'OTP verification failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Format timer display
-  const formatTimer = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className="register-container">
@@ -170,8 +113,7 @@ const Register = () => {
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
         
-        {/* STEP 1: Registration Form */}
-        {!registrationComplete && (
+        {
           <form onSubmit={handleRegister}>
             <div className="info-box">
               <span>ℹ️</span>
@@ -310,68 +252,7 @@ const Register = () => {
               {loading ? 'Registering...' : '📝 Register as Farmer'}
             </button>
           </form>
-        )}
-        
-        {/* STEP 2: OTP Verification */}
-        {registrationComplete && (
-          <div className="otp-verification-section">
-            <div className="info-box success">
-              <span>✅</span>
-              <div>
-                <strong>Registration Complete!</strong>
-                <p>Please verify your phone number to access your account.</p>
-              </div>
-            </div>
-            
-            <div className="registered-info">
-              <p><strong>Aadhaar:</strong> XXXX-XXXX-{formData.aadhaar_number.slice(-4)}</p>
-              <p><strong>Phone:</strong> +91-{formData.phone}</p>
-            </div>
-            
-            {!otpSent ? (
-              <button 
-                className="btn-primary btn-send-otp"
-                onClick={handleSendOTP}
-                disabled={loading}
-              >
-                {loading ? 'Sending OTP...' : '📱 Send OTP to Verify Phone'}
-              </button>
-            ) : (
-              <>
-                <div className="form-group">
-                  <label>Enter OTP</label>
-                  <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="Enter 6-digit OTP"
-                    maxLength="6"
-                    autoFocus
-                  />
-                  {otpTimer > 0 && (
-                    <span className="otp-timer">OTP expires in: {formatTimer(otpTimer)}</span>
-                  )}
-                </div>
-                
-                <button 
-                  className="btn-primary"
-                  onClick={handleVerifyOTP}
-                  disabled={loading || otp.length !== 6}
-                >
-                  {loading ? 'Verifying...' : '✅ Verify & Login'}
-                </button>
-                
-                <button 
-                  className="btn-secondary"
-                  onClick={handleSendOTP}
-                  disabled={loading || otpTimer > 0}
-                >
-                  {otpTimer > 0 ? `Resend OTP in ${formatTimer(otpTimer)}` : '🔄 Resend OTP'}
-                </button>
-              </>
-            )}
-          </div>
-        )}
+        }
         
         <div className="role-info-section">
           <h3>Not a Farmer?</h3>
