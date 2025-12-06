@@ -18,6 +18,15 @@ export const AuthProvider = ({ children }) => {
 
   const API_URL = process.env.REACT_APP_API_URL || '/api';
 
+  // Create axios instance with proper configuration
+  const apiClient = axios.create({
+    baseURL: API_URL,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: 15000, // 15 second timeout
+  });
+
   useEffect(() => {
     checkAuth();
     const savedLanguage = localStorage.getItem('language') || 'en';
@@ -28,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const response = await axios.get(`${API_URL}/auth/me`, {
+        const response = await apiClient.get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser(response.data);
@@ -49,13 +58,21 @@ export const AuthProvider = ({ children }) => {
   
   // Generate CAPTCHA
   const generateCaptcha = async () => {
-    const response = await axios.get(`${API_URL}/auth/captcha/generate`);
-    return response.data;
+    try {
+      console.log('Generating CAPTCHA from:', `${API_URL}/auth/captcha/generate`);
+      const response = await apiClient.get('/auth/captcha/generate');
+      console.log('CAPTCHA generated successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('CAPTCHA generation failed:', error);
+      console.error('Error details:', error.response?.data || error.message);
+      throw error;
+    }
   };
 
   // Login farmer with CAPTCHA
   const loginFarmer = async (aadhaar, phone, captchaId, captchaInput) => {
-    const response = await axios.post(`${API_URL}/auth/farmer/login`, {
+    const response = await apiClient.post('/auth/farmer/login', {
       aadhaar_number: aadhaar,
       phone,
       captchaId,
@@ -99,7 +116,7 @@ export const AuthProvider = ({ children }) => {
 
   // Register new farmer
   const registerFarmer = async (farmerData) => {
-    const response = await axios.post(`${API_URL}/auth/farmer/register`, farmerData);
+    const response = await apiClient.post('/auth/farmer/register', farmerData);
     return response.data;
   };
 
@@ -108,7 +125,7 @@ export const AuthProvider = ({ children }) => {
   // ============================================
   
   const login = async (email, password) => {
-    const response = await axios.post(`${API_URL}/auth/login`, {
+    const response = await apiClient.post('/auth/login', {
       email,
       password
     });
@@ -120,7 +137,7 @@ export const AuthProvider = ({ children }) => {
 
   // Register (legacy for non-farmers)
   const register = async (userData) => {
-    const response = await axios.post(`${API_URL}/auth/register`, userData);
+    const response = await apiClient.post('/auth/register', userData);
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
     setUser(response.data.user);

@@ -102,8 +102,11 @@ const Login = () => {
       setError('Farmers cannot use Google login. Please use Aadhaar + CAPTCHA.');
       return;
     }
-    const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-    window.location.href = `${backendUrl}/auth/google?role=${loginMode}`;
+    // Remove /api suffix from REACT_APP_API_URL to get base backend URL
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    const backendUrl = apiUrl.replace(/\/api$/, '');
+    console.log('Redirecting to Google OAuth:', `${backendUrl}/api/auth/google?role=${loginMode}`);
+    window.location.href = `${backendUrl}/api/auth/google?role=${loginMode}`;
   };
 
   return (
