@@ -85,7 +85,12 @@ app.use(
     secret: process.env.SESSION_SECRET || "secret123",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 86400000 } // 1 day
+    cookie: { 
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      httpOnly: true,
+      maxAge: 86400000, // 1 day
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Allow cross-site in production
+    }
   })
 );
 
