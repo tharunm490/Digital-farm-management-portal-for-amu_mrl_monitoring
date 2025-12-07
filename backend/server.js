@@ -122,6 +122,7 @@ app.use('/api/vet-farm-mapping', require('./routes/vetFarmMappingRoutes'));
 app.use('/api/authority', require('./routes/authorityRoutes'));
 app.use('/api/loans', require('./routes/loanRoutes'));
 app.use('/api/distributor', require('./routes/distributorRoutes'));
+app.use('/api/tamper-proof', require('./routes/tamperProofRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT
