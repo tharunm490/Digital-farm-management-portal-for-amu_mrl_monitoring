@@ -37,6 +37,13 @@ import AuthorityLoanApplications from './pages/authority/AuthorityLoanApplicatio
 import AuthorityLoanDetail from './pages/authority/AuthorityLoanDetail';
 import DiseaseIntelligenceHub from './pages/authority/DiseaseIntelligenceHub';
 import TreatmentReports from './pages/authority/TreatmentReports';
+import LaboratoryDashboard from './pages/LaboratoryDashboard';
+import IncomingTreatmentCases from './pages/Lab/IncomingTreatmentCases';
+import SampleRequests from './pages/Lab/SampleRequests';
+import SampleCollection from './pages/Lab/SampleCollection';
+import TestReportEntry from './pages/Lab/TestReportEntry';
+import AllReports from './pages/Lab/AllReports';
+import LaboratoryProfile from './pages/Lab/LaboratoryProfile';
 import './App.css';
 
 // Authority Routes Component
@@ -91,6 +98,24 @@ function AppRoutes() {
         <Route path="/verify-product/:qr_hash" element={<VerifyProduct />} />
         <Route path="/profile" element={<DistributorProfile />} />
         <Route path="*" element={<Navigate to="/distributor" />} />
+      </Routes>
+    );
+  }
+
+  // Redirect laboratory users to their dashboard
+  if (user && user.role === 'laboratory') {
+    return (
+      <Routes>
+        <Route path="/" element={<Navigate to="/lab/dashboard" />} />
+        <Route path="/lab/dashboard" element={<LaboratoryDashboard />} />
+        <Route path="/lab/incoming-cases" element={<IncomingTreatmentCases />} />
+        <Route path="/lab/sample-requests" element={<SampleRequests />} />
+        <Route path="/lab/sample-collection" element={<SampleCollection />} />
+        <Route path="/lab/upload-report" element={<TestReportEntry />} />
+        <Route path="/lab/reports" element={<AllReports />} />
+        <Route path="/lab/profile" element={<LaboratoryProfile />} />
+        <Route path="/notifications" element={<FarmerNotifications />} />
+        <Route path="*" element={<Navigate to="/lab/dashboard" />} />
       </Routes>
     );
   }

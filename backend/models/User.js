@@ -28,9 +28,9 @@ const User = {
       throw new Error('Farmers cannot use Google login. Please use Aadhaar + OTP.');
     }
     
-    // Validate role
-    if (!['authority', 'veterinarian', 'distributor'].includes(role)) {
-      throw new Error('Invalid role for Google login.');
+    // Validate role - match allowed roles in authRoutes.js
+    if (!['authority', 'veterinarian', 'distributor', 'laboratory'].includes(role)) {
+      throw new Error(`Invalid role for Google login: ${role}`);
     }
     
     const [result] = await db.query(

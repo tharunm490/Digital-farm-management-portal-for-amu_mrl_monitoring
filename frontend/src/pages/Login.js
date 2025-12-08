@@ -11,7 +11,7 @@ const Login = () => {
   const [captchaLoading, setCaptchaLoading] = useState(false);
   
   // Role selection state
-  const [loginMode, setLoginMode] = useState('farmer'); // 'farmer' | 'authority' | 'veterinarian' | 'distributor'
+  const [loginMode, setLoginMode] = useState('farmer'); // 'farmer' | 'authority' | 'veterinarian' | 'distributor' | 'laboratory'
   
   // UI state
   const [error, setError] = useState('');
@@ -36,7 +36,20 @@ const Login = () => {
     } else if (errorType === 'google_failed') {
       setError('Google login failed. Please try again.');
     } else if (errorType === 'invalid_role') {
-      setError('Invalid role selected. Please select Authority or Veterinarian for Google login.');
+      const baseMsg = 'Invalid role selected. Please select Authority, Veterinarian, Distributor, or Laboratory for Google login.';
+      if (attemptedRole) {
+        setError(`${baseMsg} (attempted: "${attemptedRole}")`);
+      } else {
+        setError(baseMsg);
+      }
+    } else if (errorType === 'callback_error') {
+      // Show backend-provided message (if any) and attempted role
+      const backendMessage = searchParams.get('message');
+      const decodedMsg = backendMessage ? decodeURIComponent(backendMessage) : null;
+      const attempted = searchParams.get('attempted_role');
+      setError(
+        `Login callback failed${attempted ? ` (attempted role: "${attempted}")` : ''}${decodedMsg ? `: ${decodedMsg}` : ''}`
+      );
     }
   }, [searchParams]);
 
@@ -175,6 +188,18 @@ const Login = () => {
               <span>🚚</span>
               <span>Distributor</span>
             </button>
+            <button
+              type="button"
+              className={`px-4 py-3 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center space-x-2 ${
+                loginMode === 'laboratory'
+                  ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              onClick={() => { setLoginMode('laboratory'); setError(''); }}
+            >
+              <span>🔬</span>
+              <span>Laboratory</span>
+            </button>
           </div>
 
           {/* Error/Success Messages */}
@@ -303,7 +328,7 @@ const Login = () => {
           )}
 
           {/* AUTHORITY / VETERINARIAN / DISTRIBUTOR LOGIN - Google Only */}
-          {(loginMode === 'authority' || loginMode === 'veterinarian' || loginMode === 'distributor') && (
+          {(loginMode === 'authority' || loginMode === 'veterinarian' || loginMode === 'distributor' || loginMode === 'laboratory') && (
             <div className="space-y-5">
               {/* Info Box */}
               <div className={`bg-gradient-to-r ${
@@ -317,7 +342,9 @@ const Login = () => {
                     ? 'Authorities login using Google Account'
                     : loginMode === 'veterinarian'
                     ? 'Veterinarians login using Google Account'
-                    : 'Distributors login using Google Account'}
+                    : loginMode === 'distributor'
+                    ? 'Distributors login using Google Account'
+                    : 'Laboratories login using Google Account'}
                 </p>
               </div>
 
@@ -352,13 +379,15 @@ const Login = () => {
               <div className={`text-center text-sm font-medium ${
                 loginMode === 'authority' ? 'text-indigo-700' :
                 loginMode === 'veterinarian' ? 'text-blue-700' :
-                'text-orange-700'
+                loginMode === 'distributor' ? 'text-orange-700' : 'text-teal-700'
               }`}>
                 {loginMode === 'authority'
                   ? '👮 For DAHD/State/District officials only'
                   : loginMode === 'veterinarian'
                   ? '🩺 For registered veterinary practitioners'
-                  : '🚚 For bulk buyers who verify AMU compliance before purchasing'}
+                  : loginMode === 'distributor'
+                  ? '🚚 For bulk buyers who verify AMU compliance before purchasing'
+                  : '🔬 For accredited laboratories and lab personnel'}
               </div>
             </div>
           )}

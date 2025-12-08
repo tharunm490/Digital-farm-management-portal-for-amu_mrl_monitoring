@@ -349,10 +349,12 @@ router.get("/google", (req, res, next) => {
     );
   }
   
-  // Only allow authority, veterinarian, and distributor
-  if (!['authority', 'veterinarian', 'distributor'].includes(role)) {
+  // Only allow authority, veterinarian, distributor and laboratory
+  if (!['authority', 'veterinarian', 'distributor', 'laboratory'].includes(role)) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    console.warn(`Google login attempt with invalid role: ${role}`);
     return res.redirect(
-      `${process.env.FRONTEND_URL}/login?error=invalid_role&message=Invalid role selected`
+      `${frontendUrl}/login?error=invalid_role&attempted_role=${encodeURIComponent(role || '')}&message=Invalid role selected`
     );
   }
 
@@ -381,6 +383,15 @@ router.get("/google/callback",
 
       const selectedRole = req.query.state || req.user.intendedRole;
       console.log("✅ Google OAuth callback - Role:", selectedRole, "Email:", req.user.email);
+
+      // Validate selectedRole to avoid uncaught errors later
+      const allowedRoles = ['authority', 'veterinarian', 'distributor', 'laboratory'];
+      if (!selectedRole || !allowedRoles.includes(selectedRole)) {
+        console.warn(`Google callback received invalid or missing role: ${selectedRole}`);
+        return res.redirect(
+          `${frontendUrl}/login?error=invalid_role&attempted_role=${encodeURIComponent(selectedRole || '')}&message=Invalid role in callback`
+        );
+      }
       
       const existingUser = await User.findByGoogleUID(req.user.google_uid);
 
@@ -411,38 +422,72 @@ router.get("/google/callback",
       }
 
       // New user - create with selected role (role is now LOCKED)
+      console.log(`Creating new user for role: ${selectedRole}, email: ${req.user.email}`);
       const userId = await User.createGoogleUser({
         google_uid: req.user.google_uid,
         email: req.user.email,
         display_name: req.user.display_name,
         role: selectedRole
       });
+      console.log(`✅ User created with ID: ${userId}`);
 
       // Create role-specific profile
-      if (selectedRole === 'veterinarian') {
-        // Veterinarian needs to complete profile later
-        await Veterinarian.create({
-          user_id: userId,
-          vet_name: req.user.display_name,
-          license_number: `TEMP_${Date.now()}`, // Temporary, to be updated
-          phone: null
-        });
-      } else if (selectedRole === 'authority') {
-        await Authority.create({
-          user_id: userId,
-          department: null,
-          designation: null,
-          phone: null
-        });
-      } else if (selectedRole === 'distributor') {
-        // Distributor needs to complete profile later
-        await Distributor.create({
-          user_id: userId,
-          distributor_name: req.user.display_name,
-          company_name: 'To be updated', // Temporary, to be updated
-          phone: 'To be updated',
-          email: req.user.email
-        });
+      try {
+        if (selectedRole === 'veterinarian') {
+          // Veterinarian needs to complete profile later
+          console.log('Creating veterinarian profile...');
+          await Veterinarian.create({
+            user_id: userId,
+            vet_name: req.user.display_name,
+            license_number: `TEMP_${Date.now()}`, // Temporary, to be updated
+            phone: null
+          });
+          console.log('✅ Veterinarian profile created');
+        } else if (selectedRole === 'authority') {
+          console.log('Creating authority profile...');
+          await Authority.create({
+            user_id: userId,
+            department: null,
+            designation: null,
+            phone: null
+          });
+          console.log('✅ Authority profile created');
+        } else if (selectedRole === 'distributor') {
+          // Distributor needs to complete profile later
+          console.log('Creating distributor profile...');
+          await Distributor.create({
+            user_id: userId,
+            distributor_name: req.user.display_name,
+            company_name: 'To be updated', // Temporary, to be updated
+            phone: 'To be updated',
+            email: req.user.email
+          });
+          console.log('✅ Distributor profile created');
+        } else if (selectedRole === 'laboratory') {
+          // Create a laboratory profile placeholder; lab can complete details later
+          console.log('Creating laboratory profile...');
+          const Laboratory = require('../models/Laboratory');
+          try {
+            await Laboratory.create({
+              user_id: userId,
+              lab_name: req.user.display_name || 'Unnamed Lab',
+              license_number: `TEMP_${Date.now()}`,
+              phone: 'To be updated', // Changed from null to placeholder string
+              email: req.user.email,
+              state: null,
+              district: null,
+              taluk: null,
+              address: null
+            });
+            console.log('✅ Laboratory profile created');
+          } catch (e) {
+            console.warn('Failed to create laboratory placeholder:', e?.message || e);
+            // Continue - don't fail the entire login
+          }
+        }
+      } catch (profileErr) {
+        console.error(`❌ Failed to create ${selectedRole} profile:`, profileErr?.message || profileErr);
+        throw profileErr; // Re-throw to be caught by outer catch
       }
 
       const newUser = await User.findById(userId);
@@ -460,8 +505,18 @@ router.get("/google/callback",
       return res.redirect(`${frontendUrl}/auth/callback?token=${token}&newUser=true`);
 
     } catch (err) {
-      console.error("❌ Google callback error:", err);
-      return res.redirect(frontendUrl + "/login?error=callback_error");
+      console.error("❌ Google callback error:", {
+        message: err?.message,
+        code: err?.code,
+        stack: err?.stack,
+        email: req.user?.email,
+        role: req.query.state || req.user?.intendedRole,
+        timestamp: new Date().toISOString()
+      });
+      
+      const errMsg = encodeURIComponent((err && err.message) || 'callback_error');
+      const attempted = encodeURIComponent(req.query.state || (req.user && req.user.intendedRole) || '');
+      return res.redirect(`${frontendUrl}/login?error=callback_error&attempted_role=${attempted}&message=${errMsg}`);
     }
   }
 );

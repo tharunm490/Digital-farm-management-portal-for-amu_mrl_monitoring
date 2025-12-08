@@ -367,6 +367,13 @@ class Treatment {
 
       const amuId = await this.createAMURecord(treatmentId, finalPredictions, formattedEndDate);
 
+      // Auto-assign a laboratory and create a sample request if applicable
+      try {
+        await this.autoAssignLabAndCreateSample(amuId, treatmentId);
+      } catch (e) {
+        console.warn('Failed to auto-assign lab/sample:', e && e.message ? e.message : e);
+      }
+
       // Create tissue predictions if matrix is meat
       if (entity.matrix === 'meat') {
         const tissueResults = predictTissueMrl(
@@ -526,6 +533,59 @@ class Treatment {
     ]);
 
     return result.insertId;
+  }
+
+  // After AMU record is created, optionally auto-create a sample_request and assign to nearest lab
+  static async autoAssignLabAndCreateSample(amuId, treatmentId) {
+    try {
+      const Laboratory = require('./Laboratory');
+      const SampleRequest = require('./SampleRequest');
+      const Notification = require('./Notification');
+
+      // Load treatment and entity/farm details
+      const [tRows] = await db.execute('SELECT t.*, a.matrix, a.farm_id FROM treatment_records t JOIN animals_or_batches a ON t.entity_id = a.entity_id WHERE t.treatment_id = ?', [treatmentId]);
+      if (!tRows || tRows.length === 0) return null;
+      const t = tRows[0];
+
+      // Fetch farm location
+      const [farmRows] = await db.execute('SELECT * FROM farms WHERE farm_id = ?', [t.farm_id]);
+      const farm = farmRows && farmRows[0] ? farmRows[0] : null;
+
+      const loc = { taluk: farm ? farm.taluk : null, district: farm ? farm.district : null, state: farm ? farm.state : null };
+
+      // Find nearest lab
+      const lab = await Laboratory.findNearestByLocation(loc);
+      if (!lab) return null;
+
+      // Create sample_request with safe_date from AMU record's safe_date if present
+      const [amuRows] = await db.execute('SELECT * FROM amu_records WHERE amu_id = ?', [amuId]);
+      const amu = amuRows && amuRows[0] ? amuRows[0] : null;
+      const safe_date = amu && amu.safe_date ? amu.safe_date : t.end_date;
+
+      const sampleRequestId = await SampleRequest.create({
+        treatment_id: treatmentId,
+        farmer_id: t.user_id,
+        entity_id: t.entity_id,
+        assigned_lab_id: lab.lab_id,
+        safe_date,
+        status: 'requested'
+      });
+
+      // Notify lab via Notification model
+      await Notification.create({
+        user_id: lab.user_id,
+        type: 'task',
+        subtype: 'sample_collection',
+        message: `Withdrawal completed. Sample collection required for Entity ${t.entity_id}.`,
+        entity_id: t.entity_id,
+        treatment_id: treatmentId
+      });
+
+      return sampleRequestId;
+    } catch (e) {
+      console.warn('autoAssignLabAndCreateSample error:', e && e.message ? e.message : e);
+      return null;
+    }
   }
 
 

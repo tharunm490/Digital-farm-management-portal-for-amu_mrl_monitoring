@@ -18,6 +18,7 @@
     "treatments": "Treatments",
     "vaccinations": "Vaccinations",
     "request_treatment": "Request Treatment",
+    "give_treatment": "Give Treatment",
     "symptoms": "Symptoms",
     "submit_request": "Submit Request",
     "treatment_requests": "Treatment Requests",

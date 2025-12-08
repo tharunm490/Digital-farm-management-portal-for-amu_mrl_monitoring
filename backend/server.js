@@ -123,6 +123,8 @@ app.use('/api/authority', require('./routes/authorityRoutes'));
 app.use('/api/loans', require('./routes/loanRoutes'));
 app.use('/api/distributor', require('./routes/distributorRoutes'));
 app.use('/api/tamper-proof', require('./routes/tamperProofRoutes'));
+app.use('/api/labs', require('./routes/labRoutes'));
+app.use('/api/lab-reports', require('./routes/labReportRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

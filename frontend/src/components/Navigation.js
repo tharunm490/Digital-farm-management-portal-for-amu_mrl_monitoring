@@ -75,55 +75,6 @@ const Navigation = () => {
                 <span>{t('dashboard')}</span>
               </Link>
 
-              {/* Management Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => toggleDropdown('management')}
-                  className="text-white hover:bg-primary-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
-                  aria-expanded={dropdownOpen === 'management'}
-                >
-                  <span>🏗️</span>
-                  <span>Management</span>
-                  <span className={`text-xs transition-transform ${dropdownOpen === 'management' ? 'rotate-180' : ''}`}>▼</span>
-                </button>
-                {dropdownOpen === 'management' && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-strong py-2 animate-fade-in">
-                    {user?.role !== 'veterinarian' && (
-                      <>
-                        <Link to="/farms" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                          <span className="mr-2">🏡</span>{t('farms')}
-                        </Link>
-                        <Link to="/animals" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                          <span className="mr-2">🐄</span>{t('animals_batches')}
-                        </Link>
-                        <Link to="/crops" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                          <span className="mr-2">🌱</span>Crops
-                        </Link>
-                      </>
-                    )}
-                    <Link to="/treatments" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                      <span className="mr-2">💊</span>{t('treatments')}
-                    </Link>
-                    {user?.role === 'veterinarian' && (
-                      <Link to="/treatment-requests" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                        <span className="mr-2">📋</span>Treatment Requests
-                      </Link>
-                    )}
-                    <Link to="/vaccinations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                      <span className="mr-2">💉</span>{t('vaccinations')}
-                    </Link>
-                    <Link to="/amu-records" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                      <span className="mr-2">📊</span>AMU Records
-                    </Link>
-                    {user?.role !== 'veterinarian' && (
-                      <Link to="/qr-generator" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
-                        <span className="mr-2">📱</span>QR Code Generator
-                      </Link>
-                    )}
-                  </div>
-                )}
-              </div>
-
               {/* Financial Assistance - Farmers only */}
               {user?.role === 'farmer' && (
                 <div className="relative">
@@ -143,6 +94,46 @@ const Navigation = () => {
                       </Link>
                       <Link to="/loan-status" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
                         <span className="mr-2">📋</span>Loan Status
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Laboratory Portal - Laboratory only */}
+              {user?.role === 'laboratory' && (
+                <div className="relative">
+                  <button
+                    onClick={() => toggleDropdown('laboratory')}
+                    className="text-white hover:bg-primary-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                    aria-expanded={dropdownOpen === 'laboratory'}
+                  >
+                    <span>🔬</span>
+                    <span>Laboratory</span>
+                    <span className={`text-xs transition-transform ${dropdownOpen === 'laboratory' ? 'rotate-180' : ''}`}>▼</span>
+                  </button>
+                  {dropdownOpen === 'laboratory' && (
+                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-strong py-2 animate-fade-in">
+                      <Link to="/lab/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📊</span>Dashboard
+                      </Link>
+                      <Link to="/lab/incoming-cases" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📦</span>Incoming Treatment Cases
+                      </Link>
+                      <Link to="/lab/sample-requests" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">🧪</span>Sample Requests
+                      </Link>
+                      <Link to="/lab/sample-collection" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">🧿</span>Sample Collection
+                      </Link>
+                      <Link to="/lab/upload-report" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📝</span>Test Report Entry
+                      </Link>
+                      <Link to="/lab/reports" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📁</span>All Reports
+                      </Link>
+                      <Link to="/lab/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">👤</span>Profile
                       </Link>
                     </div>
                   )}
@@ -268,52 +259,7 @@ const Navigation = () => {
               <span className="font-medium">{t('dashboard')}</span>
             </Link>
 
-            {/* Management Section */}
-            <div>
-              <button
-                onClick={() => toggleDropdown('management-mobile')}
-                className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="text-xl">🏗️</span>
-                  <span className="font-medium">Management</span>
-                </div>
-                <span className={`text-xs transition-transform ${dropdownOpen === 'management-mobile' ? 'rotate-180' : ''}`}>▼</span>
-              </button>
-              {dropdownOpen === 'management-mobile' && (
-                <div className="ml-8 mt-2 space-y-1">
-                  {user?.role !== 'veterinarian' && (
-                    <>
-                      <Link to="/farms" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                        <span className="mr-2">🏡</span>{t('farms')}
-                      </Link>
-                      <Link to="/animals" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                        <span className="mr-2">🐄</span>{t('animals_batches')}
-                      </Link>
-                    </>
-                  )}
-                  <Link to="/treatments" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                    <span className="mr-2">💊</span>{t('treatments')}
-                  </Link>
-                  {user?.role === 'veterinarian' && (
-                    <Link to="/treatment-requests" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                      <span className="mr-2">📋</span>Treatment Requests
-                    </Link>
-                  )}
-                  <Link to="/vaccinations" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                    <span className="mr-2">💉</span>{t('vaccinations')}
-                  </Link>
-                  <Link to="/amu-records" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                    <span className="mr-2">📊</span>AMU Records
-                  </Link>
-                  {user?.role !== 'veterinarian' && (
-                    <Link to="/qr-generator" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
-                      <span className="mr-2">📱</span>QR Code Generator
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
+
 
             {/* Financial Assistance - Farmers only */}
             {user?.role === 'farmer' && (
@@ -335,6 +281,47 @@ const Navigation = () => {
                     </Link>
                     <Link to="/loan-status" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
                       <span className="mr-2">📋</span>Loan Status
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Laboratory Portal - Laboratory only */}
+            {user?.role === 'laboratory' && (
+              <div>
+                <button
+                  onClick={() => toggleDropdown('laboratory-mobile')}
+                  className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <span className="text-xl">🔬</span>
+                    <span className="font-medium">Laboratory</span>
+                  </div>
+                  <span className={`text-xs transition-transform ${dropdownOpen === 'laboratory-mobile' ? 'rotate-180' : ''}`}>▼</span>
+                </button>
+                {dropdownOpen === 'laboratory-mobile' && (
+                  <div className="ml-8 mt-2 space-y-1">
+                    <Link to="/lab/dashboard" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">📊</span>Dashboard
+                    </Link>
+                    <Link to="/lab/incoming-cases" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">📦</span>Incoming Cases
+                    </Link>
+                    <Link to="/lab/sample-requests" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">🧪</span>Sample Requests
+                    </Link>
+                    <Link to="/lab/sample-collection" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">🧿</span>Collection
+                    </Link>
+                    <Link to="/lab/upload-report" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">📝</span>Test Report
+                    </Link>
+                    <Link to="/lab/reports" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">📁</span>All Reports
+                    </Link>
+                    <Link to="/lab/profile" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg" onClick={closeAllMenus}>
+                      <span className="mr-2">👤</span>Profile
                     </Link>
                   </div>
                 )}

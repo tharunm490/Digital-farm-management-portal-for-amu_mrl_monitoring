@@ -399,16 +399,60 @@ router.post('/:treatmentId/amu', async (req, res) => {
         }
 
         // Update AMU record with worst tissue info
+        const safeDate = calculateSafeDate(newAMU.start_date, tissueResults.predicted_withdrawal_days);
         await AMU.update(amuId, {
           worst_tissue: tissueResults.worst_tissue,
           risk_category: tissueResults.overall_risk_category,
           predicted_mrl: tissueResults.predicted_mrl,
           predicted_withdrawal_days: tissueResults.predicted_withdrawal_days,
-          safe_date: calculateSafeDate(newAMU.start_date, tissueResults.predicted_withdrawal_days),
+          safe_date: safeDate,
           overdosage: tissueResults.overdosage,
           message: tissueResults.message,
           risk_percent: tissueResults.tissues[tissueResults.worst_tissue].risk_percent
         });
+
+        // 🔬 STEP 1: AUTO-CREATE SAMPLE REQUEST when AMU record is generated
+        console.log(`📌 Creating sample request for treatment ${req.params.treatmentId} with safe_date: ${safeDate}`);
+        
+        try {
+          // Find lab by location (taluk → district → state → any)
+          const Laboratory = require('../models/Laboratory');
+          const assignedLab = await Laboratory.findNearestByLocation({
+            taluk: farm.taluk,
+            district: farm.district,
+            state: farm.state
+          });
+
+          if (assignedLab) {
+            const SampleRequest = require('../models/SampleRequest');
+            const sampleRequestId = await SampleRequest.create({
+              treatment_id: req.params.treatmentId,
+              farmer_id: farmer.farmer_id,
+              entity_id: entity.entity_id,
+              assigned_lab_id: assignedLab.lab_id,
+              safe_date: safeDate,
+              status: 'requested'
+            });
+
+            console.log(`✅ Sample request created: ID ${sampleRequestId} for Lab ID ${assignedLab.lab_id}`);
+
+            // Create notification for lab about new sample request
+            const Notification = require('../models/Notification');
+            await Notification.create({
+              user_id: assignedLab.user_id,
+              type: 'alert',
+              subtype: 'sample_request_assigned',
+              message: `New sample request assigned. Safe date: ${safeDate}`,
+              entity_id: entity.entity_id,
+              treatment_id: req.params.treatmentId
+            });
+          } else {
+            console.warn('⚠️ No lab found for location-based assignment');
+          }
+        } catch (err) {
+          console.error('Error creating sample request:', err.message);
+          // Don't fail the AMU creation if sample request fails
+        }
       }
     }
 

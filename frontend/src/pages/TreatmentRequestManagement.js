@@ -295,6 +295,17 @@ const TreatmentRequestManagement = () => {
                           )}
                         </div>
                       )}
+
+                      {request.status === 'approved' && isVet && request.handling_status !== 'handled_by_other' && (
+                        <div className="request-actions">
+                          <button
+                            className="give-treatment-btn"
+                            onClick={() => navigate(`/treatments/entity/${request.entity_id}?request_id=${request.request_id}`)}
+                          >
+                            {t('give_treatment') || 'Give Treatment'}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
