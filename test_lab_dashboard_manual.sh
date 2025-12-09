@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# ===========================================
+# LAB DASHBOARD TESTING GUIDE
+# ===========================================
+# Test all 6 tabs of the Laboratory Dashboard
+#
+# Usage:
+#   bash test_lab_dashboard_manual.sh
+# ===========================================
+
+echo "🧪 LAB DASHBOARD TESTING INSTRUCTIONS"
+echo "======================================="
+echo ""
+
+# Check if backend is running
+echo "1️⃣  Checking backend connectivity..."
+if curl -s http://localhost:5000/health > /dev/null; then
+    echo "✅ Backend is running on http://localhost:5000"
+else
+    echo "❌ Backend is NOT running. Start it first:"
+    echo "   cd backend && npm start"
+    exit 1
+fi
+
+echo ""
+echo "2️⃣  Testing Lab Dashboard Endpoints..."
+echo ""
+
+# Get a test token (you'll need to replace with actual lab user token)
+echo "⚠️  NOTE: You need a valid lab user token to test these endpoints."
+echo "   Get it from browser localStorage after logging in as a laboratory user."
+echo ""
+
+# Display endpoint summary
+echo "📋 LAB DASHBOARD ENDPOINTS TO TEST:"
+echo ""
+echo "Tab 1 - Dashboard Stats (Counters)"
+echo "  GET /api/labs/stats"
+echo "  Returns: { pending, collected, tested, completed }"
+echo ""
+echo "Tab 2 - Pending Requests (Sample Requests awaiting collection)"
+echo "  GET /api/labs/pending-requests"
+echo "  Returns: Array of sample requests with status='requested'"
+echo ""
+echo "Tab 3 - Samples Collected (Ready for testing)"
+echo "  GET /api/labs/untested-samples"
+echo "  Returns: Array of samples collected but not yet tested"
+echo ""
+echo "Tab 4 - Reports Completed (Submitted test results)"
+echo "  GET /api/labs/all-reports"
+echo "  Returns: Array of lab test reports"
+echo ""
+echo "Tab 5 - Lab Profile (Profile details)"
+echo "  GET /api/labs/profile"
+echo "  Returns: Lab details (name, location, contact)"
+echo ""
+echo "Tab 6 - Notifications (Alerts and messages)"
+echo "  GET /api/notifications"
+echo "  Returns: Array of notifications for the user"
+echo ""
+
+echo "🧪 AUTOMATED TESTING"
+echo "==================="
+echo ""
+echo "To run automated tests, use:"
+echo "  node test_lab_dashboard.js <TOKEN> [API_URL]"
+echo ""
+echo "Example:"
+echo "  node test_lab_dashboard.js 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' http://localhost:5000"
+echo ""
+
+echo "📱 MANUAL TESTING STEPS"
+echo "======================"
+echo ""
+echo "1. Login to the application as a Laboratory user"
+echo "2. Navigate to Laboratory Dashboard"
+echo "3. Check each tab:"
+echo ""
+echo "   ⏳ PENDING REQUESTS"
+echo "     - Shows sample requests with status='requested'"
+echo "     - Should display entity_id, species, farm_name, safe_date"
+echo "     - Has 'Collect Sample' button for each"
+echo ""
+echo "   🧫 SAMPLES COLLECTED"
+echo "     - Shows samples that have been collected"
+echo "     - Should display sample_id, type, collected_date"
+echo "     - Has 'Upload Report' button for each"
+echo ""
+echo "   🔬 UNDER TESTING"
+echo "     - Count of samples currently being tested"
+echo "     - Should match collected - tested counts"
+echo ""
+echo "   ✅ REPORTS COMPLETED"
+echo "     - Shows final test reports"
+echo "     - Should display final_status (safe/unsafe)"
+echo "     - Shows detected residue and MRL limits"
+echo ""
+echo "   👤 LAB PROFILE"
+echo "     - Edit lab information"
+echo "     - Update phone, address, state, district, taluk"
+echo "     - Check save functionality"
+echo ""
+echo "   🔔 NOTIFICATIONS"
+echo "     - Check for alerts about sample collection"
+echo "     - Look for unsafe residue warnings"
+echo "     - Check for collection reminders"
+echo ""
+
+echo "✅ EXPECTED BEHAVIORS"
+echo "===================="
+echo ""
+echo "1. Stats update when samples are collected/tested"
+echo "2. Pending requests disappear after collection"
+echo "3. Collected samples appear in 'Under Testing'"
+echo "4. Reports appear in 'Reports Completed' after submission"
+echo "5. Notifications are received for key events"
+echo "6. Profile changes are saved immediately"
+echo ""
+
+echo "🐛 TROUBLESHOOTING"
+echo "=================="
+echo ""
+echo "If endpoints return 404:"
+echo "  - Check /api/labs/ (not /api/lab/)"
+echo "  - Verify token is valid and not expired"
+echo "  - Check user role is 'laboratory'"
+echo ""
+echo "If stats show 0:"
+echo "  - Ensure sample requests were created for this lab"
+echo "  - Verify lab_id matches in sample_requests table"
+echo ""
+echo "If notifications are empty:"
+echo "  - Check notification_history table"
+echo "  - Verify user_id matches in notifications"
+echo ""

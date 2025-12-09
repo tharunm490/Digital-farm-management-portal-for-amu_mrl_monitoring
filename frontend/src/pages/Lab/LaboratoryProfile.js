@@ -29,22 +29,29 @@ const LaboratoryProfile = () => {
       setLoading(true);
       setError('');
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/labs/profile', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      
+      console.log('Fetching lab profile...');
+      const response = await fetch(`${API_URL}/labs/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Profile fetch failed:', response.status, errorText);
+        throw new Error(`Failed to fetch profile: ${response.status}`);
       }
 
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
-        console.warn('Response is not JSON:', contentType);
+        const responseText = await response.text();
+        console.warn('Response is not JSON:', contentType, responseText);
         setError('Server returned invalid response. Please try again.');
         return;
       }
 
       const data = await response.json();
+      console.log('Lab profile fetched:', data);
       setFormData({
         lab_name: data.lab_name || '',
         license_number: data.license_number || '',
@@ -79,7 +86,8 @@ const LaboratoryProfile = () => {
       setSuccess('');
       
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/labs/profile', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

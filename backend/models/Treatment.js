@@ -149,6 +149,10 @@ class Treatment {
       next_due_date,
       vaccine_end_date,
       vaccination_date,
+      // Prescription fields
+      prescription,
+      prescription_date,
+      prescription_number,
       status // New status field
     } = treatmentData;
 
@@ -270,8 +274,8 @@ class Treatment {
 
     const query = `
       INSERT INTO treatment_records
-      (entity_id, farm_id, user_id, species, medication_type, is_vaccine, vaccine_interval_days, vaccine_total_months, next_due_date, vaccine_end_date, vet_id, vet_name, reason, cause, medicine, start_date, end_date, route, dose_amount, dose_unit, frequency_per_day, duration_days, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (entity_id, farm_id, user_id, species, medication_type, is_vaccine, vaccine_interval_days, vaccine_total_months, next_due_date, vaccine_end_date, vet_id, vet_name, reason, cause, medicine, start_date, end_date, route, dose_amount, dose_unit, frequency_per_day, duration_days, prescription, prescription_date, prescription_number, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     // Determine status based on who is creating the treatment
@@ -304,6 +308,9 @@ class Treatment {
       dose_unit,
       frequency_per_day ? (isNaN(parseInt(frequency_per_day)) ? null : parseInt(frequency_per_day)) : null,
       duration_days ? (isNaN(parseInt(duration_days)) ? null : parseInt(duration_days)) : null,
+      prescription || null,
+      prescription_date || null,
+      prescription_number || null,
       treatmentStatus
     ]);
 

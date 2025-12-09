@@ -36,6 +36,55 @@ function getMrlStatus(predicted_mrl, safe_max, borderline_max, unsafe_above) {
 }
 
 class AMU {
+  // Helper method to find the best laboratory for sample assignment
+  // Priority: Same taluk > Same district > Same state > Any lab
+  static async findAssignedLab(state, district, taluk) {
+    try {
+      // Priority 1: Same taluk
+      const [talukLabs] = await db.execute(
+        'SELECT lab_id FROM laboratories WHERE state = ? AND district = ? AND taluk = ? LIMIT 1',
+        [state, district, taluk]
+      );
+      if (talukLabs.length > 0) {
+        console.log(`✅ Lab found in same taluk: ${talukLabs[0].lab_id}`);
+        return talukLabs[0].lab_id;
+      }
+
+      // Priority 2: Same district
+      const [districtLabs] = await db.execute(
+        'SELECT lab_id FROM laboratories WHERE state = ? AND district = ? LIMIT 1',
+        [state, district]
+      );
+      if (districtLabs.length > 0) {
+        console.log(`✅ Lab found in same district: ${districtLabs[0].lab_id}`);
+        return districtLabs[0].lab_id;
+      }
+
+      // Priority 3: Same state
+      const [stateLabs] = await db.execute(
+        'SELECT lab_id FROM laboratories WHERE state = ? LIMIT 1',
+        [state]
+      );
+      if (stateLabs.length > 0) {
+        console.log(`✅ Lab found in same state: ${stateLabs[0].lab_id}`);
+        return stateLabs[0].lab_id;
+      }
+
+      // Priority 4: Any lab
+      const [anyLabs] = await db.execute('SELECT lab_id FROM laboratories LIMIT 1');
+      if (anyLabs.length > 0) {
+        console.log(`✅ Lab found (any): ${anyLabs[0].lab_id}`);
+        return anyLabs[0].lab_id;
+      }
+
+      console.warn('⚠️ No laboratories found in the system');
+      return null;
+    } catch (err) {
+      console.error('Error finding assigned lab:', err.message);
+      return null;
+    }
+  }
+
   // Create new AMU record (auto-filled from treatment)
   static async create(amuData) {
     const {
@@ -205,6 +254,71 @@ class AMU {
           treatment_id,
           amu_id: amuId
         });
+      }
+    }
+
+    // ========================================
+    // 🔬 STEP 1: CREATE SAMPLE REQUEST
+    // ========================================
+    // After AMU record is created with safe_date, automatically create a sample request
+    // with the best-assigned laboratory
+    if (safe_date) {
+      try {
+        console.log(`\n📋 STEP 1: Creating sample request for AMU ID ${amuId}`);
+        console.log(`   safe_date: ${safe_date}`);
+        
+        // Get farm location details for lab assignment
+        const [farmDetails] = await db.execute(
+          'SELECT f.state, f.district, f.taluk, fr.farmer_id FROM farms f JOIN farmers fr ON f.farmer_id = fr.farmer_id WHERE f.farm_id = ?',
+          [farm_id]
+        );
+        
+        if (!farmDetails || farmDetails.length === 0) {
+          console.warn('⚠️ Could not find farm details for sample request');
+        } else {
+          const { state, district, taluk, farmer_id } = farmDetails[0];
+          
+          // Find the best laboratory
+          const assigned_lab_id = await AMU.findAssignedLab(state, district, taluk);
+          
+          if (assigned_lab_id) {
+            // Create sample request
+            const sampleRequestQuery = `
+              INSERT INTO sample_requests (treatment_id, farmer_id, entity_id, assigned_lab_id, safe_date, status)
+              VALUES (?, ?, ?, ?, ?, 'requested')
+            `;
+            
+            const [sampleResult] = await db.execute(sampleRequestQuery, [
+              treatment_id,
+              farmer_id,
+              entity_id,
+              assigned_lab_id
+            ]);
+            
+            const sample_request_id = sampleResult.insertId;
+            console.log(`✅ Sample request created successfully!`);
+            console.log(`   sample_request_id: ${sample_request_id}`);
+            console.log(`   assigned_lab_id: ${assigned_lab_id}`);
+            console.log(`   status: requested`);
+            
+            // Create notification for farmer
+            await Notification.create({
+              user_id: farmerUserId,
+              type: 'info',
+              subtype: 'sample_request_created',
+              message: `Lab assigned for sample collection. Your sample will be ready for collection on ${safe_date}`,
+              entity_id,
+              treatment_id,
+              amu_id: amuId
+            });
+            console.log(`📧 Notification sent to farmer about sample request`);
+          } else {
+            console.warn('⚠️ No laboratory available for sample request assignment');
+          }
+        }
+      } catch (sampleErr) {
+        console.error('❌ Error creating sample request:', sampleErr.message);
+        // Don't throw - sample request creation is optional, AMU record already created
       }
     }
 

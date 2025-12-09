@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Navigation from '../../components/Navigation';
 
 const SampleCollection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const preSelectedRequestId = location.state?.requestId;
+  
   const [pendingSamples, setPendingSamples] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,13 +28,23 @@ const SampleCollection = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/pending-samples', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/pending-samples`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.ok) {
         const data = await response.json();
         setPendingSamples(data);
+        
+        // Auto-select the sample if requestId was passed from navigation
+        if (preSelectedRequestId && data.length > 0) {
+          const preSelected = data.find(sample => sample.sample_request_id === preSelectedRequestId);
+          if (preSelected) {
+            setSelectedSample(preSelected);
+            console.log('✅ Auto-selected sample request #', preSelectedRequestId);
+          }
+        }
       } else {
         setError('Failed to load pending samples');
       }
@@ -53,7 +66,8 @@ const SampleCollection = () => {
       setSubmitting(true);
       setError('');
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/collect-sample', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/collect-sample`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

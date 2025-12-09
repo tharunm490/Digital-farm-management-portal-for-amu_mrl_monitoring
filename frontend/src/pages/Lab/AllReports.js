@@ -18,7 +18,8 @@ const AllReports = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/all-reports', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/all-reports`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -52,7 +53,8 @@ const AllReports = () => {
   const downloadReport = async (reportId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/lab/report/${reportId}/download`, {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/lab/report/${reportId}/download`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -136,12 +138,12 @@ const AllReports = () => {
                   <div className="p-6 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-600">Entity ID</p>
-                        <p className="font-semibold text-gray-900">#{report.entity_id}</p>
+                        <p className="text-sm text-gray-600">Sample ID</p>
+                        <p className="font-semibold text-gray-900">#{report.sample_id || 'N/A'}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">Farm</p>
-                        <p className="font-semibold text-gray-900">{report.farm_name}</p>
+                        <p className="text-sm text-gray-600">Species</p>
+                        <p className="font-semibold text-gray-900">{report.species || 'N/A'}</p>
                       </div>
                     </div>
 

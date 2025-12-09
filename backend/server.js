@@ -102,6 +102,16 @@ app.use(passport.session());
 require('./config/passport')(passport);
 
 // =========================================
+// NOTIFICATION SCHEDULER (FOR LAB MODULE)
+// =========================================
+const NotificationScheduler = require('./utils/notificationScheduler');
+try {
+  NotificationScheduler.initializeScheduler();
+} catch (err) {
+  console.warn('⚠️ Failed to initialize notification scheduler:', err.message);
+}
+
+// =========================================
 // ✔ ONLY ONE AUTH ROUTE (NO DUPLICATES)
 // Google OAuth & Local Auth both inside authRoutes.js
 // =========================================

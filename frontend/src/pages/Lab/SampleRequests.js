@@ -12,14 +12,15 @@ const SampleRequests = () => {
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetchSampleRequests();
+    fetchRequests();
   }, []);
 
-  const fetchSampleRequests = async () => {
+  const fetchRequests = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/sample-requests', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/sample-requests`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

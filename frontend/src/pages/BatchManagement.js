@@ -185,9 +185,47 @@ const BatchManagement = () => {
     navigate(`/qr-generator?entity_id=${entityId}`);
   };
 
+  const [activeTab, setActiveTab] = useState('all');
+
   return (
     <div className="module-page">
       <Navigation />
+
+      {/* Tab Navigation */}
+      <div className="batch-tabs-container">
+        <div className="batch-tabs-wrapper">
+          <button 
+            className={`batch-tab ${activeTab === 'all' ? 'active' : ''}`}
+            onClick={() => setActiveTab('all')}
+          >
+            📋 All Entities
+          </button>
+          <button 
+            className={`batch-tab ${activeTab === 'animals' ? 'active' : ''}`}
+            onClick={() => setActiveTab('animals')}
+          >
+            🐄 Animals
+          </button>
+          <button 
+            className={`batch-tab ${activeTab === 'batches' ? 'active' : ''}`}
+            onClick={() => setActiveTab('batches')}
+          >
+            🐖 Batches
+          </button>
+          <button 
+            className={`batch-tab ${activeTab === 'requests' ? 'active' : ''}`}
+            onClick={() => setActiveTab('requests')}
+          >
+            📝 Treatment Requests
+          </button>
+          <button 
+            className={`batch-tab ${activeTab === 'withdrawals' ? 'active' : ''}`}
+            onClick={() => setActiveTab('withdrawals')}
+          >
+            ⏳ Active Withdrawals
+          </button>
+        </div>
+      </div>
 
       <div className="batch-content">
         {/* Enhanced Header */}

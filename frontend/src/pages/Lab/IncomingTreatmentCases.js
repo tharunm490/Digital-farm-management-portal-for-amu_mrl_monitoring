@@ -7,17 +7,17 @@ const IncomingTreatmentCases = () => {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [assigningId, setAssigningId] = useState(null);
 
   useEffect(() => {
-    fetchIncomingCases();
+    fetchCases();
   }, []);
 
-  const fetchIncomingCases = async () => {
+  const fetchCases = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/incoming-cases', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/incoming-cases`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -34,37 +34,6 @@ const IncomingTreatmentCases = () => {
     }
   };
 
-  const handleAssignLab = async (treatmentId, entityId, farmerId, safeDate) => {
-    try {
-      setAssigningId(treatmentId);
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/assign-treatment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          treatment_id: treatmentId,
-          entity_id: entityId,
-          farmer_id: farmerId,
-          safe_date: safeDate
-        })
-      });
-
-      if (response.ok) {
-        setCases(cases.filter(c => c.treatment_id !== treatmentId));
-        alert('Treatment assigned to lab successfully!');
-      } else {
-        setError('Failed to assign treatment');
-      }
-    } catch (err) {
-      setError('Error: ' + err.message);
-    } finally {
-      setAssigningId(null);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <Navigation />
@@ -72,7 +41,7 @@ const IncomingTreatmentCases = () => {
       <div className="mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">📦 Incoming Treatment Cases</h1>
-          <p className="text-gray-600">Completed treatments with withdrawal predictions requiring sample collection</p>
+          <p className="text-gray-600">Completed treatments automatically assigned to nearest laboratories based on location</p>
         </div>
 
         {error && (
@@ -107,8 +76,8 @@ const IncomingTreatmentCases = () => {
                       <p className="font-semibold text-gray-900">{caseItem.farm_name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Address</p>
-                      <p className="font-semibold text-gray-900">{caseItem.address}</p>
+                      <p className="text-sm text-gray-500">Location</p>
+                      <p className="font-semibold text-gray-900">{caseItem.district}, {caseItem.state}</p>
                     </div>
                   </div>
 
@@ -119,7 +88,7 @@ const IncomingTreatmentCases = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Medicine</p>
-                      <p className="font-semibold text-gray-900">{caseItem.treatment_medicine}</p>
+                      <p className="font-semibold text-gray-900">{caseItem.medicine || caseItem.treatment_medicine || 'N/A'}</p>
                     </div>
                   </div>
 
@@ -133,19 +102,33 @@ const IncomingTreatmentCases = () => {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t">
-                    <button
-                      onClick={() => handleAssignLab(
-                        caseItem.treatment_id,
-                        caseItem.entity_id,
-                        caseItem.farmer_id,
-                        caseItem.safe_date
-                      )}
-                      disabled={assigningId === caseItem.treatment_id}
-                      className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:shadow-lg transition disabled:opacity-50"
-                    >
-                      {assigningId === caseItem.treatment_id ? 'Assigning...' : '✅ Assign to This Lab'}
-                    </button>
+                  <div className="pt-4 border-t space-y-3">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-700">Assigned Laboratory</p>
+                          <p className="text-lg font-bold text-blue-600 mt-1">{caseItem.assigned_lab_name}</p>
+                          <div className="mt-2 flex items-center space-x-2">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                              {caseItem.assignment_method}
+                            </span>
+                            {caseItem.distance_km && (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+                                📍 {caseItem.distance_km} km away
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 text-center italic">
+                      Auto-assigned based on location proximity
+                    </p>
                   </div>
                 </div>
               </div>

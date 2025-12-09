@@ -39,7 +39,10 @@ const TreatmentManagement = () => {
     vaccine_interval_days: '',
     vaccine_total_months: '',
     next_due_date: '',
-    vaccine_end_date: ''
+    vaccine_end_date: '',
+    prescription: '',
+    prescription_date: '',
+    prescription_number: ''
   });
   const [medicationType, setMedicationType] = useState('');
   const [medicine, setMedicine] = useState('');
@@ -274,6 +277,9 @@ const TreatmentManagement = () => {
         vaccine_total_months: formData.vaccine_total_months || null,
         next_due_date: dateToInt(formData.next_due_date) || null,
         vaccine_end_date: dateToInt(formData.vaccine_end_date) || null,
+        prescription: formData.prescription || null,
+        prescription_date: formData.prescription_date || null,
+        prescription_number: formData.prescription_number || null,
         request_id: requestDetails ? requestDetails.request_id : null
       };
 
@@ -348,7 +354,10 @@ const TreatmentManagement = () => {
       vaccine_interval_days: '',
       vaccine_total_months: '',
       next_due_date: '',
-      vaccine_end_date: ''
+      vaccine_end_date: '',
+      prescription: '',
+      prescription_date: '',
+      prescription_number: ''
     });
     setMedicationType('');
     setMedicine('');
@@ -1808,7 +1817,67 @@ const TreatmentManagement = () => {
                     </div>
                   )}
 
-
+                  {/* Prescription Information */}
+                  {user?.role === 'veterinarian' && (
+                    <div className="form-section">
+                      <h3>📋 Prescription Details</h3>
+                      <div className="form-row">
+                        <div className="form-group" style={{ flex: '1 1 100%' }}>
+                          <label>Prescription Text *</label>
+                          <textarea
+                            name="prescription"
+                            value={formData.prescription}
+                            onChange={handleInputChange}
+                            placeholder="Enter prescription instructions and drugs (e.g., Amoxicillin 250mg twice daily for 5 days)"
+                            rows="4"
+                            className="form-control"
+                            style={{ fontFamily: 'monospace' }}
+                          />
+                        </div>
+                      </div>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Prescription Date</label>
+                          <input
+                            type="date"
+                            name="prescription_date"
+                            value={formData.prescription_date}
+                            onChange={handleInputChange}
+                            className="form-control"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Prescription Number</label>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <input
+                              type="text"
+                              name="prescription_number"
+                              value={formData.prescription_number}
+                              onChange={handleInputChange}
+                              placeholder="Auto-generated or manual"
+                              className="form-control"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const year = new Date().getFullYear();
+                                const vetId = formData.vet_id || 'VET';
+                                setFormData(prev => ({
+                                  ...prev,
+                                  prescription_number: `PRESC-${vetId}-${year}`
+                                }));
+                              }}
+                              className="btn-secondary"
+                              style={{ whiteSpace: 'nowrap', padding: '10px 15px' }}
+                              title="Auto-generate prescription number"
+                            >
+                              🔢 Generate
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* MRL Information */}
                   {mrlData.length > 0 && (
@@ -2107,6 +2176,54 @@ const TreatmentManagement = () => {
                           </>
                         )}
                       </div>
+
+                      {/* Prescription Section */}
+                      {treatment.prescription && (
+                        <div className="prescription-section" style={{ 
+                          backgroundColor: '#f0f8ff', 
+                          border: '2px solid #4169e1',
+                          borderRadius: '8px',
+                          padding: '15px',
+                          marginTop: '15px'
+                        }}>
+                          <h4 style={{ marginTop: 0, color: '#4169e1' }}>📋 Prescription Details</h4>
+                          <div className="detail-row">
+                            <span className="label">Prescription Number:</span>
+                            <span className="value" style={{ fontWeight: 'bold', color: '#4169e1' }}>
+                              {treatment.prescription_number || 'N/A'}
+                            </span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="label">Prescription Date:</span>
+                            <span className="value">
+                              {treatment.prescription_date ? formatDate(treatment.prescription_date) : 'N/A'}
+                            </span>
+                          </div>
+                          <div className="detail-row" style={{ marginTop: '10px' }}>
+                            <span className="label">Veterinarian License:</span>
+                            <span className="value">
+                              {treatment.vet_id || 'N/A'}
+                            </span>
+                          </div>
+                          <div style={{ 
+                            marginTop: '12px', 
+                            padding: '10px', 
+                            backgroundColor: 'white',
+                            border: '1px solid #d0e0f0',
+                            borderRadius: '5px',
+                            fontFamily: 'monospace',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            fontSize: '13px',
+                            lineHeight: '1.5'
+                          }}>
+                            {treatment.prescription}
+                          </div>
+                          <div style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
+                            ✓ This prescription is legally tied to this treatment record and cannot be modified
+                          </div>
+                        </div>
+                      )}
 
                       {treatment.is_vaccine && (
                         <div className="vaccination-section">

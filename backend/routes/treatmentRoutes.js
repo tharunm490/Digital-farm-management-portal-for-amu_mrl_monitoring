@@ -177,6 +177,9 @@ router.post('/', farmerOrVet, async (req, res) => {
       vaccine_total_months,
       next_due_date,
       vaccine_end_date,
+      prescription,
+      prescription_date,
+      prescription_number,
       request_id // For vets approving requests
     } = req.body;
 
@@ -292,6 +295,9 @@ router.post('/', farmerOrVet, async (req, res) => {
       vaccine_total_months,
       next_due_date: intToDate(next_due_date),
       vaccine_end_date: intToDate(vaccine_end_date),
+      prescription,
+      prescription_date: intToDate(prescription_date),
+      prescription_number,
       status: isVetCreating ? 'approved' : 'pending' // Vets create approved treatments, farmers create pending
     });
 

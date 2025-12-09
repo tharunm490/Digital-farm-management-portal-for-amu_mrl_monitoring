@@ -100,6 +100,46 @@ const Navigation = () => {
                 </div>
               )}
 
+              {/* Management - Farmers only */}
+              {user?.role === 'farmer' && (
+                <div className="relative">
+                  <button
+                    onClick={() => toggleDropdown('management')}
+                    className="text-white hover:bg-primary-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                    aria-expanded={dropdownOpen === 'management'}
+                  >
+                    <span>⚙️</span>
+                    <span>Management</span>
+                    <span className={`text-xs transition-transform ${dropdownOpen === 'management' ? 'rotate-180' : ''}`}>▼</span>
+                  </button>
+                  {dropdownOpen === 'management' && (
+                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-strong py-2 animate-fade-in">
+                      <Link to="/farms" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">🏡</span>Farms
+                      </Link>
+                      <Link to="/animals" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">🐄</span>Animals & Entities
+                      </Link>
+                      <Link to="/batch-management" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📋</span>Batch Management
+                      </Link>
+                      <Link to="/amu-records" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📊</span>AMU Records
+                      </Link>
+                      <Link to="/vaccinations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">💉</span>Vaccinations
+                      </Link>
+                      <Link to="/treatments" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">💊</span>Treatments
+                      </Link>
+                      <Link to="/qr-generator" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">📱</span>QR Codes
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Laboratory Portal - Laboratory only */}
               {user?.role === 'laboratory' && (
                 <div className="relative">

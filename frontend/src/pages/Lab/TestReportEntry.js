@@ -20,14 +20,15 @@ const TestReportEntry = () => {
   });
 
   useEffect(() => {
-    fetchUntestaSamples();
+    fetchUntestedSamples();
   }, []);
 
-  const fetchUntestaSamples = async () => {
+  const fetchUntestedSamples = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/lab/untested-samples', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/untested-samples`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -66,25 +67,30 @@ const TestReportEntry = () => {
       setError('');
       
       const token = localStorage.getItem('token');
-      const formDataToSend = new FormData();
-      formDataToSend.append('sample_id', selectedSample.sample_id);
-      formDataToSend.append('detected_residue', formData.detected_residue);
-      formDataToSend.append('mrl_limit', formData.mrl_limit);
-      formDataToSend.append('withdrawal_days_remaining', formData.withdrawal_days_remaining);
-      formDataToSend.append('final_status', formData.final_status);
-      formDataToSend.append('tested_on', formData.tested_on);
-      formDataToSend.append('remarks', formData.remarks);
       
+      // Build certificate URL from file name if provided
+      let certificate_url = '';
       if (certificateFile) {
-        formDataToSend.append('certificate', certificateFile);
+        certificate_url = `uploads/certificates/${Date.now()}_${certificateFile.name}`;
       }
 
-      const response = await fetch('http://localhost:5000/api/lab/upload-report', {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/labs/upload-report`, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: formDataToSend
+        body: JSON.stringify({
+          sample_id: selectedSample.sample_id,
+          detected_residue: parseFloat(formData.detected_residue),
+          mrl_limit: parseFloat(formData.mrl_limit),
+          withdrawal_days_remaining: parseInt(formData.withdrawal_days_remaining) || 0,
+          final_status: formData.final_status,
+          tested_on: formData.tested_on,
+          remarks: formData.remarks,
+          certificate_url: certificate_url
+        })
       });
 
       if (response.ok) {
@@ -100,7 +106,7 @@ const TestReportEntry = () => {
           tested_on: new Date().toISOString().split('T')[0],
           remarks: ''
         });
-        fetchUntestaSamples();
+        fetchUntestedSamples();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to submit report');

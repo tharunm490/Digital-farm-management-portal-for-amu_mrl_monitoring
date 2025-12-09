@@ -75,9 +75,9 @@ router.get('/pending-requests', authMiddleware, roleMiddleware(['laboratory']), 
     const query = `
       SELECT sr.sample_request_id, sr.treatment_id, sr.farmer_id, sr.entity_id, sr.safe_date, sr.status,
              sr.created_at, sr.assigned_lab_id,
-             a.species, a.tag_id, a.breed,
-             f.farm_name, f.address as farm_address, f.district, f.state,
-             t.treatment_medicine, t.dosage, t.duration_days, t.end_date
+             a.species, a.tag_id, a.batch_name,
+             f.farm_name, f.district, f.state,
+             t.medicine, t.dose_amount, t.duration_days
       FROM sample_requests sr
       JOIN animals_or_batches a ON a.entity_id = sr.entity_id
       JOIN farms f ON f.farm_id = a.farm_id
@@ -127,8 +127,8 @@ router.post('/collect-sample', authMiddleware, roleMiddleware(['laboratory']), a
     const Notification = require('../models/Notification');
     await Notification.create({ 
       user_id: sr.farmer_id, 
-      type: 'info', 
-      subtype: 'sample_collected', 
+      type: 'alert', 
+      subtype: null, 
       message: `Sample collected for entity ${sr.entity_id}`, 
       entity_id: sr.entity_id, 
       treatment_id: sr.treatment_id 
@@ -178,7 +178,7 @@ router.post('/upload-report', authMiddleware, roleMiddleware(['laboratory']), as
       await Notification.create({ 
         user_id: null, 
         type: 'alert', 
-        subtype: 'unsafe_lab_report', 
+        subtype: 'unsafe_mrl', 
         message: `⚠️ UNSAFE: Residue ${detected_residue} exceeds MRL ${mrl_limit} for sample ${sample_id}`, 
         entity_id: sample.entity_id 
       });
@@ -189,8 +189,8 @@ router.post('/upload-report', authMiddleware, roleMiddleware(['laboratory']), as
       if (srRows && srRows.length > 0) {
         await Notification.create({
           user_id: srRows[0].farmer_id,
-          type: 'success',
-          subtype: 'test_completed_safe',
+          type: 'alert',
+          subtype: null,
           message: `✅ Test passed! Safe to use products after ${new Date(tested_on).toLocaleDateString()}. Withdrawal: ${withdrawal_days_remaining} days.`,
           entity_id: sample.entity_id,
           treatment_id: sample.sample_request_id
@@ -206,13 +206,13 @@ router.post('/upload-report', authMiddleware, roleMiddleware(['laboratory']), as
   }
 });
 
-// Get all incoming treatment cases (treatments with withdrawal predictions)
+// Get all incoming treatment cases with auto-assigned labs
 router.get('/incoming-cases', authMiddleware, roleMiddleware(['laboratory']), async (req, res) => {
   try {
     const [cases] = await db.execute(`
-      SELECT ar.amu_id, tr.treatment_id, tr.entity_id, tr.user_id as farmer_id,
-             ar.safe_date, tr.treatment_medicine, 
-             f.farm_name, f.address
+      SELECT ar.amu_id, tr.treatment_id, tr.entity_id, f.farmer_id,
+             ar.safe_date, tr.medicine, 
+             f.farm_name, f.district, f.state, f.latitude as farm_lat, f.longitude as farm_lon
       FROM amu_records ar
       JOIN treatment_records tr ON ar.treatment_id = tr.treatment_id
       JOIN farms f ON f.farm_id = tr.farm_id
@@ -222,43 +222,260 @@ router.get('/incoming-cases', authMiddleware, roleMiddleware(['laboratory']), as
       )
       ORDER BY ar.safe_date ASC
     `);
-    res.json(cases);
+
+    // For each case, determine which lab it should be assigned to
+    const casesWithAssignedLabs = await Promise.all(cases.map(async (caseItem) => {
+      let assignedLabId = null;
+      let assignedLabName = 'Not Assigned';
+      let assignmentMethod = 'Pending';
+      let distance = null;
+
+      // Step 1: Try distance-based assignment if coordinates available
+      if (caseItem.farm_lat && caseItem.farm_lon) {
+        const [labs] = await db.execute(`
+          SELECT lab_id, lab_name, latitude, longitude, district, state
+          FROM laboratories
+          WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+        `);
+
+        if (labs.length > 0) {
+          const labsWithDistance = labs.map(lab => ({
+            ...lab,
+            distance: calculateDistance(caseItem.farm_lat, caseItem.farm_lon, lab.latitude, lab.longitude)
+          }));
+
+          labsWithDistance.sort((a, b) => a.distance - b.distance);
+          const nearestLab = labsWithDistance[0];
+
+          if (nearestLab.distance <= 200) {
+            assignedLabId = nearestLab.lab_id;
+            assignedLabName = nearestLab.lab_name;
+            assignmentMethod = 'Nearest Lab';
+            distance = nearestLab.distance.toFixed(2);
+          }
+        }
+      }
+
+      // Step 2: Try same district
+      if (!assignedLabId) {
+        const [districtLabs] = await db.execute(`
+          SELECT lab_id, lab_name FROM laboratories
+          WHERE district = ? AND state = ?
+          LIMIT 1
+        `, [caseItem.district, caseItem.state]);
+
+        if (districtLabs.length > 0) {
+          assignedLabId = districtLabs[0].lab_id;
+          assignedLabName = districtLabs[0].lab_name;
+          assignmentMethod = 'Same District';
+        }
+      }
+
+      // Step 3: Try same state
+      if (!assignedLabId) {
+        const [stateLabs] = await db.execute(`
+          SELECT lab_id, lab_name FROM laboratories
+          WHERE state = ?
+          LIMIT 1
+        `, [caseItem.state]);
+
+        if (stateLabs.length > 0) {
+          assignedLabId = stateLabs[0].lab_id;
+          assignedLabName = stateLabs[0].lab_name;
+          assignmentMethod = 'Same State';
+        }
+      }
+
+      // Step 4: Default to first available lab
+      if (!assignedLabId) {
+        const [defaultLab] = await db.execute(`
+          SELECT lab_id, lab_name FROM laboratories
+          ORDER BY lab_id ASC
+          LIMIT 1
+        `);
+
+        if (defaultLab.length > 0) {
+          assignedLabId = defaultLab[0].lab_id;
+          assignedLabName = defaultLab[0].lab_name;
+          assignmentMethod = 'Default Lab';
+        }
+      }
+
+      return {
+        ...caseItem,
+        assigned_lab_id: assignedLabId,
+        assigned_lab_name: assignedLabName,
+        assignment_method: assignmentMethod,
+        distance_km: distance
+      };
+    }));
+
+    res.json(casesWithAssignedLabs);
   } catch (e) {
     console.error('Incoming cases error:', e.message || e);
     res.status(500).json({ error: 'Failed to fetch incoming cases' });
   }
 });
 
-// Assign treatment to this lab
+// Helper function to calculate distance between two coordinates (Haversine formula)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c; // Distance in kilometers
+}
+
+// Assign treatment to this lab (Smart Assignment)
 router.post('/assign-treatment', authMiddleware, roleMiddleware(['laboratory']), async (req, res) => {
   try {
     const { treatment_id, entity_id, farmer_id, safe_date } = req.body;
-    const lab = await Laboratory.getByUserId(req.user.user_id);
-    if (!lab) return res.status(404).json({ error: 'Lab profile not found' });
+    
+    console.log(`🔍 Smart Lab Assignment for Treatment #${treatment_id}`);
 
-    // Create sample request
+    // Get the farm location for this entity
+    const [farmRows] = await db.execute(`
+      SELECT f.farm_id, f.farm_name, f.latitude, f.longitude, f.district, f.state
+      FROM animals_or_batches a
+      JOIN farms f ON f.farm_id = a.farm_id
+      WHERE a.entity_id = ?
+    `, [entity_id]);
+
+    if (!farmRows || farmRows.length === 0) {
+      return res.status(404).json({ error: 'Farm not found for this entity' });
+    }
+
+    const farm = farmRows[0];
+    console.log(`📍 Farm: ${farm.farm_name} (${farm.district}, ${farm.state})`);
+    console.log(`   Coordinates: ${farm.latitude}, ${farm.longitude}`);
+
+    let selectedLabId = null;
+    let assignmentMethod = '';
+
+    // Step 1: Try to find nearest lab if farm has coordinates
+    if (farm.latitude && farm.longitude) {
+      const [allLabs] = await db.execute(`
+        SELECT lab_id, lab_name, latitude, longitude, district, state
+        FROM laboratories
+        WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+      `);
+
+      if (allLabs.length > 0) {
+        // Calculate distances to all labs
+        const labsWithDistance = allLabs.map(lab => ({
+          ...lab,
+          distance: calculateDistance(farm.latitude, farm.longitude, lab.latitude, lab.longitude)
+        }));
+
+        // Sort by distance
+        labsWithDistance.sort((a, b) => a.distance - b.distance);
+
+        const nearestLab = labsWithDistance[0];
+        const MAX_DISTANCE_KM = 200; // Maximum acceptable distance
+
+        if (nearestLab.distance <= MAX_DISTANCE_KM) {
+          selectedLabId = nearestLab.lab_id;
+          assignmentMethod = `nearest lab (${nearestLab.distance.toFixed(2)} km away)`;
+          console.log(`✅ Nearest Lab: ${nearestLab.lab_name} - ${nearestLab.distance.toFixed(2)} km`);
+        } else {
+          console.log(`⚠️ Nearest lab is ${nearestLab.distance.toFixed(2)} km away (exceeds ${MAX_DISTANCE_KM} km limit)`);
+        }
+      }
+    }
+
+    // Step 2: Try same district/state
+    if (!selectedLabId) {
+      const [districtLabs] = await db.execute(`
+        SELECT lab_id, lab_name, district, state
+        FROM laboratories
+        WHERE district = ? AND state = ?
+        LIMIT 1
+      `, [farm.district, farm.state]);
+
+      if (districtLabs.length > 0) {
+        selectedLabId = districtLabs[0].lab_id;
+        assignmentMethod = `same district (${farm.district})`;
+        console.log(`✅ District Match: ${districtLabs[0].lab_name} in ${farm.district}`);
+      }
+    }
+
+    // Step 3: Try same state
+    if (!selectedLabId) {
+      const [stateLabs] = await db.execute(`
+        SELECT lab_id, lab_name, state
+        FROM laboratories
+        WHERE state = ?
+        LIMIT 1
+      `, [farm.state]);
+
+      if (stateLabs.length > 0) {
+        selectedLabId = stateLabs[0].lab_id;
+        assignmentMethod = `same state (${farm.state})`;
+        console.log(`✅ State Match: ${stateLabs[0].lab_name} in ${farm.state}`);
+      }
+    }
+
+    // Step 4: Fallback to default lab (lab_id = 1 or any available lab)
+    if (!selectedLabId) {
+      const [defaultLab] = await db.execute(`
+        SELECT lab_id, lab_name
+        FROM laboratories
+        ORDER BY lab_id ASC
+        LIMIT 1
+      `);
+
+      if (defaultLab.length > 0) {
+        selectedLabId = defaultLab[0].lab_id;
+        assignmentMethod = 'default lab (no nearby labs available)';
+        console.log(`✅ Default Lab: ${defaultLab[0].lab_name}`);
+      } else {
+        return res.status(500).json({ error: 'No laboratories available in the system' });
+      }
+    }
+
+    // Format safe_date to MySQL date format (YYYY-MM-DD)
+    const formattedSafeDate = safe_date ? new Date(safe_date).toISOString().split('T')[0] : null;
+
+    // Create sample request with the selected lab
     const sampleRequestId = await SampleRequest.create({
       treatment_id,
       farmer_id,
       entity_id,
-      assigned_lab_id: lab.lab_id,
-      safe_date,
+      assigned_lab_id: selectedLabId,
+      safe_date: formattedSafeDate,
       status: 'requested'
     });
+
+    console.log(`✅ Sample request created: #${sampleRequestId}`);
+
+    // Get lab details for notification
+    const [labDetails] = await db.execute('SELECT lab_name FROM laboratories WHERE lab_id = ?', [selectedLabId]);
+    const labName = labDetails[0]?.lab_name || 'Laboratory';
 
     // Notify farmer
     await Notification.create({
       user_id: farmer_id,
       type: 'alert',
-      message: `Lab assigned for sample collection. Safe date: ${safe_date}`,
+      message: `Lab assigned for sample collection: ${labName}. Safe date: ${formattedSafeDate}`,
       entity_id,
       treatment_id
     });
 
-    res.json({ message: 'Treatment assigned', sample_request_id: sampleRequestId });
+    console.log(`📧 Notification sent to farmer #${farmer_id}`);
+
+    res.json({ 
+      message: 'Treatment assigned successfully', 
+      sample_request_id: sampleRequestId,
+      assigned_lab_id: selectedLabId,
+      assignment_method: assignmentMethod,
+      lab_name: labName
+    });
   } catch (e) {
     console.error('Assign treatment error:', e.message || e);
-    res.status(500).json({ error: 'Failed to assign treatment' });
+    res.status(500).json({ error: 'Failed to assign treatment', details: e.message });
   }
 });
 
@@ -285,21 +502,24 @@ router.get('/sample-requests', authMiddleware, roleMiddleware(['laboratory']), a
   }
 });
 
-// Get pending samples ready for collection (approved status)
+// Get pending samples ready for collection (approved status OR requested status with safe_date reached)
 router.get('/pending-samples', authMiddleware, roleMiddleware(['laboratory']), async (req, res) => {
   try {
     const lab = await Laboratory.getByUserId(req.user.user_id);
     if (!lab) return res.status(404).json({ error: 'Lab profile not found' });
 
     const [samples] = await db.execute(`
-      SELECT sr.sample_request_id, sr.entity_id, sr.safe_date,
+      SELECT sr.sample_request_id, sr.entity_id, sr.safe_date, sr.status,
              a.species, f.farm_name
       FROM sample_requests sr
       JOIN animals_or_batches a ON a.entity_id = sr.entity_id
       JOIN farms f ON f.farm_id = a.farm_id
       WHERE sr.assigned_lab_id = ? 
-      AND sr.status IN ('approved')
+      AND sr.status IN ('approved', 'requested')
       AND sr.safe_date <= CURDATE()
+      AND sr.sample_request_id NOT IN (
+        SELECT DISTINCT sample_request_id FROM samples
+      )
       ORDER BY sr.safe_date ASC
     `, [lab.lab_id]);
 
@@ -343,15 +563,18 @@ router.get('/all-reports', authMiddleware, roleMiddleware(['laboratory']), async
     if (!lab) return res.status(404).json({ error: 'Lab profile not found' });
 
     const [reports] = await db.execute(`
-      SELECT ltr.report_id, ltr.detected_residue, ltr.mrl_limit, 
-             ltr.withdrawal_days_remaining, ltr.final_status, ltr.tested_on,
+      SELECT ltr.report_id, ltr.final_status, ltr.tested_on,
+             ltr.detected_residue, ltr.mrl_limit, ltr.withdrawal_days_remaining,
              ltr.remarks, ltr.certificate_url,
-             s.sample_type, sr.entity_id, f.farm_name
+             a.species, tr.medicine, f.farm_name, u.display_name AS farmer_name
       FROM lab_test_reports ltr
       JOIN samples s ON s.sample_id = ltr.sample_id
       JOIN sample_requests sr ON sr.sample_request_id = s.sample_request_id
+      JOIN treatment_records tr ON sr.treatment_id = tr.treatment_id
       JOIN animals_or_batches a ON a.entity_id = sr.entity_id
-      JOIN farms f ON f.farm_id = a.farm_id
+      JOIN farmers fr ON sr.farmer_id = fr.farmer_id
+      JOIN users u ON fr.user_id = u.user_id
+      JOIN farms f ON tr.farm_id = f.farm_id
       WHERE ltr.lab_id = ?
       ORDER BY ltr.tested_on DESC
     `, [lab.lab_id]);
@@ -369,26 +592,37 @@ router.get('/stats', authMiddleware, roleMiddleware(['laboratory']), async (req,
     const lab = await Laboratory.getByUserId(req.user.user_id);
     if (!lab) return res.status(404).json({ error: 'Lab profile not found' });
 
+    // 🟢 Pending Requests - requests waiting for collection
     const [pending] = await db.execute(
       'SELECT COUNT(*) as count FROM sample_requests WHERE assigned_lab_id = ? AND status = ?',
       [lab.lab_id, 'requested']
     );
 
+    // 🟡 Samples Collected - requests where samples have been collected
     const [collected] = await db.execute(
-      'SELECT COUNT(*) as count FROM samples WHERE collected_by_lab_id = ?',
-      [lab.lab_id]
+      'SELECT COUNT(*) as count FROM sample_requests WHERE assigned_lab_id = ? AND status = ?',
+      [lab.lab_id, 'collected']
     );
 
+    // 🔬 Under Testing - requests where samples are being tested
     const [tested] = await db.execute(
+      'SELECT COUNT(*) as count FROM sample_requests WHERE assigned_lab_id = ? AND status = ?',
+      [lab.lab_id, 'tested']
+    );
+
+    // ✅ Completed Reports - final reports submitted to authority
+    const [completed] = await db.execute(
       'SELECT COUNT(*) as count FROM lab_test_reports WHERE lab_id = ?',
       [lab.lab_id]
     );
+
+    console.log(`📊 Lab ${lab.lab_id} Stats: Pending=${pending[0].count}, Collected=${collected[0].count}, Tested=${tested[0].count}, Completed=${completed[0].count}`);
 
     res.json({
       pending: pending[0]?.count || 0,
       collected: collected[0]?.count || 0,
       tested: tested[0]?.count || 0,
-      completed: tested[0]?.count || 0
+      completed: completed[0]?.count || 0
     });
   } catch (e) {
     console.error('Stats error:', e.message || e);
@@ -445,6 +679,102 @@ router.put('/profile', authMiddleware, roleMiddleware(['laboratory']), async (re
     console.error('Stack trace:', e.stack);
     console.error('=== END: Update failed ===\n');
     res.status(500).json({ error: 'Failed to update profile', details: e.message });
+  }
+});
+
+// 📊 AUTHORITY ENDPOINTS - View all lab reports from all labs
+// Get all lab test reports for authority (global view of all labs)
+router.get('/authority/all-lab-reports', authMiddleware, roleMiddleware(['authority']), async (req, res) => {
+  try {
+    const [reports] = await db.execute(`
+      SELECT ltr.report_id, ltr.final_status, ltr.tested_on,
+             ltr.detected_residue, ltr.mrl_limit, ltr.withdrawal_days_remaining,
+             ltr.remarks, ltr.certificate_url,
+             a.species, tr.medicine, f.farm_name, u.display_name AS farmer_name,
+             fr.farmer_id, l.lab_name, l.license_number
+      FROM lab_test_reports ltr
+      JOIN samples s ON ltr.sample_id = s.sample_id
+      JOIN sample_requests sr ON s.sample_request_id = sr.sample_request_id
+      JOIN treatment_records tr ON sr.treatment_id = tr.treatment_id
+      JOIN animals_or_batches a ON sr.entity_id = a.entity_id
+      JOIN farmers fr ON sr.farmer_id = fr.farmer_id
+      JOIN users u ON fr.user_id = u.user_id
+      JOIN farms f ON tr.farm_id = f.farm_id
+      JOIN laboratories l ON ltr.lab_id = l.lab_id
+      ORDER BY ltr.tested_on DESC
+    `);
+
+    console.log(`📊 Authority fetched ${reports.length} lab reports from all labs`);
+    res.json(reports);
+  } catch (e) {
+    console.error('Authority all reports error:', e.message || e);
+    res.status(500).json({ error: 'Failed to fetch lab reports', details: e.message });
+  }
+});
+
+// Get lab reports filtered by status
+router.get('/authority/reports-by-status/:status', authMiddleware, roleMiddleware(['authority']), async (req, res) => {
+  try {
+    const { status } = req.params;
+    const validStatuses = ['safe', 'borderline', 'unsafe'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Must be: safe, borderline, or unsafe' });
+    }
+
+    const [reports] = await db.execute(`
+      SELECT ltr.report_id, ltr.final_status, ltr.tested_on,
+             ltr.detected_residue, ltr.mrl_limit, ltr.withdrawal_days_remaining,
+             a.species, tr.medicine, f.farm_name, u.display_name AS farmer_name,
+             l.lab_name, l.state, l.district, l.taluk
+      FROM lab_test_reports ltr
+      JOIN samples s ON ltr.sample_id = s.sample_id
+      JOIN sample_requests sr ON s.sample_request_id = sr.sample_request_id
+      JOIN treatment_records tr ON sr.treatment_id = tr.treatment_id
+      JOIN animals_or_batches a ON sr.entity_id = a.entity_id
+      JOIN farmers fr ON sr.farmer_id = fr.farmer_id
+      JOIN users u ON fr.user_id = u.user_id
+      JOIN farms f ON tr.farm_id = f.farm_id
+      JOIN laboratories l ON ltr.lab_id = l.lab_id
+      WHERE ltr.final_status = ?
+      ORDER BY ltr.tested_on DESC
+    `, [status]);
+
+    console.log(`📊 Authority fetched ${reports.length} ${status} lab reports`);
+    res.json(reports);
+  } catch (e) {
+    console.error('Authority reports by status error:', e.message || e);
+    res.status(500).json({ error: 'Failed to fetch reports by status', details: e.message });
+  }
+});
+
+// Get unsafe reports alert (for authority dashboard)
+router.get('/authority/unsafe-reports', authMiddleware, roleMiddleware(['authority']), async (req, res) => {
+  try {
+    const [reports] = await db.execute(`
+      SELECT ltr.report_id, ltr.tested_on,
+             ltr.detected_residue, ltr.mrl_limit,
+             a.species, tr.medicine, f.farm_name, u.display_name AS farmer_name,
+             l.lab_name, l.phone, l.email
+      FROM lab_test_reports ltr
+      JOIN samples s ON ltr.sample_id = s.sample_id
+      JOIN sample_requests sr ON s.sample_request_id = sr.sample_request_id
+      JOIN treatment_records tr ON sr.treatment_id = tr.treatment_id
+      JOIN animals_or_batches a ON sr.entity_id = a.entity_id
+      JOIN farmers fr ON sr.farmer_id = fr.farmer_id
+      JOIN users u ON fr.user_id = u.user_id
+      JOIN farms f ON tr.farm_id = f.farm_id
+      JOIN laboratories l ON ltr.lab_id = l.lab_id
+      WHERE ltr.final_status = 'unsafe'
+      ORDER BY ltr.tested_on DESC
+      LIMIT 50
+    `);
+
+    console.log(`🚨 Authority fetched ${reports.length} unsafe reports`);
+    res.json(reports);
+  } catch (e) {
+    console.error('Unsafe reports error:', e.message || e);
+    res.status(500).json({ error: 'Failed to fetch unsafe reports', details: e.message });
   }
 });
 

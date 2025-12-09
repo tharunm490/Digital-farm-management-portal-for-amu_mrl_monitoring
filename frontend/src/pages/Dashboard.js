@@ -348,6 +348,33 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Treatment Management Card */}
+      <div 
+        className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group border-l-4 border-purple-500" 
+        onClick={() => navigate('/treatment-management')}
+      >
+        <div className="absolute top-0 right-0 w-40 h-40 bg-purple-500/5 rounded-full -mr-20 -mt-20 group-hover:scale-125 transition-transform duration-500"></div>
+        <div className="relative p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+              📋
+            </div>
+            <div className="flex flex-col items-end">
+              <span className="text-xs font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded-full mb-1">Manage</span>
+              <span className="text-xs text-gray-500">All Records</span>
+            </div>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Treatment Management</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">View and manage all treatment records</p>
+          <div className="mt-4 flex items-center space-x-2">
+            <div className="h-2 flex-1 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full w-2/3 bg-purple-500 rounded-full"></div>
+            </div>
+            <span className="text-xs font-medium text-gray-600">2/3 Complete</span>
+          </div>
+        </div>
+      </div>
+
       {/* Vaccinations - Healthcare Card */}
       <div 
         className="relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group border-l-4 border-green-500" 
