@@ -131,6 +131,7 @@ class Treatment {
       user_id,
       medication_type,
       medicine,
+      body_weight_kg,
       dose_amount,
       dose_unit,
       route,
@@ -213,6 +214,9 @@ class Treatment {
     if (dose_amount !== null && dose_amount !== undefined && (isNaN(parseFloat(dose_amount)) || parseFloat(dose_amount) <= 0)) {
       throw new Error('dose_amount must be a positive number');
     }
+    if (body_weight_kg !== null && body_weight_kg !== undefined && body_weight_kg !== '' && (isNaN(parseFloat(body_weight_kg)) || parseFloat(body_weight_kg) <= 0)) {
+      throw new Error('body_weight_kg must be a positive number when provided');
+    }
     if (frequency_per_day !== null && frequency_per_day !== undefined && (isNaN(parseInt(frequency_per_day)) || parseInt(frequency_per_day) <= 0)) {
       throw new Error('frequency_per_day must be a positive integer');
     }
@@ -274,8 +278,8 @@ class Treatment {
 
     const query = `
       INSERT INTO treatment_records
-      (entity_id, farm_id, user_id, species, medication_type, is_vaccine, vaccine_interval_days, vaccine_total_months, next_due_date, vaccine_end_date, vet_id, vet_name, reason, cause, medicine, start_date, end_date, route, dose_amount, dose_unit, frequency_per_day, duration_days, prescription, prescription_date, prescription_number, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (entity_id, farm_id, user_id, species, medication_type, is_vaccine, vaccine_interval_days, vaccine_total_months, next_due_date, vaccine_end_date, vet_id, vet_name, reason, cause, medicine, start_date, end_date, route, dose_amount, dose_unit, body_weight_kg, frequency_per_day, duration_days, prescription, prescription_date, prescription_number, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     // Determine status based on who is creating the treatment
@@ -306,6 +310,7 @@ class Treatment {
       mappedRoute,
       dose_amount ? (isNaN(parseFloat(dose_amount)) ? null : parseFloat(dose_amount)) : null,
       dose_unit,
+      body_weight_kg ? (isNaN(parseFloat(body_weight_kg)) ? null : parseFloat(body_weight_kg)) : null,
       frequency_per_day ? (isNaN(parseInt(frequency_per_day)) ? null : parseInt(frequency_per_day)) : null,
       duration_days ? (isNaN(parseInt(duration_days)) ? null : parseInt(duration_days)) : null,
       prescription || null,

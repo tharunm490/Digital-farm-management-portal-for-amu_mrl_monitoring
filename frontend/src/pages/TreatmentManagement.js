@@ -42,7 +42,8 @@ const TreatmentManagement = () => {
     vaccine_end_date: '',
     prescription: '',
     prescription_date: '',
-    prescription_number: ''
+    prescription_number: '',
+    body_weight_kg: ''
   });
   const [medicationType, setMedicationType] = useState('');
   const [medicine, setMedicine] = useState('');
@@ -84,6 +85,58 @@ const TreatmentManagement = () => {
     if (!date) return '';
     const d = new Date(date);
     return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  };
+
+  // Download prescription PDF for a treatment
+  const downloadPrescription = async (treatmentId, prescriptionNumber) => {
+    try {
+      const token = localStorage.getItem('token');
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      console.log('Requesting prescription for', treatmentId);
+      const res = await fetch(`${API_URL}/prescription/${treatmentId}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        // Try to parse JSON error or text for more info
+        let msg = `Server returned ${res.status}`;
+        try {
+          const json = await res.json();
+          msg = json.error || json.message || JSON.stringify(json);
+        } catch (e) {
+          try {
+            const text = await res.text();
+            if (text) msg = text;
+          } catch (_) {}
+        }
+        console.error('Prescription download failed:', msg);
+        alert('Failed to download prescription: ' + msg);
+        return;
+      }
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/pdf')) {
+        // backend returned something unexpected
+        const text = await res.text();
+        console.error('Unexpected response from server:', text);
+        alert('Failed to download prescription: unexpected server response');
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${prescriptionNumber || 'prescription'}_${treatmentId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Prescription download error:', err);
+      alert('Failed to download prescription. Check server logs and network connection.');
+    }
   };
 
   // Convert date to integer format YYYYMMDD
@@ -260,6 +313,7 @@ const TreatmentManagement = () => {
         species: formData.species,
         medication_type: formData.medication_type,
         medicine: formData.medicine,
+        body_weight_kg: formData.body_weight_kg || null,
         dose_amount: formData.dose_amount,
         dose_unit: formData.dose_unit,
         frequency_per_day: formData.frequency_per_day,
@@ -1360,6 +1414,20 @@ const TreatmentManagement = () => {
                       </div>
 
                       <div className="form-group">
+                        <label>Body Weight (kg)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          name="body_weight_kg"
+                          value={formData.body_weight_kg}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          placeholder="Enter measured body weight (kg)"
+                        />
+                        <small className="form-help">Enter body weight used for dosage calculations (optional but recommended)</small>
+                      </div>
+
+                      <div className="form-group">
                         <label>Dose Unit *</label>
                         <input
                           type="text"
@@ -2221,6 +2289,14 @@ const TreatmentManagement = () => {
                           </div>
                           <div style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
                             ✓ This prescription is legally tied to this treatment record and cannot be modified
+                          </div>
+                          <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
+                            <button
+                              className="btn-primary"
+                              onClick={() => downloadPrescription(treatment.treatment_id, treatment.prescription_number)}
+                            >
+                              Download Prescription PDF
+                            </button>
                           </div>
                         </div>
                       )}

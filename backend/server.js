@@ -138,6 +138,7 @@ app.use('/api/lab-reports', require('./routes/labReportRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/biomass', require('./routes/biomassRoutes'));
 app.use('/api/feed', require('./routes/feedRoutes'));
+app.use('/api/prescription', require('./routes/prescriptionRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT

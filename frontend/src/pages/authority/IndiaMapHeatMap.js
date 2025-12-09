@@ -75,12 +75,15 @@ const IndiaMapHeatMap = () => {
   };
 
   const getUsageForState = (stateName) => {
-    const state = stateUsage.find(s => s.state === stateName);
+    // Normalize API response: some endpoints return an object { data: [...] }
+    const stateArray = Array.isArray(stateUsage) ? stateUsage : (stateUsage && Array.isArray(stateUsage.data) ? stateUsage.data : []);
+    const state = stateArray.find(s => s.state === stateName);
     return state ? state.usage : 0;
   };
 
   const getColorForUsage = (usage) => {
-    const maxUsage = Math.max(...stateUsage.map(s => s.usage), 1);
+    const stateArray = Array.isArray(stateUsage) ? stateUsage : (stateUsage && Array.isArray(stateUsage.data) ? stateUsage.data : []);
+    const maxUsage = Math.max(...(stateArray.length ? stateArray.map(s => s.usage) : [1]), 1);
     const intensity = usage / maxUsage;
 
     if (intensity > 0.7) return '#dc2626'; // Red - High
@@ -90,7 +93,7 @@ const IndiaMapHeatMap = () => {
   };
 
   const getMarkerIcon = (usage) => {
-    const maxUsage = Math.max(...stateUsage.map(s => s.usage), 1);
+    const maxUsage = Math.max(...(stateArray.length ? stateArray.map(s => s.usage) : [1]), 1);
     const intensity = usage / maxUsage;
     const color = intensity > 0.7 ? 'red' : intensity > 0.4 ? 'orange' : 'green';
     const size = 20 + (intensity * 30);
@@ -102,6 +105,11 @@ const IndiaMapHeatMap = () => {
       iconAnchor: [size/2, size/2]
     });
   };
+
+  // Normalize API responses into arrays to avoid runtime errors when server returns { data: [...] }
+  const stateArray = Array.isArray(stateUsage) ? stateUsage : (stateUsage && Array.isArray(stateUsage.data) ? stateUsage.data : []);
+  const districtArray = Array.isArray(districtUsage) ? districtUsage : (districtUsage && Array.isArray(districtUsage.data) ? districtUsage.data : []);
+  const stateMaxUsage = stateArray.length ? Math.max(...stateArray.map(s => s.usage)) : 1;
 
   if (loading) {
     return (
@@ -234,9 +242,8 @@ const IndiaMapHeatMap = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {stateUsage.map((state, index) => {
-                    const maxUsage = Math.max(...stateUsage.map(s => s.usage));
-                    const percentage = (state.usage / maxUsage) * 100;
+                  {stateArray.map((state, index) => {
+                    const percentage = (state.usage / stateMaxUsage) * 100;
                     const riskLevel = percentage > 70 ? 'High' : percentage > 40 ? 'Medium' : 'Low';
                     const riskColor = riskLevel === 'High' ? 'text-red-600 bg-red-50' :
                                      riskLevel === 'Medium' ? 'text-yellow-600 bg-yellow-50' :
@@ -281,8 +288,8 @@ const IndiaMapHeatMap = () => {
             <h3 className="text-xl font-bold text-gray-900 mb-4">District-wise AMU Distribution</h3>
             
             {/* Group by State */}
-            {[...new Set(districtUsage.map(d => d.state))].map(state => {
-              const stateDistricts = districtUsage.filter(d => d.state === state);
+            {[...new Set(districtArray.map(d => d.state))].map(state => {
+              const stateDistricts = districtArray.filter(d => d.state === state);
               const stateTotal = stateDistricts.reduce((sum, d) => sum + d.usage, 0);
               
               return (
@@ -336,21 +343,23 @@ const IndiaMapHeatMap = () => {
           <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-xl p-6">
             <span className="text-4xl mb-3 block">🔥</span>
             <h4 className="font-bold text-gray-900 mb-2">Highest Usage</h4>
-            <p className="text-2xl font-bold text-red-600 mb-1">{stateUsage[0]?.state}</p>
-            <p className="text-sm text-gray-600">{stateUsage[0]?.usage} AMU records</p>
+            <>
+              <p className="text-2xl font-bold text-red-600 mb-1">{stateArray[0]?.state || 'N/A'}</p>
+              <p className="text-sm text-gray-600">{stateArray[0]?.usage || 0} AMU records</p>
+            </>
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-6">
             <span className="text-4xl mb-3 block">📊</span>
             <h4 className="font-bold text-gray-900 mb-2">Total States</h4>
-            <p className="text-2xl font-bold text-blue-600 mb-1">{stateUsage.length}</p>
+            <p className="text-2xl font-bold text-blue-600 mb-1">{stateArray.length}</p>
             <p className="text-sm text-gray-600">Monitored regions</p>
           </div>
 
           <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-xl p-6">
             <span className="text-4xl mb-3 block">📍</span>
             <h4 className="font-bold text-gray-900 mb-2">Total Districts</h4>
-            <p className="text-2xl font-bold text-green-600 mb-1">{districtUsage.length}</p>
+            <p className="text-2xl font-bold text-green-600 mb-1">{districtArray.length}</p>
             <p className="text-sm text-gray-600">Coverage areas</p>
           </div>
         </div>
