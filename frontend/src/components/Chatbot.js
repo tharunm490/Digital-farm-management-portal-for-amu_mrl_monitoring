@@ -98,7 +98,8 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/chatbot/chat`, {
+      const API_URL = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${API_URL}/chatbot/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

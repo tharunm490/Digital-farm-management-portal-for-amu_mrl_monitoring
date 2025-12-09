@@ -126,6 +126,9 @@ const Navigation = () => {
                       <Link to="/amu-records" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
                         <span className="mr-2">📊</span>AMU Records
                       </Link>
+                      <Link to="/feed-amu-predictor" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
+                        <span className="mr-2">🌾</span>Feed & AMU Predictor
+                      </Link>
                       <Link to="/vaccinations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={closeAllMenus}>
                         <span className="mr-2">💉</span>Vaccinations
                       </Link>

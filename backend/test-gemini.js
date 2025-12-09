@@ -1,20 +1,20 @@
 require('dotenv').config();
 console.log('Environment loaded. API Key:', process.env.GEMINI_API_KEY ? 'Present' : 'Missing');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 
 async function testGeminiAPI() {
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    // Try with gemini-2.0-flash
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     const prompt = "Hello Gemini, can you hear me? Please respond with a simple greeting.";
 
-    console.log('Testing Gemini API with gemini-2.0-flash...');
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    console.log('Testing Gemini API with gemini-1.5-flash...');
+    const response = await genAI.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }]
+    });
+
+    const text = response.text;
 
     console.log('✅ Gemini API is working!');
     console.log('Response:', text);

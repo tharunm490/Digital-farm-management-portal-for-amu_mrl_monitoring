@@ -64,13 +64,55 @@ const AuthorityNavigation = () => {
                 <span>Dashboard</span>
               </Link>
 
-              <Link
-                to="/authority/amu-analytics"
-                className="text-white hover:bg-primary-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
-              >
-                <span>📈</span>
-                <span>Analytics</span>
-              </Link>
+              {/* Analytics Dropdown */}
+              <div className="relative group">
+                <Link
+                  to="/authority/enhanced-analytics"
+                  className="text-white hover:bg-primary-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                >
+                  <span>📈</span>
+                  <span>Analytics Dashboard</span>
+                  <span className="text-xs">▼</span>
+                </Link>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2">
+                    <Link to="/authority/enhanced-analytics" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">📊</span>
+                      <span>Overview</span>
+                    </Link>
+                    <Link to="/authority/analytics/antibiotic-usage" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">💊</span>
+                      <span>Antibiotic Usage Trends</span>
+                    </Link>
+                    <Link to="/authority/analytics/withdrawal-compliance" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">📅</span>
+                      <span>Withdrawal Compliance</span>
+                    </Link>
+                    <Link to="/authority/analytics/lab-reports" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">🧪</span>
+                      <span>Laboratory Reports</span>
+                    </Link>
+                    <Link to="/authority/india-map-heatmap" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">🗺️</span>
+                      <span>AMU State Heat Map</span>
+                    </Link>
+                    <Link to="/authority/analytics/risky-farms" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">🏡</span>
+                      <span>Farm-Level Insights</span>
+                    </Link>
+                    <Link to="/authority/biomass-analytics" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">⚖️</span>
+                      <span>Biomass-Based AMU Usage</span>
+                    </Link>
+                    <Link to="/authority/feed-nutrition-analytics" className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                      <span className="mr-2">🌾</span>
+                      <span>Feed-Nutrition Risk Analytics</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
 
               <Link
                 to="/authority/map-view"
@@ -181,14 +223,76 @@ const AuthorityNavigation = () => {
               <span className="font-medium">Dashboard</span>
             </Link>
 
-            <Link
-              to="/authority/amu-analytics"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              onClick={closeMobileMenu}
-            >
-              <span className="text-xl">📈</span>
-              <span className="font-medium">Analytics</span>
-            </Link>
+            {/* Analytics Section */}
+            <div className="px-2 py-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Analytics Dashboard</p>
+              <div className="space-y-1">
+                <Link
+                  to="/authority/enhanced-analytics"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">📊</span>
+                  <span className="text-sm">Overview</span>
+                </Link>
+                <Link
+                  to="/authority/analytics/antibiotic-usage"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">💊</span>
+                  <span className="text-sm">Antibiotic Usage</span>
+                </Link>
+                <Link
+                  to="/authority/analytics/withdrawal-compliance"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">📅</span>
+                  <span className="text-sm">Withdrawal Compliance</span>
+                </Link>
+                <Link
+                  to="/authority/analytics/lab-reports"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">🧪</span>
+                  <span className="text-sm">Lab Reports</span>
+                </Link>
+                <Link
+                  to="/authority/india-map-heatmap"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">🗺️</span>
+                  <span className="text-sm">India Heat Map</span>
+                </Link>
+                <Link
+                  to="/authority/analytics/risky-farms"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">🏡</span>
+                  <span className="text-sm">Farm Insights</span>
+                </Link>
+                <Link
+                  to="/authority/biomass-analytics"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">⚖️</span>
+                  <span className="text-sm">Biomass-Based AMU</span>
+                </Link>
+                <Link
+                  to="/authority/feed-nutrition-analytics"
+                  className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <span className="text-lg">🌾</span>
+                  <span className="text-sm">Feed-Nutrition Risk</span>
+                </Link>
+              </div>
+            </div>
 
             <Link
               to="/authority/map-view"

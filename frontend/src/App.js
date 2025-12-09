@@ -37,6 +37,15 @@ import AuthorityLoanApplications from './pages/authority/AuthorityLoanApplicatio
 import AuthorityLoanDetail from './pages/authority/AuthorityLoanDetail';
 import DiseaseIntelligenceHub from './pages/authority/DiseaseIntelligenceHub';
 import TreatmentReports from './pages/authority/TreatmentReports';
+import AnalyticsDashboard from './pages/authority/AnalyticsDashboard';
+import StateHeatmap from './pages/authority/StateHeatmap';
+import WithdrawalCompliance from './pages/authority/WithdrawalCompliance';
+import RiskyFarms from './pages/authority/RiskyFarms';
+import EnhancedAnalyticsDashboard from './pages/authority/EnhancedAnalyticsDashboard';
+import IndiaMapHeatMap from './pages/authority/IndiaMapHeatMap';
+import BiomassUsageAnalytics from './pages/authority/BiomassUsageAnalytics';
+import FeedAMUPredictor from './pages/FeedAMUPredictor';
+import FeedNutritionRiskAnalytics from './pages/authority/FeedNutritionRiskAnalytics';
 import LaboratoryDashboard from './pages/LaboratoryDashboard';
 import IncomingTreatmentCases from './pages/Lab/IncomingTreatmentCases';
 import SampleRequests from './pages/Lab/SampleRequests';
@@ -54,6 +63,16 @@ const AuthorityRoutes = () => {
       <Routes>
         <Route path="/dashboard" element={<AuthorityDashboard />} />
         <Route path="/analytics" element={<DiseaseIntelligenceHub />} />
+        <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
+        <Route path="/enhanced-analytics" element={<EnhancedAnalyticsDashboard />} />
+        <Route path="/india-map-heatmap" element={<IndiaMapHeatMap />} />
+        <Route path="/biomass-analytics" element={<BiomassUsageAnalytics />} />
+        <Route path="/feed-nutrition-analytics" element={<FeedNutritionRiskAnalytics />} />
+        <Route path="/analytics/state-heatmap" element={<StateHeatmap />} />
+        <Route path="/analytics/withdrawal-compliance" element={<WithdrawalCompliance />} />
+        <Route path="/analytics/risky-farms" element={<RiskyFarms />} />
+        <Route path="/analytics/antibiotic-usage" element={<EnhancedAnalyticsDashboard />} />
+        <Route path="/analytics/lab-reports" element={<EnhancedAnalyticsDashboard />} />
         <Route path="/amu-analytics" element={<AuthorityAMUAnalytics />} />
         <Route path="/heat-map" element={<AuthorityHeatMap />} />
         <Route path="/complaints" element={<AuthorityComplaints />} />
@@ -146,6 +165,7 @@ function AppRoutes() {
       <Route path="/amu-records" element={<ProtectedRoute><AMURecords /></ProtectedRoute>} />
       <Route path="/apply-loan" element={<ProtectedRoute><ApplyForLoan /></ProtectedRoute>} />
       <Route path="/loan-status" element={<ProtectedRoute><LoanStatus /></ProtectedRoute>} />
+      <Route path="/feed-amu-predictor" element={<ProtectedRoute><FeedAMUPredictor /></ProtectedRoute>} />
     </Routes>
   );
 }

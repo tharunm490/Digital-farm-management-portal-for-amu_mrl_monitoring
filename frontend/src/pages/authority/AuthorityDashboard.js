@@ -14,7 +14,9 @@ const AuthorityDashboard = () => {
     unsafeMRLCases: 0,
     highRiskFarms: 0,
     activeVets: 0,
-    stateDistribution: {}
+    stateDistribution: {},
+    feedHighRiskFarmers: 0,
+    feedAvgAmuRisk: 0
   });
   const [analytics, setAnalytics] = useState({
     topMedicines: [],
@@ -39,14 +41,15 @@ const AuthorityDashboard = () => {
       console.log('🔄 Fetching dashboard data...');
       
       // Fetch all required statistics
-      const [farmsRes, treatmentsRes, amuRes, alertsRes, vetsRes, analyticsRes, complaintsRes] = await Promise.all([
+      const [farmsRes, treatmentsRes, amuRes, alertsRes, vetsRes, analyticsRes, complaintsRes, feedStatsRes] = await Promise.all([
         api.get('/authority/stats/farms'),
         api.get('/authority/stats/treatments'),
         api.get('/authority/stats/amu'),
         api.get('/authority/stats/alerts'),
         api.get('/authority/stats/veterinarians'),
         api.get('/authority/amu-analytics?period=30'),
-        api.get('/authority/complaints?limit=5')
+        api.get('/authority/complaints?limit=5'),
+        api.get('/feed/authority/feed-risk-stats').catch(() => ({ data: { overall: { high_risk_count: 0, very_high_risk_count: 0, avg_amu_risk: 0 } } }))
       ]);
 
       console.log('✅ Dashboard data received:', {
@@ -66,7 +69,9 @@ const AuthorityDashboard = () => {
         unsafeMRLCases: alertsRes.data.unsafeMRLCases || 0,
         highRiskFarms: alertsRes.data.highRiskFarms || 0,
         activeVets: vetsRes.data.activeVets || 0,
-        stateDistribution: farmsRes.data.stateDistribution || {}
+        stateDistribution: farmsRes.data.stateDistribution || {},
+        feedHighRiskFarmers: (feedStatsRes.data.overall?.high_risk_count || 0) + (feedStatsRes.data.overall?.very_high_risk_count || 0),
+        feedAvgAmuRisk: feedStatsRes.data.overall?.avg_amu_risk || 0
       });
 
       setAnalytics({
@@ -223,6 +228,32 @@ const AuthorityDashboard = () => {
               <div className="stat-trend positive">🏥 Healthcare network</div>
             </div>
             <div className="card-action-hint">Click to view details →</div>
+          </div>
+
+          <div className="stat-flash-card warning clickable" onClick={() => navigate('/authority/feed-nutrition-analytics')} style={{ cursor: 'pointer' }}>
+            <div className="stat-flash-header">
+              <div className="stat-icon">🌾</div>
+              <h3>Feed-Nutrition Risk</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">{stats.feedHighRiskFarmers.toLocaleString()}</div>
+              <div className="stat-subtitle">High-risk farmers</div>
+              <div className="stat-trend">📊 Avg Risk: {(stats.feedAvgAmuRisk * 100).toFixed(1)}%</div>
+            </div>
+            <div className="card-action-hint">Click to view analytics →</div>
+          </div>
+
+          <div className="stat-flash-card success clickable" onClick={() => navigate('/authority/biomass-analytics')} style={{ cursor: 'pointer' }}>
+            <div className="stat-flash-header">
+              <div className="stat-icon">⚖️</div>
+              <h3>Biomass-Based AMU</h3>
+            </div>
+            <div className="stat-flash-content">
+              <div className="stat-main-value">View</div>
+              <div className="stat-subtitle">Species-wise usage</div>
+              <div className="stat-trend">📈 Track AMU by biomass</div>
+            </div>
+            <div className="card-action-hint">Click to view analytics →</div>
           </div>
         </div>
 

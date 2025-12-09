@@ -1,10 +1,10 @@
 const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 
 const router = express.Router();
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Default system prompt
 const SYSTEM_PROMPT = `
@@ -60,19 +60,21 @@ router.post('/chat', async (req, res) => {
       });
     }
 
-    // Use correct Gemini model - try gemini-2.0-flash
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     // Build prompt
     let prompt = SYSTEM_PROMPT + "\n\n";
     prompt += `Respond in ${language} language.\n\n`;
     prompt += `User Question: ${message}\n\n`;
     prompt += `Assistant Response:\n`;
 
-    // Generate response
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    // Generate response using GoogleGenAI
+    const response = await genAI.generateText({
+      model: 'gemini-1.5-flash',
+      prompt: prompt,
+      temperature: 0.7,
+      maxOutputTokens: 2048,
+    });
+
+    const text = response.text || response;
 
     res.json({
       response: text,
@@ -107,13 +109,15 @@ router.post('/translate', async (req, res) => {
       return res.status(400).json({ error: "Text and target language are required" });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const prompt = `Translate this from ${sourceLanguage} to ${targetLanguage}. Only the translation:\n\n${text}`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const translation = response.text().trim();
+    const response = await genAI.generateText({
+      model: 'gemini-1.5-flash',
+      prompt: prompt,
+      temperature: 0.3,
+    });
+
+    const translation = (response.text || response).trim();
 
     res.json({
       original: text,

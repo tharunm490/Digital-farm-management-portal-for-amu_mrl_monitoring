@@ -135,6 +135,9 @@ app.use('/api/distributor', require('./routes/distributorRoutes'));
 app.use('/api/tamper-proof', require('./routes/tamperProofRoutes'));
 app.use('/api/labs', require('./routes/labRoutes'));
 app.use('/api/lab-reports', require('./routes/labReportRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/biomass', require('./routes/biomassRoutes'));
+app.use('/api/feed', require('./routes/feedRoutes'));
 
 // =========================================
 // API HEALTH ENDPOINT
