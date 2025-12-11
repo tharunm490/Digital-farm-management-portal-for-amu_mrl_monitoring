@@ -21,7 +21,8 @@ const LaboratoryDashboard = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/labs/stats', {
+      const apiBase = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${apiBase}/labs/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.ok) {

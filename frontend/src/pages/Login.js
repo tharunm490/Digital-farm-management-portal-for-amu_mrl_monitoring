@@ -116,7 +116,7 @@ const Login = () => {
       return;
     }
     // Remove /api suffix from REACT_APP_API_URL to get base backend URL
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    const apiUrl = process.env.REACT_APP_API_URL || '/api';
     const backendUrl = apiUrl.replace(/\/api$/, '');
     console.log('Redirecting to Google OAuth:', `${backendUrl}/api/auth/google?role=${loginMode}`);
     window.location.href = `${backendUrl}/api/auth/google?role=${loginMode}`;
