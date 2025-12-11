@@ -1,10 +1,10 @@
 const express = require('express');
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const router = express.Router();
 
-// Initialize Gemini AI
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize Gemini AI (v1.32.0)
+const genAI = new GoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Default system prompt
 const SYSTEM_PROMPT = `
@@ -66,15 +66,12 @@ router.post('/chat', async (req, res) => {
     prompt += `User Question: ${message}\n\n`;
     prompt += `Assistant Response:\n`;
 
-    // Generate response using GoogleGenAI
-    const response = await genAI.generateText({
-      model: 'gemini-1.5-flash',
-      prompt: prompt,
-      temperature: 0.7,
-      maxOutputTokens: 2048,
-    });
 
-    const text = response.text || response;
+    // Generate response using GoogleGenAI (v1.32.0)
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
     res.json({
       response: text,
@@ -112,7 +109,7 @@ router.post('/translate', async (req, res) => {
     const prompt = `Translate this from ${sourceLanguage} to ${targetLanguage}. Only the translation:\n\n${text}`;
 
     const response = await genAI.generateText({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash',
       prompt: prompt,
       temperature: 0.3,
     });
@@ -151,3 +148,4 @@ router.get('/context', (req, res) => {
 });
 
 module.exports = router;
+
